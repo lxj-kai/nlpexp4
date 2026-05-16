@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+import html as _html
 import sys
 from pathlib import Path
 
@@ -66,13 +67,17 @@ LABEL_BADGE = {
 def _doc_card(idx: int, doc: str, label: str, *, max_chars: int = 600) -> str:
     emoji, badge = LABEL_BADGE.get(label, ("⚪", label.upper()))
     text = doc[:max_chars] + ("…" if len(doc) > max_chars else "")
+    safe_text = _html.escape(text).replace("\n", "<br>")
+    border_color = (
+        "#10b981" if label == "positive"
+        else ("#f59e0b" if label == "positive_wrong" else "#ef4444")
+    )
     return (
-        f"<div style='padding:10px 12px;margin:8px 0;border-left:4px solid "
-        f"{'#10b981' if label=='positive' else ('#f59e0b' if label=='positive_wrong' else '#ef4444')};"
+        f"<div style='padding:10px 12px;margin:8px 0;border-left:4px solid {border_color};"
         f"background:rgba(255,255,255,0.03);border-radius:6px;'>"
         f"<div style='font-weight:600;color:#94a3b8;font-size:.85rem;margin-bottom:4px;'>"
         f"{emoji} 文档 [{idx}] · {badge}</div>"
-        f"<div style='color:#e2e8f0;line-height:1.55;font-size:.92rem;'>{gr.utils.sanitize_value(text) if hasattr(gr,'utils') else text}</div>"
+        f"<div style='color:#e2e8f0;line-height:1.55;font-size:.92rem;'>{safe_text}</div>"
         f"</div>"
     )
 

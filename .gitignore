@@ -20,3 +20,10 @@ figures/*.tmp.*
 .idea/
 .vscode/
 .DS_Store
+
+# frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.log
+npm-debug.log*

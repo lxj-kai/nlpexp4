@@ -1,0 +1,520 @@
+{
+  "config": {
+    "api_base": "https://api.deepseek.com/v1",
+    "model": "deepseek-chat",
+    "judge_model": "deepseek-chat",
+    "timeout": 60,
+    "max_retries": 3,
+    "temperature": 0.0,
+    "max_tokens": 512,
+    "project_root": "D:\\code\\nlpexp4",
+    "data_dir": "D:\\code\\nlpexp4\\data\\rgb",
+    "results_dir": "D:\\code\\nlpexp4\\experiments\\results",
+    "cache_dir": "D:\\code\\nlpexp4\\.cache",
+    "figures_dir": "D:\\code\\nlpexp4\\figures",
+    "report_dir": "D:\\code\\nlpexp4\\report",
+    "zh_main": "zh.json",
+    "zh_fact": "zh_fact.json",
+    "zh_int": "zh_int.json",
+    "zh_refine": "zh_refine.json",
+    "en_main": "en.json",
+    "en_fact": "en_fact.json",
+    "noise_ratios": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "noise_types": [
+      "semantic",
+      "counterfactual",
+      "mixed"
+    ],
+    "noise_positions": [
+      "front",
+      "back",
+      "interleave",
+      "surround"
+    ],
+    "max_docs": 10,
+    "min_positive_docs": 1,
+    "seed": 42,
+    "smoke_test_size": 50,
+    "judge_score_max": 5,
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "correctors_enabled": [
+      "prompt",
+      "iterative",
+      "confidence",
+      "selfrag"
+    ]
+  },
+  "n_samples": 5,
+  "dry": false,
+  "methods": [
+    "naive",
+    "prompt"
+  ],
+  "summaries": [
+    {
+      "method": "naive",
+      "bucket": "clean",
+      "n": 5,
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4927,
+      "rouge_l": 0.5098,
+      "judge_score": null,
+      "isr": 0.8,
+      "nar": 0.0
+    },
+    {
+      "method": "prompt",
+      "bucket": "clean",
+      "n": 5,
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4717,
+      "rouge_l": 0.4905,
+      "judge_score": null,
+      "isr": 0.8,
+      "nar": 0.0
+    },
+    {
+      "method": "naive",
+      "bucket": "noisy",
+      "n": 5,
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.5117,
+      "rouge_l": 0.5326,
+      "judge_score": null,
+      "isr": 0.8,
+      "nar": 0.0
+    },
+    {
+      "method": "prompt",
+      "bucket": "noisy",
+      "n": 5,
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.5117,
+      "rouge_l": 0.5326,
+      "judge_score": null,
+      "isr": 0.8,
+      "nar": 0.0
+    }
+  ],
+  "rows": [
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "12人死亡。",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.6666666666666666,
+      "rouge_l": 0.7499999999999999,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "RCEP成员国包括东盟10国与中国、日本、韩国、澳大利亚、新西兰。",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.2857142857142857,
+      "rouge_l": 0.25,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "2022年1月3日上午。",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.6666666666666666,
+      "rouge_l": 0.5333333333333333,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 3,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "南宁国际铁路港",
+      "gold": [
+        "南宁"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4444444444444445,
+      "rouge_l": 0.4444444444444445,
+      "judge_score": null,
+      "isr": 0.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 4,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "90个议席。",
+      "gold": [
+        "90"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4,
+      "rouge_l": 0.5714285714285715,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "12人死亡",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.6666666666666666,
+      "rouge_l": 0.7499999999999999,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "RCEP成员国包括东盟10国以及中国、日本、韩国、澳大利亚、新西兰。",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.2758620689655173,
+      "rouge_l": 0.2424242424242424,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "2022年1月3日上午11时",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.5714285714285715,
+      "rouge_l": 0.4444444444444445,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 3,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "南宁国际铁路港",
+      "gold": [
+        "南宁"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4444444444444445,
+      "rouge_l": 0.4444444444444445,
+      "judge_score": null,
+      "isr": 0.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 4,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "90个议席。",
+      "gold": [
+        "90"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4,
+      "rouge_l": 0.5714285714285715,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "12人死亡",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.6666666666666666,
+      "rouge_l": 0.7499999999999999,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.38095238095238093,
+      "rouge_l": 0.3636363636363636,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "2022年1月3日上午。",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.6666666666666666,
+      "rouge_l": 0.5333333333333333,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 3,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "南宁国际铁路港",
+      "gold": [
+        "南宁"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4444444444444445,
+      "rouge_l": 0.4444444444444445,
+      "judge_score": null,
+      "isr": 0.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 4,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "90个议席。",
+      "gold": [
+        "90"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4,
+      "rouge_l": 0.5714285714285715,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "12人死亡",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.6666666666666666,
+      "rouge_l": 0.7499999999999999,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.38095238095238093,
+      "rouge_l": 0.3636363636363636,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "2022年1月3日上午",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.6666666666666666,
+      "rouge_l": 0.5333333333333333,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 3,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "南宁国际铁路港",
+      "gold": [
+        "南宁"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4444444444444445,
+      "rouge_l": 0.4444444444444445,
+      "judge_score": null,
+      "isr": 0.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 4,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "90个议席。",
+      "gold": [
+        "90"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.4,
+      "rouge_l": 0.5714285714285715,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    }
+  ],
+  "llm_usage": {
+    "calls": 20,
+    "prompt_tokens": 21694,
+    "completion_tokens": 140,
+    "total_tokens": 21834
+  }
+}

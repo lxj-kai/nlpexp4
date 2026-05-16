@@ -1,0 +1,2069 @@
+{
+  "experiment": "exp2_correction_zh",
+  "timestamp": "20260516_060917",
+  "config": {
+    "api_base": "https://api.deepseek.com/v1",
+    "model": "deepseek-chat",
+    "judge_model": "deepseek-chat",
+    "timeout": 60,
+    "max_retries": 3,
+    "temperature": 0.0,
+    "max_tokens": 512,
+    "project_root": "D:\\code\\nlpexp4",
+    "data_dir": "D:\\code\\nlpexp4\\data\\rgb",
+    "results_dir": "D:\\code\\nlpexp4\\experiments\\results",
+    "cache_dir": "D:\\code\\nlpexp4\\.cache",
+    "figures_dir": "D:\\code\\nlpexp4\\figures",
+    "report_dir": "D:\\code\\nlpexp4\\report",
+    "zh_main": "zh.json",
+    "zh_fact": "zh_fact.json",
+    "zh_int": "zh_int.json",
+    "zh_refine": "zh_refine.json",
+    "en_main": "en.json",
+    "en_fact": "en_fact.json",
+    "noise_ratios": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "noise_types": [
+      "semantic",
+      "counterfactual",
+      "mixed"
+    ],
+    "noise_positions": [
+      "front",
+      "back",
+      "interleave",
+      "surround"
+    ],
+    "max_docs": 10,
+    "min_positive_docs": 1,
+    "seed": 42,
+    "smoke_test_size": 50,
+    "judge_score_max": 5,
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "correctors_enabled": [
+      "prompt",
+      "iterative",
+      "confidence",
+      "selfrag"
+    ]
+  },
+  "results": [
+    {
+      "condition": {
+        "method": "naive",
+        "noise_ratio": 0.0,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "naive|r=0.0"
+      },
+      "summary": {
+        "method": "naive",
+        "n": 10,
+        "em": 0.3,
+        "contains": 1.0,
+        "token_f1": 0.7063,
+        "rouge_l": 0.6831,
+        "judge_score": null,
+        "isr": 0.7,
+        "nar": 0.0
+      },
+      "elapsed": 0.02,
+      "n": 10,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "12人死亡。",
+          "gold": [
+            "12人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7499999999999999,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "RCEP成员国包括东盟10国与中国、日本、韩国、澳大利亚、新西兰。",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.2857142857142857,
+          "rouge_l": 0.25,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年1月3日上午。",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.5333333333333333,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "南宁国际铁路港",
+          "gold": [
+            "南宁"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4444444444444445,
+          "rouge_l": 0.4444444444444445,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "90个议席。",
+          "gold": [
+            "90"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2500万人次",
+          "gold": [
+            "2500万人次"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "《长津湖之水门桥》",
+          "gold": [
+            "长津湖之水门桥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年1月17日",
+          "gold": [
+            "1月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年1月3日。",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "naive",
+        "noise_ratio": 0.5,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "naive|r=0.5"
+      },
+      "summary": {
+        "method": "naive",
+        "n": 10,
+        "em": 0.3,
+        "contains": 1.0,
+        "token_f1": 0.7159,
+        "rouge_l": 0.6945,
+        "judge_score": null,
+        "isr": 0.7,
+        "nar": 0.0
+      },
+      "elapsed": 0.0,
+      "n": 10,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "12人死亡",
+          "gold": [
+            "12人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7499999999999999,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.38095238095238093,
+          "rouge_l": 0.3636363636363636,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年1月3日上午。",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.5333333333333333,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "南宁国际铁路港",
+          "gold": [
+            "南宁"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4444444444444445,
+          "rouge_l": 0.4444444444444445,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "90个议席。",
+          "gold": [
+            "90"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.556,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.556,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2500万人次",
+          "gold": [
+            "2500万人次"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "《长津湖之水门桥》",
+          "gold": [
+            "长津湖之水门桥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年1月17日。",
+          "gold": [
+            "1月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年1月3日。",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "naive",
+        "noise_ratio": 0.75,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "naive|r=0.75"
+      },
+      "summary": {
+        "method": "naive",
+        "n": 10,
+        "em": 0.3,
+        "contains": 0.9,
+        "token_f1": 0.6641,
+        "rouge_l": 0.6413,
+        "judge_score": null,
+        "isr": 0.7,
+        "nar": 0.0
+      },
+      "elapsed": 0.01,
+      "n": 10,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "12人死亡。",
+          "gold": [
+            "12人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7499999999999999,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "RCEP包括东盟十国以及中国、日本、韩国、澳大利亚、新西兰。",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.3076923076923077,
+          "rouge_l": 0.2758620689655173,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年1月3日上午。",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.5333333333333333,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "无法回答",
+          "gold": [
+            "南宁"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "90个议席。",
+          "gold": [
+            "90"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2500万人次",
+          "gold": [
+            "2500万人次"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "《长津湖之水门桥》",
+          "gold": [
+            "长津湖之水门桥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年1月17日。",
+          "gold": [
+            "1月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年1月3日。",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "prompt",
+        "noise_ratio": 0.0,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "prompt|r=0.0"
+      },
+      "summary": {
+        "method": "prompt",
+        "n": 10,
+        "em": 0.3,
+        "contains": 1.0,
+        "token_f1": 0.6958,
+        "rouge_l": 0.6735,
+        "judge_score": null,
+        "isr": 0.7,
+        "nar": 0.0
+      },
+      "elapsed": 3.18,
+      "n": 10,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "12人死亡",
+          "gold": [
+            "12人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7499999999999999,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "RCEP成员国包括东盟10国以及中国、日本、韩国、澳大利亚、新西兰。",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.2758620689655173,
+          "rouge_l": 0.2424242424242424,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2022年1月3日上午11时",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5714285714285715,
+          "rouge_l": 0.4444444444444445,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "南宁国际铁路港",
+          "gold": [
+            "南宁"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4444444444444445,
+          "rouge_l": 0.4444444444444445,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "90个议席。",
+          "gold": [
+            "90"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2500万人次。",
+          "gold": [
+            "2500万人次"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "《长津湖之水门桥》",
+          "gold": [
+            "长津湖之水门桥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2022年1月17日",
+          "gold": [
+            "1月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2022年1月3日。",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "prompt",
+        "noise_ratio": 0.5,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "prompt|r=0.5"
+      },
+      "summary": {
+        "method": "prompt",
+        "n": 10,
+        "em": 0.3,
+        "contains": 1.0,
+        "token_f1": 0.7159,
+        "rouge_l": 0.6945,
+        "judge_score": null,
+        "isr": 0.7,
+        "nar": 0.0
+      },
+      "elapsed": 2.81,
+      "n": 10,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "12人死亡",
+          "gold": [
+            "12人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7499999999999999,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.38095238095238093,
+          "rouge_l": 0.3636363636363636,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2022年1月3日上午",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.5333333333333333,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "南宁国际铁路港",
+          "gold": [
+            "南宁"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4444444444444445,
+          "rouge_l": 0.4444444444444445,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "90个议席。",
+          "gold": [
+            "90"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.556,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.556,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2500万人次",
+          "gold": [
+            "2500万人次"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "《长津湖之水门桥》",
+          "gold": [
+            "长津湖之水门桥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2022年1月17日",
+          "gold": [
+            "1月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2022年1月3日。",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "prompt",
+        "noise_ratio": 0.75,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "prompt|r=0.75"
+      },
+      "summary": {
+        "method": "prompt",
+        "n": 10,
+        "em": 0.3,
+        "contains": 0.9,
+        "token_f1": 0.6481,
+        "rouge_l": 0.6277,
+        "judge_score": null,
+        "isr": 0.7,
+        "nar": 0.0
+      },
+      "elapsed": 5.53,
+      "n": 10,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "12人死亡",
+          "gold": [
+            "12人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7499999999999999,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "RCEP包括东盟十国（印度尼西亚、马来西亚、菲律宾、泰国、新加坡、文莱、柬埔寨、老挝、缅甸、越南）以及中国、日本、韩国、澳大利亚、新西兰。",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.14814814814814814,
+          "rouge_l": 0.14035087719298245,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2022年1月3日上午",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.5333333333333333,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "无法回答",
+          "gold": [
+            "南宁"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "90个议席。",
+          "gold": [
+            "90"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2500万人次",
+          "gold": [
+            "2500万人次"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "《长津湖之水门桥》",
+          "gold": [
+            "长津湖之水门桥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2022年1月17日。",
+          "gold": [
+            "1月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2022年1月3日。",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "confidence",
+        "noise_ratio": 0.0,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "confidence|r=0.0"
+      },
+      "summary": {
+        "method": "confidence",
+        "n": 10,
+        "em": 0.2,
+        "contains": 1.0,
+        "token_f1": 0.713,
+        "rouge_l": 0.696,
+        "judge_score": null,
+        "isr": 0.7,
+        "nar": 0.0
+      },
+      "elapsed": 8.7,
+      "n": 10,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "12人死亡",
+          "gold": [
+            "12人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7499999999999999,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "东盟10国、中国、日本、韩国、澳大利亚、新西兰",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.38095238095238093,
+          "rouge_l": 0.3636363636363636,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2022年1月3日上午11时",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5714285714285715,
+          "rouge_l": 0.4444444444444445,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "南宁国际铁路港",
+          "gold": [
+            "南宁"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4444444444444445,
+          "rouge_l": 0.4444444444444445,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "90个",
+          "gold": [
+            "90"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "突破2500万人次",
+          "gold": [
+            "2500万人次"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8750000000000001,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "《长津湖之水门桥》",
+          "gold": [
+            "长津湖之水门桥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2022年1月17日",
+          "gold": [
+            "1月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2022年1月3日",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "confidence",
+        "noise_ratio": 0.5,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "confidence|r=0.5"
+      },
+      "summary": {
+        "method": "confidence",
+        "n": 10,
+        "em": 0.3,
+        "contains": 1.0,
+        "token_f1": 0.7425,
+        "rouge_l": 0.7382,
+        "judge_score": null,
+        "isr": 0.7,
+        "nar": 0.0
+      },
+      "elapsed": 9.23,
+      "n": 10,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "12人死亡",
+          "gold": [
+            "12人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7499999999999999,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "东盟10国、中国、日本、韩国、澳大利亚、新西兰",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.38095238095238093,
+          "rouge_l": 0.3636363636363636,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2022年1月3日上午",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.5333333333333333,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "南宁国际铁路港",
+          "gold": [
+            "南宁"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4444444444444445,
+          "rouge_l": 0.4444444444444445,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "90个",
+          "gold": [
+            "90"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.556,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.556,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "突破2500万人次",
+          "gold": [
+            "2500万人次"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8750000000000001,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "《长津湖之水门桥》",
+          "gold": [
+            "长津湖之水门桥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "1月17日",
+          "gold": [
+            "1月17日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2022年1月3日",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "confidence",
+        "noise_ratio": 0.75,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "confidence|r=0.75"
+      },
+      "summary": {
+        "method": "confidence",
+        "n": 10,
+        "em": 0.5,
+        "contains": 1.0,
+        "token_f1": 0.8148,
+        "rouge_l": 0.8047,
+        "judge_score": null,
+        "isr": 0.6,
+        "nar": 0.0
+      },
+      "elapsed": 9.94,
+      "n": 10,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "12人死亡",
+          "gold": [
+            "12人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7499999999999999,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "东盟十国、中国、日本、韩国、澳大利亚、新西兰、印度",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.34782608695652173,
+          "rouge_l": 0.34782608695652173,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2022年1月3日上午",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.5333333333333333,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "南宁",
+          "gold": [
+            "南宁"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "90个",
+          "gold": [
+            "90"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2500万人次",
+          "gold": [
+            "2500万人次"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "《长津湖之水门桥》",
+          "gold": [
+            "长津湖之水门桥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "1月17日",
+          "gold": [
+            "1月17日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.8,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2022年1月3日",
+          "gold": [
+            "1月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        }
+      ]
+    }
+  ],
+  "robustness_table": [
+    {
+      "method": "confidence",
+      "score_clean": 0.713,
+      "score_noisy_avg": 0.7786500000000001,
+      "NS": -0.09207573632538583,
+      "NRS": 0.1247714285714289,
+      "ISR_avg": 0.6667,
+      "NAR_avg": 0.0,
+      "n_conditions": 3
+    },
+    {
+      "method": "naive",
+      "score_clean": 0.7063,
+      "score_noisy_avg": 0.69,
+      "NS": 0.023078012176129252,
+      "NRS": -0.045485714285714275,
+      "ISR_avg": 0.7,
+      "NAR_avg": 0.0,
+      "n_conditions": 3
+    },
+    {
+      "method": "prompt",
+      "score_clean": 0.6958,
+      "score_noisy_avg": 0.6819999999999999,
+      "NS": 0.019833285426846845,
+      "NRS": -0.04877142857142839,
+      "ISR_avg": 0.7,
+      "NAR_avg": 0.0,
+      "n_conditions": 3
+    }
+  ],
+  "args": {
+    "n": 10,
+    "language": "zh",
+    "methods": "naive,prompt,confidence",
+    "ratios": "0,0.5,0.75"
+  }
+}

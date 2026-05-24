@@ -570,16 +570,62 @@ tr:hover td{background:rgba(255,255,255,.015)}
     <ul>
       <li><strong>位置效应在 50% 噪音下不显著</strong>：需补跑 r=0.75 + zh/main 来放大差异</li>
       <li><strong>selfrag 在此数据集下没体现优势</strong>：可能因 RELEVANT 判定过宽</li>
-      <li><strong>n=10-20 样本量偏小</strong>：扩到 n=50-100 后做 bootstrap 置信区间</li>
-      <li><strong>方法 D 在 semantic 噪音上的表现尚未测</strong>：理论上应与方法 C 相当</li>
+      <li><strong>样本量仍需继续扩大</strong>：主线已扩到 n=50，最终建议扩到 n=100-300 并做 bootstrap 置信区间</li>
+      <li><strong>方法 D 在 semantic 噪音上优势不明显</strong>：最新 n=50 中 voting 略高于 naive，但低于 iterative/confidence</li>
     </ul>
   </div>
 </div>
 
-<!-- ===== 8. 风险与计划 ===== -->
+<!-- ===== 8. 最新实验同步 ===== -->
 <div class="sec">
   <div class="sec-head">
-    <div class="sec-dot" style="background:var(--r)">8</div>
+    <div class="sec-dot" style="background:var(--g)">8</div>
+    <div class="sec-title">最新实验同步（2026-05-24）</div>
+  </div>
+  <div class="c">
+    <div class="note ok">
+      <strong>说明</strong>：本节为 5 月 24 日同步后的最新结果，覆盖前文 5 月 16 日首轮小样本数字。
+      前文保留用于说明实验演进过程；正式报告应以本节 JSON 与图表为准。
+    </div>
+
+    <h3>最新结果文件</h3>
+    <table>
+      <tr><th>实验</th><th>最新 JSON</th><th>规模</th><th>用途</th></tr>
+      <tr><td>exp1 噪音比例/类型</td><td><code>exp1_noise_impact_zh_main_20260523_212441.json</code></td><td>15 conditions × 50</td><td>分析噪音比例、类型对性能的影响</td></tr>
+      <tr><td>exp1 位置子实验</td><td><code>exp1_noise_impact_zh_main_position_20260523_212649.json</code></td><td>4 positions × 50</td><td>分析 front/back/interleave/surround</td></tr>
+      <tr><td>exp2 矫正方法</td><td><code>exp2_correction_zh_20260523_212925.json</code></td><td>9 conditions × 30</td><td>naive/prompt/confidence 梯度对比</td></tr>
+      <tr><td>exp3 案例研究</td><td><code>exp3_case_study_zh_20260524_194830.json</code></td><td>3 conditions × 30，15 cases</td><td>矫正前后案例解释，已补全 query/docs/labels</td></tr>
+      <tr><td>exp4 现有方法比较</td><td><code>exp4_existing_methods_zh_main_semantic_20260524_200425.json</code></td><td>6 methods × 50</td><td>naive/selfrag/iterative/confidence/prompt/voting 横向比较</td></tr>
+    </table>
+
+    <h3>关键数值更新</h3>
+    <table>
+      <tr><th>观察点</th><th>最新结果</th><th>解释</th></tr>
+      <tr><td>高噪音破坏性</td><td>exp1 中 token-F1 从 0.712 下降到约 0.313，contains 从 0.92 下降到 0.24</td><td>当上下文完全由噪音构成时，模型无法稳定恢复答案；NAR 升至约 0.51，答案来源明显向噪音迁移。</td></tr>
+      <tr><td>中等语义噪音</td><td>exp2 中 naive token-F1 从 0.7176 升至 0.7381</td><td>中等语义噪音不必然有害，可能补充主题线索；正式结论需避免简单写成“噪音越多越差”。</td></tr>
+      <tr><td>位置效应</td><td>front=0.7164, back=0.7100, interleave=0.7144, surround=0.7264</td><td>50% 语义噪音下位置差异较小，暂不作强结论。</td></tr>
+      <tr><td>现有方法比较</td><td>iterative=0.7415 最高，confidence=0.7326，prompt=0.7178，naive=0.7144，voting=0.7158，selfrag=0.7144</td><td>在 zh/main semantic r=0.5 上，迭代式文档筛选当前最优；Self-RAG 判定过宽，几乎退化为 naive。</td></tr>
+      <tr><td>案例研究</td><td>exp3 已生成 15 个案例，case 中包含 query、gold、三种预测、ISR/NAR 与文档标签</td><td>可用于最终报告逐例解释“哪些文档被采纳、矫正机制如何改变答案”。</td></tr>
+    </table>
+
+    <h3>更新后的图表</h3>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp4_existing_methods.png" alt="exp4_methods_latest" style="max-width:100%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 7: exp4 最新 N=50 六方法横向比较</p>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp3_case_type_pie.png" alt="exp3_cases_latest" style="max-width:70%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 8: exp3 最新案例类型分布</p>
+
+    <div class="note warn">
+      <strong>结论边界</strong>：当前最新结果支持“高比例噪音显著损害 RAG 问答，ISR/NAR 能刻画答案来源迁移”；
+      对“矫正机制显著优于 naive”的论证仍需谨慎表述。现阶段更稳妥的结论是：
+      iterative 在 zh/main semantic r=0.5 条件下表现最好，但不同噪音类型和更大样本量下仍需继续验证。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 9. 风险与计划 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--r)">9</div>
     <div class="sec-title">风险与后续计划</div>
   </div>
   <div class="c">
@@ -605,10 +651,10 @@ tr:hover td{background:rgba(255,255,255,.015)}
   </div>
 </div>
 
-<!-- ===== 9. 命令速查 ===== -->
+<!-- ===== 10. 命令速查 ===== -->
 <div class="sec">
   <div class="sec-head">
-    <div class="sec-dot" style="background:var(--g)">9</div>
+    <div class="sec-dot" style="background:var(--g)">10</div>
     <div class="sec-title">运行方式</div>
   </div>
   <div class="c">
@@ -626,11 +672,15 @@ python -m src.smoke_test --n 20
 # 4. 四个核心实验
 python -m experiments.exp1_noise_impact --n 50 --language zh
 python -m experiments.exp2_correction   --n 50 --language zh
-python -m experiments.exp3_case_study   --n 30 --pick 15
-python -m experiments.exp4_existing_methods --n 50 --language zh
+python -m experiments.exp3_case_study   --n 30 --pick 15 --language zh
+python -m experiments.exp4_existing_methods --n 50 --language zh --subset main --ratio 0.5 --noise-type semantic
 
-# 5. 启动 Demo
-python demo/app.py     # http://127.0.0.1:7860</div>
+# 5. 生成最新图表
+python -m scripts.render_all_figures
+
+# 6. 启动 Demo
+python demo/app.py     # Gradio: http://127.0.0.1:7861
+cd frontend && npm run dev  # Vue: http://127.0.0.1:5173</div>
   </div>
 </div>
 

@@ -21,8 +21,11 @@ from src.visualize import (
     _PALETTE,
     _save,
     _setup_style,
+    plot_case_type_distribution,
     plot_correction_compare,
+    plot_isr_nar_scatter,
     plot_noise_impact,
+    plot_nrs_grouped_bar,
     plot_robustness_radar,
 )
 
@@ -104,10 +107,12 @@ def main() -> None:
     p = _latest("exp1_noise_impact_zh_fact_2*.json")
     if p:
         out = plot_noise_impact(p, out_dir=FIG / "_tmp_fact")
-        Path(out).rename(FIG / "exp1_noise_impact_zh_fact.png")
+        Path(out).replace(FIG / "exp1_noise_impact_zh_fact.png")
         targets.append(("exp1_fact", str(p.name), "exp1_noise_impact_zh_fact.png"))
 
-    p = _latest("exp1_noise_impact_zh_fact_position_*.json")
+    p = _latest("exp1_noise_impact_zh_main_position_*.json") or _latest(
+        "exp1_noise_impact_zh_fact_position_*.json"
+    )
     if p:
         plot_position_bar(p, out_path=FIG / "exp1_position_effect.png")
         targets.append(("exp1_pos", str(p.name), "exp1_position_effect.png"))
@@ -116,6 +121,51 @@ def main() -> None:
     if p:
         plot_correction_compare(p, out_dir=FIG)
         targets.append(("exp2", str(p.name), "exp2_correction.png"))
+
+        data = read_json(p)
+        tbl = data.get("robustness_table", [])
+        if tbl:
+            plot_nrs_grouped_bar(
+                tbl,
+                out_path=FIG / "exp2_nrs_grouped.png",
+                title="Exp2: NRS by Method × Noise Type",
+            )
+            targets.append(("exp2_nrs", str(p.name), "exp2_nrs_grouped.png"))
+            plot_robustness_radar(tbl, out_path=FIG / "exp2_robustness_radar.png")
+            targets.append(
+                ("exp2_radar", str(p.name), "exp2_robustness_radar.png")
+            )
+
+        rows = []
+        for r in data["results"]:
+            cond = r["condition"]
+            for row in r.get("rows", []):
+                rows.append(
+                    {
+                        "method": cond["method"],
+                        "ratio": cond["noise_ratio"],
+                        "isr": row.get("isr") or 0.0,
+                        "nar": row.get("nar") or 0.0,
+                    }
+                )
+        noisy_rows = [r for r in rows if r["ratio"] > 0]
+        if noisy_rows:
+            plot_isr_nar_scatter(
+                noisy_rows,
+                out_path=FIG / "exp2_isr_nar_scatter.png",
+                title="Exp2: ISR vs NAR (noisy conditions only)",
+            )
+            targets.append(("exp2_isrnar", str(p.name), "exp2_isr_nar_scatter.png"))
+
+    p = _latest("exp3_case_study_zh_*.json")
+    if p:
+        data = read_json(p)
+        cases = data.get("cases", [])
+        if cases:
+            plot_case_type_distribution(
+                cases, out_path=FIG / "exp3_case_type_pie.png"
+            )
+            targets.append(("exp3_pie", str(p.name), "exp3_case_type_pie.png"))
 
     p = _latest("exp4_existing_methods_zh_fact_counterfactual_*.json")
     if p:
@@ -128,6 +178,13 @@ def main() -> None:
 
     p = _latest("exp4_existing_methods_zh_*main*.json") or _latest("exp4_existing_methods_zh_2*.json")
     if p:
+        plot_method_vs_naive(
+            p,
+            out_path=FIG / "exp4_existing_methods.png",
+            title="Exp4: Existing Methods on Semantic Noise (zh/main, r=0.5)",
+        )
+        targets.append(("exp4_main", str(p.name), "exp4_existing_methods.png"))
+
         data = read_json(p)
         tbl = data.get("robustness_table", [])
         if tbl:

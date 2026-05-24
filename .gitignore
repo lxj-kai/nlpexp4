@@ -14,6 +14,8 @@ env/
 
 experiments/results/raw/
 experiments/results/*.log
+experiments/results/dryrun_*.json
+experiments/results/smoke_*.json
 figures/*.tmp.*
 *.ipynb_checkpoints/
 
@@ -21,9 +23,18 @@ figures/*.tmp.*
 .vscode/
 .DS_Store
 
-# frontend
+# 工作过程产生的临时文件
+.codex_run/
+.tmp_*
+*.tmp
+*.bak
+*.orig
+PLAN.html.bak
+
+# 前端
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
-frontend/*.log
-npm-debug.log*
+
+# Windows 乱码命名兜底
+~$*

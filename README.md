@@ -13,6 +13,7 @@
 ```text
 D:\code\nlpexp4\
 ├── data/rgb/                  # RGB 数据集 (zh.json / en.json 等)
+├── data/processed/            # 面向验收的 input/output/reference 标准 JSON
 ├── src/                       # 核心模块
 │   ├── config.py              # 全局配置 (dataclass)
 │   ├── data_loader.py         # RGB 数据加载
@@ -62,11 +63,37 @@ python -m experiments.exp2_correction
 python -m experiments.exp3_case_study
 python -m experiments.exp4_existing_methods
 
-# 5. 启动 Demo
+# 5. 导出课程要求的标准输入/输出/参考答案文件
+python scripts/export_standard_io.py
+
+# 6. 启动 Demo
 python demo/app.py
 ```
 
-## 4. 代码规范
+## 4. 数据与交付格式
+
+本项目使用 RGB 数据集作为公开问答/RAG 数据源。每条样本包含 `query`、`answer`、`positive`、`negative`，其中 `zh_fact/en_fact` 额外包含 `positive_wrong` 和 `fakeanswer`。实验中不重新爬取网页或 PDF，而是把 RGB 已标注好的候选文档池建模为“检索结果”，通过受控采样研究噪音文档对 RAG 推理的影响。
+
+噪音定义如下：
+
+- `positive`：可支持答案的有效文档；
+- `negative`：语义相关但不能支持答案的噪音文档；
+- `positive_wrong`：表面支持错误答案的反事实噪音文档。
+
+为对齐实验要求，`scripts/export_standard_io.py` 会把最新实验结果导出为：
+
+- `input.json`：`id / question / context`，并额外保留 `documents / document_labels / noise_*` 方便复查；
+- `output.json`：默认选取 token-F1 最高的方法作为主系统输出；
+- `reference.json`：与输入 id 对齐的参考答案；
+- `output_<method>.json` 与 `output_all_methods.json`：保留所有方法的横向对比输出。
+
+当前已导出的标准文件位于：
+
+```text
+data/processed/exp4_existing_methods_zh_main_semantic_20260524_200425/
+```
+
+## 5. 代码规范
 
 - **配置集中**：所有参数在 `src/config.py` 的 `Config` dataclass
 - **接口统一**：所有矫正方法继承 `correctors.base.BaseCorrector`
@@ -75,7 +102,7 @@ python demo/app.py
 - **文件精简**：单文件 ≤ 200 行，超出即拆分
 - **实验脚本只组装不实现**：核心逻辑全部下沉到 `src/` 模块
 
-## 5. 5 个自主鲁棒性指标
+## 6. 5 个自主鲁棒性指标
 
 | 指标 | 含义 |
 |---|---|
@@ -85,7 +112,7 @@ python demo/app.py
 | **NAR**（Noise Adoption Rate）| 答案中来自 negative 文档的信息占比 |
 | **CRR**（Correction Recovery Rate）| 矫正机制对噪音损失的恢复程度 |
 
-## 6. 关键 Deadline
+## 7. 关键 Deadline
 
 | 时间 | 事项 |
 |---|---|

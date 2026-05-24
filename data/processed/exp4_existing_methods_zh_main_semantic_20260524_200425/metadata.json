@@ -1,0 +1,17 @@
+{
+  "source_result": "experiments\\results\\exp4_existing_methods_zh_main_semantic_20260524_200425.json",
+  "experiment": "exp4_existing_methods_zh_main_semantic",
+  "timestamp": "20260524_200425",
+  "git_commit": "2cac25d366c16072fb0d79a63b9da5a9a6ba2dc4",
+  "selected_method": "iterative",
+  "methods": [
+    "confidence",
+    "iterative",
+    "naive",
+    "prompt",
+    "selfrag",
+    "voting"
+  ],
+  "n_samples": 50,
+  "format_note": "input.json/output.json/reference.json follow the course-required id-question-context / id-answer schema; documents and labels are kept as extra fields for RAG noise analysis."
+}

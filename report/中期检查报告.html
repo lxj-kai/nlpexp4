@@ -622,10 +622,51 @@ tr:hover td{background:rgba(255,255,255,.015)}
   </div>
 </div>
 
-<!-- ===== 9. 风险与计划 ===== -->
+<!-- ===== 9. 实验要求对齐 ===== -->
 <div class="sec">
   <div class="sec-head">
-    <div class="sec-dot" style="background:var(--r)">9</div>
+    <div class="sec-dot" style="background:var(--b)">9</div>
+    <div class="sec-title">实验要求对齐</div>
+  </div>
+  <div class="c">
+    <h3>标准输入 / 输出 / 参考答案文件</h3>
+    <p>
+      为对齐课程要求，项目已将最新 exp4 结果导出为可直接检查的三件套：
+      <code>input.json</code>、<code>output.json</code>、<code>reference.json</code>。
+      文件位于 <code>data/processed/exp4_existing_methods_zh_main_semantic_20260524_200425/</code>。
+    </p>
+    <table>
+      <tr><th>文件</th><th>样本数</th><th>主要字段</th><th>说明</th></tr>
+      <tr><td><code>input.json</code></td><td>50</td><td><code>id / question / context</code></td><td>额外保留 <code>documents / document_labels / noise_*</code>，便于复查 RAG 噪音来源</td></tr>
+      <tr><td><code>output.json</code></td><td>50</td><td><code>id / answer</code></td><td>默认导出当前 token-F1 最高的 iterative 方法输出</td></tr>
+      <tr><td><code>reference.json</code></td><td>50</td><td><code>id / answer / answers</code></td><td>与输入 id 严格对齐，用于 EM、contains、Token-F1、ROUGE-L 等指标评估</td></tr>
+      <tr><td><code>output_all_methods.json</code></td><td>300</td><td><code>id / method / answer</code></td><td>保留 naive/selfrag/iterative/confidence/prompt/voting 六种方法的横向比较输出</td></tr>
+    </table>
+
+    <h3>原始数据准备说明</h3>
+    <p>
+      本项目使用公开 RGB 数据集作为问答与候选文档来源，而不是重新爬取网页或解析 PDF。
+      RGB 已提供 <code>positive</code>、<code>negative</code>、<code>positive_wrong</code> 三类文档池，正好对应本题所要求的
+      “相关但缺少逻辑依赖”噪音文档和反事实噪音文档。实验将这些已标注文档池建模为受控检索结果，从而能精确改变噪音比例、类型和位置。
+    </p>
+    <table>
+      <tr><th>字段</th><th>实验含义</th><th>用途</th></tr>
+      <tr><td><code>positive</code></td><td>支持正确答案的有效文档</td><td>构造 clean RAG 上下文与 ISR 归因</td></tr>
+      <tr><td><code>negative</code></td><td>语义相关但不能支持答案的噪音文档</td><td>模拟普通检索噪音，计算 NAR</td></tr>
+      <tr><td><code>positive_wrong</code></td><td>表面相关且指向错误答案的反事实文档</td><td>模拟更强误导性噪音，测试矫正机制鲁棒性</td></tr>
+    </table>
+
+    <div class="note warn">
+      <strong>表述边界</strong>：当前系统重点是“受控 RAG 上下文扰动实验”，不是完整向量数据库检索系统。
+      因此正式报告中会避免夸大为端到端检索优化，而是强调上下文文档组成对大模型问答结果的影响、指标设计和矫正前后比较。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 10. 风险与计划 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--r)">10</div>
     <div class="sec-title">风险与后续计划</div>
   </div>
   <div class="c">

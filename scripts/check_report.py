@@ -7,7 +7,10 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
 ROOT = Path(__file__).resolve().parent.parent
-html_path = ROOT / "report" / "中期检查报告.html"
+html_files = sorted((ROOT / "report").glob("*.html"))
+if not html_files:
+    raise FileNotFoundError("no HTML report found under report/")
+html_path = html_files[0]
 html = html_path.read_text(encoding="utf-8")
 
 imgs = re.findall(r'<img[^>]*src="([^"]+)"', html)

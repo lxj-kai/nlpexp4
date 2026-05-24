@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from ..noise_injector import NoisyContext
-from ..prompts import PROMPT_AWARE_SYSTEM_ZH, NAIVE_USER_TMPL, format_context
+from ..prompts import PROMPT_AWARE_SYSTEM_EN, PROMPT_AWARE_SYSTEM_ZH, NAIVE_USER_TMPL, format_context
 from ..rag_pipeline import RAGResult
 from .base import BaseCorrector, register_corrector
 
@@ -18,7 +18,7 @@ class PromptCorrector(BaseCorrector):
     api_cost = 1
 
     def correct(self, ctx: NoisyContext, *, language: str = "zh") -> RAGResult:
-        system = PROMPT_AWARE_SYSTEM_ZH
+        system = PROMPT_AWARE_SYSTEM_ZH if language == "zh" else PROMPT_AWARE_SYSTEM_EN
         user = NAIVE_USER_TMPL.format(
             query=ctx.query, n=len(ctx.docs), context=format_context(ctx.docs)
         )

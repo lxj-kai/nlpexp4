@@ -29,44 +29,70 @@ from src.utils import get_logger
 logger = get_logger("exp3")
 
 
+_TYPE_PRIORITY = {
+    "Type1-矫正生效": 0,
+    "Type1-矫正未生效": 1,
+    "Type2-噪音激发": 2,
+    "Type4-免疫": 3,
+    "Type3-淹没": 4,
+    "Other": 9,
+}
+
+
+def _classify(c_ok: bool, n_ok: bool, cor_ok: bool | None) -> str:
+    """Type1: clean对→noisy错（关心矫正能否救回来）
+    Type2: clean错→noisy对（"噪音激发"，研究反直觉现象）
+    Type3: clean错→noisy错（双错淹没）
+    Type4: clean对→noisy对（噪音免疫）
+    """
+    if c_ok and not n_ok:
+        if cor_ok is True:
+            return "Type1-矫正生效"
+        return "Type1-矫正未生效"
+    if not c_ok and n_ok:
+        return "Type2-噪音激发"
+    if c_ok and n_ok:
+        return "Type4-免疫"
+    if not c_ok and not n_ok:
+        return "Type3-淹没"
+    return "Other"
+
+
 def _pick_typical_cases(
     naive_clean: dict, naive_noisy: dict, corrected: dict, *, k: int
 ) -> list[dict]:
-    """匹配 clean / noisy / corrected 三组，按 Type1-4 分类。"""
+    """匹配 clean / noisy / corrected 三组，按 Type1–4 分类后按优先级挑前 k 个。"""
     cases: list[dict] = []
     for sid, c in naive_clean.items():
         n = naive_noisy.get(sid)
-        cor = corrected.get(sid)
         if n is None:
             continue
-        type_label: str
-        if c.get("contains") and not n.get("contains"):
-            if cor and cor.get("contains"):
-                type_label = "Type1+矫正生效"
-            else:
-                type_label = "Type1+矫正未生效"
-        elif c.get("contains") and n.get("contains"):
-            type_label = "Type4-免疫"
-        elif not c.get("contains") and not n.get("contains"):
-            type_label = "Type3-淹没"
-        else:
-            type_label = "Other"
+        cor = corrected.get(sid)
+        c_ok = bool(c.get("contains"))
+        n_ok = bool(n.get("contains"))
+        cor_ok = bool(cor.get("contains")) if cor else None
+        type_label = _classify(c_ok, n_ok, cor_ok)
         cases.append(
             {
                 "sample_id": sid,
                 "type": type_label,
-                "query": c["prediction"] if False else c.get("query", ""),
+                "query": c.get("query", ""),
                 "gold": c.get("gold"),
                 "pred_clean": c.get("prediction"),
                 "pred_noisy": n.get("prediction"),
                 "pred_corrected": cor.get("prediction") if cor else None,
+                "contains_clean": c_ok,
+                "contains_noisy": n_ok,
+                "contains_corrected": cor_ok,
                 "isr_clean": c.get("isr"),
                 "isr_noisy": n.get("isr"),
                 "nar_noisy": n.get("nar"),
                 "nar_corrected": cor.get("nar") if cor else None,
             }
         )
-    cases.sort(key=lambda x: (x["type"] != "Type1+矫正生效", x["sample_id"]))
+    cases.sort(
+        key=lambda x: (_TYPE_PRIORITY.get(x["type"], 99), x["sample_id"])
+    )
     return cases[:k]
 
 

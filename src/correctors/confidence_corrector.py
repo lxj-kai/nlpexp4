@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 
 from ..noise_injector import NoisyContext
-from ..prompts import COT_EVIDENCE_SYSTEM_ZH, NAIVE_USER_TMPL, format_context
+from ..prompts import COT_EVIDENCE_SYSTEM_EN, COT_EVIDENCE_SYSTEM_ZH, NAIVE_USER_TMPL, format_context
 from ..rag_pipeline import RAGResult
 from .base import BaseCorrector, register_corrector
 
@@ -33,17 +33,19 @@ def _extract_answer(raw: str) -> str:
 
 @register_corrector("confidence")
 class ConfidenceCorrector(BaseCorrector):
-    """方法 C：CoT 证据链推理。"""
+    """方法 C：CoT 证据链推理（注册名 confidence 系历史遗留，实际为 CoT-Evidence）。"""
 
     api_cost = 1
+    method_alias = "CoT-Evidence"
 
     def correct(self, ctx: NoisyContext, *, language: str = "zh") -> RAGResult:
+        system = COT_EVIDENCE_SYSTEM_ZH if language == "zh" else COT_EVIDENCE_SYSTEM_EN
         user = NAIVE_USER_TMPL.format(
             query=ctx.query, n=len(ctx.docs), context=format_context(ctx.docs)
         )
         out = self.llm.chat(
             [
-                {"role": "system", "content": COT_EVIDENCE_SYSTEM_ZH},
+                {"role": "system", "content": system},
                 {"role": "user", "content": user},
             ],
             max_tokens=768,
@@ -62,6 +64,7 @@ class ConfidenceCorrector(BaseCorrector):
             noise_position=ctx.noise_position,
             metadata={
                 "method": self.name,
+                "method_alias": self.method_alias,
                 "reasoning": raw,
                 "api_calls": 1,
                 "prompt_tokens": out.get("prompt_tokens", 0),

@@ -68,9 +68,9 @@ def _token_f1(pred: str, gold: str) -> float:
 
 
 def _rouge_l(pred: str, gold: str) -> float:
-    """轻量 ROUGE-L (F1) — 字符级 LCS，避免引入 rouge 库的依赖问题。"""
-    a = list(normalize_answer(pred))
-    b = list(normalize_answer(gold))
+    """轻量 ROUGE-L (F1) — token 级 LCS，与学术标准 ROUGE-L 对齐。"""
+    a = tokenize(pred)
+    b = tokenize(gold)
     if not a or not b:
         return 0.0
     m, n = len(a), len(b)
@@ -159,12 +159,15 @@ class Evaluator:
             rows.append(
                 {
                     "sample_id": r.sample_id,
+                    "query": r.query,
                     "noise_ratio": r.noise_ratio,
                     "noise_type": r.noise_type,
                     "noise_position": r.noise_position,
                     "method": r.metadata.get("method", "naive"),
                     "prediction": r.prediction,
                     "gold": r.gold_answers,
+                    "docs": r.docs,
+                    "labels": r.labels,
                     **m.to_dict(),
                 }
             )

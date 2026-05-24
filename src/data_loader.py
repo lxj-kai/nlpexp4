@@ -109,13 +109,15 @@ def load_dataset(
     subset: Subset = "main",
     *,
     limit: int | None = None,
+    shuffle: bool = True,
 ) -> list[RGBRecord]:
-    records: list[RGBRecord] = []
-    for rec in iter_records(language=language, subset=subset):
-        records.append(rec)
-        if limit is not None and len(records) >= limit:
-            break
-    logger.info(f"loaded {len(records)} records from {language}/{subset}")
+    records: list[RGBRecord] = list(iter_records(language=language, subset=subset))
+    if shuffle:
+        import random as _rng
+        _rng.Random(CONFIG.seed).shuffle(records)
+    if limit is not None:
+        records = records[:limit]
+    logger.info(f"loaded {len(records)} records from {language}/{subset} (shuffle={shuffle})")
     return records
 
 

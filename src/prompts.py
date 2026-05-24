@@ -34,6 +34,15 @@ PROMPT_AWARE_SYSTEM_ZH = (
     "3. 若所有文档都不能支撑答案，回答“无法回答”。"
 )
 
+PROMPT_AWARE_SYSTEM_EN = (
+    "You are a critical QA assistant. The retrieved documents may contain noise: "
+    "semantically related but answer-irrelevant documents, or factually incorrect ones. "
+    "Please: 1) Judge whether each document truly helps answer the question; "
+    "2) Answer based ONLY on genuinely useful documents; "
+    '3) If no document supports an answer, reply "I cannot answer".'
+)
+
+
 
 COT_EVIDENCE_SYSTEM_ZH = (
     "你是一个证据链推理助手。请严格遵循以下步骤：\n"
@@ -45,6 +54,19 @@ COT_EVIDENCE_SYSTEM_ZH = (
     "信息需求：...\n"
     "证据匹配：文档[i]→信息点x；...\n"
     "最终答案：<answer>...</answer>"
+)
+
+
+COT_EVIDENCE_SYSTEM_EN = (
+    "You are an evidence-chain reasoning assistant. Follow these steps strictly:\n"
+    "Step1. Decompose the question: list the key information points needed;\n"
+    "Step2. Check each document: note which documents provide which points;\n"
+    "Step3. Synthesize: build the answer ONLY from evidenced points;\n"
+    "Step4. Output the final answer (one line, concise).\n\n"
+    "Use this structure:\n"
+    "Information needs: ...\n"
+    "Evidence mapping: Doc[i]→point x; ...\n"
+    "Final answer: <answer>...</answer>"
 )
 
 
@@ -60,16 +82,39 @@ ITER_FILTER_USER_TMPL = (
     "【问题】{query}\n\n【文档】{doc}\n\n请输出标签（high/mid/low）："
 )
 
+ITER_FILTER_SYSTEM_EN = (
+    "You are a document relevance assessor. For a given question and a single document, "
+    "output ONLY one of three labels:\n"
+    "- high: the document directly contains the answer;\n"
+    "- mid: the document is topically related but does not contain the answer;\n"
+    "- low: the document is irrelevant or contains clearly incorrect information."
+)
+ITER_FILTER_USER_TMPL_EN = (
+    "Question: {query}\n\nDocument: {doc}\n\nOutput label (high/mid/low):"
+)
+
 
 SELFRAG_REL_SYSTEM_ZH = (
     "判断给定文档对回答给定问题是否相关。只输出 RELEVANT 或 IRRELEVANT。"
 )
 SELFRAG_REL_USER_TMPL = "【问题】{query}\n\n【文档】{doc}\n\n判断："
 
+SELFRAG_REL_SYSTEM_EN = (
+    "Determine if the given document is relevant to answering the given question. "
+    "Output ONLY RELEVANT or IRRELEVANT."
+)
+SELFRAG_REL_USER_TMPL_EN = "Question: {query}\n\nDocument: {doc}\n\nJudgment:"
+
 SELFRAG_SUPPORT_SYSTEM_ZH = (
     "判断给定答案是否得到给定文档的支撑。只输出 SUPPORTED / PARTIAL / UNSUPPORTED。"
 )
 SELFRAG_SUPPORT_USER_TMPL = "【问题】{query}\n\n【答案】{answer}\n\n【相关文档】\n{context}\n\n判断："
+
+SELFRAG_SUPPORT_SYSTEM_EN = (
+    "Determine if the given answer is supported by the given documents. "
+    "Output ONLY SUPPORTED / PARTIAL / UNSUPPORTED."
+)
+SELFRAG_SUPPORT_USER_TMPL_EN = "Question: {query}\n\nAnswer: {answer}\n\nRelevant documents:\n{context}\n\nJudgment:"
 
 
 JUDGE_SYSTEM_ZH = (

@@ -11,8 +11,11 @@ from __future__ import annotations
 from ..config import CONFIG
 from ..noise_injector import NoisyContext
 from ..prompts import (
+    ITER_FILTER_SYSTEM_EN,
     ITER_FILTER_SYSTEM_ZH,
     ITER_FILTER_USER_TMPL,
+    ITER_FILTER_USER_TMPL_EN,
+    NAIVE_SYSTEM_EN,
     NAIVE_SYSTEM_ZH,
     NAIVE_USER_TMPL,
     format_context,
@@ -42,21 +45,20 @@ class IterativeCorrector(BaseCorrector):
         self.keep_min = keep_min
         self.keep_threshold = keep_threshold
 
-    def _rate_doc(self, query: str, doc: str) -> int:
+    def _rate_doc(self, query: str, doc: str, *, language: str = "zh") -> int:
+        sys_msg = ITER_FILTER_SYSTEM_ZH if language == "zh" else ITER_FILTER_SYSTEM_EN
+        tmpl = ITER_FILTER_USER_TMPL if language == "zh" else ITER_FILTER_USER_TMPL_EN
         out = self.llm.chat(
             [
-                {"role": "system", "content": ITER_FILTER_SYSTEM_ZH},
-                {
-                    "role": "user",
-                    "content": ITER_FILTER_USER_TMPL.format(query=query, doc=doc[:1500]),
-                },
+                {"role": "system", "content": sys_msg},
+                {"role": "user", "content": tmpl.format(query=query, doc=doc[:1500])},
             ],
             max_tokens=8,
         )
         return _score_label((out["content"] or "").strip())
 
     def correct(self, ctx: NoisyContext, *, language: str = "zh") -> RAGResult:
-        scores = [self._rate_doc(ctx.query, d) for d in ctx.docs]
+        scores = [self._rate_doc(ctx.query, d, language=language) for d in ctx.docs]
 
         kept = [(i, s) for i, s in enumerate(scores) if s >= self.keep_threshold]
         if len(kept) < self.keep_min:
@@ -67,12 +69,13 @@ class IterativeCorrector(BaseCorrector):
         filt_docs = [ctx.docs[i] for i in keep_idx]
         filt_labels = [ctx.labels[i] for i in keep_idx]
 
+        sys_gen = NAIVE_SYSTEM_ZH if language == "zh" else NAIVE_SYSTEM_EN
         user = NAIVE_USER_TMPL.format(
             query=ctx.query, n=len(filt_docs), context=format_context(filt_docs)
         )
         out = self.llm.chat(
             [
-                {"role": "system", "content": NAIVE_SYSTEM_ZH},
+                {"role": "system", "content": sys_gen},
                 {"role": "user", "content": user},
             ]
         )

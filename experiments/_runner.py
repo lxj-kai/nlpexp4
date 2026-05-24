@@ -13,9 +13,9 @@ from src.data_loader import Language, Subset, load_dataset, RGBRecord
 from src.evaluator import Evaluator, aggregate
 from src.llm_client import LLMClient
 from src.metrics import (
+    correction_recovery_rate,
     noise_resistance_slope,
     noise_sensitivity,
-    correction_recovery_rate,
 )
 from src.noise_injector import (
     NoisePosition,
@@ -112,49 +112,145 @@ def run_conditions(
                 r["noise_ratio_target"] = cond.noise_ratio
                 r["noise_type"] = cond.noise_type
                 r["noise_position"] = cond.noise_position
-            summary = aggregate(rows, group_by=("method",))[0] if rows else {}
+            summary = (
+                aggregate(
+                    rows,
+                    group_by=("method", "noise_ratio_target", "noise_type", "noise_position"),
+                )[0]
+                if rows
+                else {}
+            )
         out.append(RunResult(condition=cond, rows=rows, elapsed=t.elapsed, summary=summary))
     return out
 
 
-def compute_robustness_table(results: list[RunResult]) -> list[dict]:
-    """从多 condition 结果中提取 NS / NRS / CRR 等 method-level 指标。"""
-    methods = sorted({r.condition.method for r in results})
+def compute_robustness_table(
+    results: list[RunResult],
+    *,
+    score_key: str = "token_f1",
+) -> list[dict]:
+    """从多 condition 结果中提取 NS / NRS / CRR / ISR / NAR 鲁棒性指标。
+
+    切片维度：(method, noise_type)。同一 method 下不同 noise_type 的
+    噪音梯度曲线斜率独立计算，避免把 semantic / counterfactual / mixed
+    搅在一起做线性回归。
+
+    CRR 需要同 method+noise_type 下既有 clean (ratio=0) 又有 noisy 的结果，
+    且会尝试从同 noise_type 下寻找 corrected method 与 naive baseline 的配对。
+    """
+
+    def cond_key(r: RunResult) -> tuple[str, str]:
+        return (r.condition.method, r.condition.noise_type)
+
+    keys = sorted({cond_key(r) for r in results})
+
+    naive_clean_scores: dict[str, float] = {}
+    naive_noisy_scores: dict[str, float] = {}
+    for method, ntype in keys:
+        if method != "naive":
+            continue
+        ms = [r for r in results if cond_key(r) == (method, ntype)]
+        for r in ms:
+            score = float(r.summary.get(score_key, 0.0) or 0.0)
+            if r.condition.noise_ratio == 0.0:
+                naive_clean_scores[ntype] = score
+            elif r.condition.noise_ratio > 0:
+                naive_noisy_scores.setdefault(ntype, [])
+                naive_noisy_scores[ntype].append(score)  # type: ignore[union-attr]
+
+    naive_noisy_avg: dict[str, float] = {}
+    for ntype, scores_list in naive_noisy_scores.items():
+        if isinstance(scores_list, list) and scores_list:
+            naive_noisy_avg[ntype] = sum(scores_list) / len(scores_list)
+
     out: list[dict] = []
-    for method in methods:
-        ms = [r for r in results if r.condition.method == method]
-        ratio_score = [
-            (r.condition.noise_ratio, r.summary.get("token_f1", 0.0) or 0.0) for r in ms
-        ]
+    for method, ntype in keys:
+        ms = [r for r in results if cond_key(r) == (method, ntype)]
+        ratio_score = sorted(
+            (r.condition.noise_ratio, float(r.summary.get(score_key, 0.0) or 0.0))
+            for r in ms
+        )
+        ratios = [r for r, _ in ratio_score]
+        scores = [s for _, s in ratio_score]
+
         clean = next((s for r, s in ratio_score if r == 0.0), None)
+        positive_ratio_scores = [s for r, s in ratio_score if r > 0]
         noisy_avg = (
-            sum(s for r, s in ratio_score if r > 0) / max(1, sum(1 for r, _ in ratio_score if r > 0))
-            if any(r > 0 for r, _ in ratio_score)
+            sum(positive_ratio_scores) / len(positive_ratio_scores)
+            if positive_ratio_scores
             else None
         )
-        nrs = noise_resistance_slope(
-            [r for r, _ in ratio_score], [s for _, s in ratio_score]
+
+        nrs = (
+            noise_resistance_slope(ratios, scores)
+            if len({r for r in ratios}) >= 2
+            else None
         )
         ns = (
             noise_sensitivity(clean, noisy_avg)
             if clean is not None and noisy_avg is not None
             else None
         )
-        isr_avg = sum(r.summary.get("isr", 0.0) or 0.0 for r in ms) / len(ms)
-        nar_avg = sum(r.summary.get("nar", 0.0) or 0.0 for r in ms) / len(ms)
+
+        crr = None
+        if method != "naive" and noisy_avg is not None:
+            s_clean = naive_clean_scores.get(ntype)
+            s_noisy = naive_noisy_avg.get(ntype)
+            if s_clean is not None and s_noisy is not None:
+                crr = correction_recovery_rate(s_clean, s_noisy, noisy_avg)
+
+        isr_avg = (
+            sum(r.summary.get("isr", 0.0) or 0.0 for r in ms) / len(ms) if ms else 0.0
+        )
+        nar_avg = (
+            sum(r.summary.get("nar", 0.0) or 0.0 for r in ms) / len(ms) if ms else 0.0
+        )
+
+        noise_ratio_actual = [
+            r.summary.get("noise_ratio", r.condition.noise_ratio)
+            for r in ms if r.condition.noise_ratio > 0
+        ]
+        noise_ratio_stats = None
+        if noise_ratio_actual:
+            import numpy as _np
+            arr = _np.array([float(v) for v in noise_ratio_actual if v is not None])
+            if len(arr):
+                noise_ratio_stats = {
+                    "mean": round(float(arr.mean()), 4),
+                    "std": round(float(arr.std()), 4),
+                }
+
         out.append(
             {
                 "method": method,
+                "noise_type": ntype,
+                "score_metric": score_key,
                 "score_clean": clean,
                 "score_noisy_avg": noisy_avg,
-                "NS": ns,
-                "NRS": nrs,
+                "NS": None if ns is None else round(ns, 4),
+                "NRS": None if nrs is None else round(nrs, 4),
+                "CRR": None if crr is None else round(crr, 4),
                 "ISR_avg": round(isr_avg, 4),
                 "NAR_avg": round(nar_avg, 4),
                 "n_conditions": len(ms),
+                "ratios": ratios,
+                "scores": [round(s, 4) for s in scores],
+                "noise_ratio_actual": noise_ratio_stats,
             }
         )
     return out
+
+
+def _git_hash() -> str | None:
+    import subprocess
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=str(CONFIG.project_root),
+            stderr=subprocess.DEVNULL,
+        ).decode().strip()
+    except Exception:
+        return None
 
 
 def save_run(
@@ -167,6 +263,7 @@ def save_run(
     out = {
         "experiment": experiment_name,
         "timestamp": now_tag(),
+        "git_commit": _git_hash(),
         "config": CONFIG.to_dict(),
         "results": [r.to_dict() for r in results],
         "robustness_table": compute_robustness_table(results),

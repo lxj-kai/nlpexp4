@@ -125,15 +125,43 @@ def plot_correction_compare(result_json: Path | str, *, out_dir: Path | str | No
     return _save(fig, out_dir / "exp2_correction.png")
 
 
+def _aggregate_radar_by_method(robustness_table: list[dict]) -> list[dict]:
+    """新版 robustness_table 每个 method 可能有多行（按 noise_type 切片）。
+
+    此函数把同一 method 跨 noise_type 的指标取均值，给雷达图用。
+    """
+    grouped: dict[str, list[dict]] = {}
+    for row in robustness_table:
+        grouped.setdefault(row.get("method", "?"), []).append(row)
+    out: list[dict] = []
+    for method, rows in grouped.items():
+        def _avg(key: str) -> float | None:
+            vals = [r.get(key) for r in rows if r.get(key) is not None]
+            return float(np.mean(vals)) if vals else None
+
+        out.append(
+            {
+                "method": method,
+                "NS": _avg("NS"),
+                "NRS": _avg("NRS"),
+                "ISR_avg": _avg("ISR_avg") or 0.0,
+                "NAR_avg": _avg("NAR_avg") or 0.0,
+                "n_rows": len(rows),
+            }
+        )
+    return out
+
+
 def plot_robustness_radar(robustness_table: list[dict], *, out_path: Path | str) -> str:
     """雷达图：方法-level NS / NRS / ISR / NAR / CRR。"""
     _setup_style()
-    methods = [r["method"] for r in robustness_table]
+    rows = _aggregate_radar_by_method(robustness_table)
+    methods = [r["method"] for r in rows]
     metrics = ["1-NS", "1-|NRS|", "ISR", "1-NAR"]
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
     angles = np.linspace(0, 2 * np.pi, len(metrics), endpoint=False).tolist()
     angles += angles[:1]
-    for i, row in enumerate(robustness_table):
+    for i, row in enumerate(rows):
         vals = [
             1 - (row.get("NS") or 0),
             1 - abs(row.get("NRS") or 0),
@@ -148,7 +176,115 @@ def plot_robustness_radar(robustness_table: list[dict], *, out_path: Path | str)
     ax.set_xticklabels(metrics)
     ax.set_ylim(0, 1)
     ax.legend(bbox_to_anchor=(1.2, 1.05))
-    ax.set_title("Robustness Radar")
+    ax.set_title("Robustness Radar (averaged across noise types)")
+    return _save(fig, out_path)
+
+
+def plot_nrs_grouped_bar(
+    robustness_table: list[dict], *, out_path: Path | str, title: str | None = None
+) -> str:
+    """按 (method, noise_type) 切片的 NRS 条形图。
+
+    斜率绝对值越小越鲁棒。同一 method 三种噪音类型用相邻颜色组。
+    """
+    _setup_style()
+    methods = sorted({r.get("method", "?") for r in robustness_table})
+    ntypes = sorted({r.get("noise_type", "?") for r in robustness_table})
+    matrix = np.full((len(methods), len(ntypes)), np.nan)
+    for r in robustness_table:
+        if r.get("NRS") is None:
+            continue
+        i = methods.index(r["method"])
+        j = ntypes.index(r["noise_type"])
+        matrix[i, j] = r["NRS"]
+
+    fig, ax = plt.subplots(figsize=(max(7, len(methods) * 1.6), 5))
+    x = np.arange(len(methods))
+    width = 0.8 / max(1, len(ntypes))
+    for j, t in enumerate(ntypes):
+        vals = matrix[:, j]
+        ax.bar(
+            x + j * width - 0.4 + width / 2,
+            np.where(np.isnan(vals), 0.0, vals),
+            width=width,
+            label=t,
+            color=_PALETTE[j % len(_PALETTE)],
+        )
+    ax.axhline(0, color="#0f172a", linewidth=0.8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(methods)
+    ax.set_ylabel("NRS (noise resistance slope, closer to 0 = more robust)")
+    ax.set_title(title or "Noise Resistance Slope by Method × Type")
+    ax.legend(title="Noise Type", ncol=min(3, len(ntypes)))
+    return _save(fig, out_path)
+
+
+def plot_case_type_distribution(
+    cases: list[dict], *, out_path: Path | str, title: str | None = None
+) -> str:
+    """exp3 案例类型分布饼图（Type1 矫正生效 / 未生效 / Type2 / Type3 / Type4）。"""
+    _setup_style()
+    counts: dict[str, int] = {}
+    for c in cases:
+        counts[c.get("type", "Other")] = counts.get(c.get("type", "Other"), 0) + 1
+    order = [
+        "Type1-矫正生效",
+        "Type1-矫正未生效",
+        "Type2-噪音激发",
+        "Type4-免疫",
+        "Type3-淹没",
+        "Other",
+    ]
+    labels = [t for t in order if t in counts]
+    sizes = [counts[t] for t in labels]
+    colors = [_PALETTE[i % len(_PALETTE)] for i in range(len(labels))]
+
+    fig, ax = plt.subplots(figsize=(7, 5))
+    wedges, texts, autotexts = ax.pie(
+        sizes,
+        labels=labels,
+        colors=colors,
+        autopct=lambda p: f"{p:.1f}%\n({int(round(p / 100 * sum(sizes)))})",
+        startangle=90,
+        wedgeprops=dict(edgecolor="white", linewidth=1.2),
+        textprops=dict(fontsize=11),
+    )
+    for at in autotexts:
+        at.set_fontsize(9)
+        at.set_color("#0f172a")
+    ax.set_title(title or "Exp3: Case Type Distribution")
+    return _save(fig, out_path)
+
+
+def plot_isr_nar_scatter(
+    rows: list[dict], *, out_path: Path | str, title: str | None = None
+) -> str:
+    """ISR-NAR 散点图：x=ISR, y=NAR；理想区在右下（高 ISR、低 NAR）。
+
+    rows 形如 [{"method":..., "isr":..., "nar":..., "ratio":...}, ...]。
+    """
+    _setup_style()
+    methods = sorted({r["method"] for r in rows})
+    fig, ax = plt.subplots(figsize=(7, 5))
+    for i, m in enumerate(methods):
+        sub = [r for r in rows if r["method"] == m]
+        ax.scatter(
+            [r.get("isr", 0.0) for r in sub],
+            [r.get("nar", 0.0) for r in sub],
+            color=_PALETTE[i % len(_PALETTE)],
+            label=m,
+            s=60,
+            alpha=0.7,
+            edgecolor="white",
+            linewidth=0.5,
+        )
+    ax.plot([0, 1], [0, 1], "k--", alpha=0.3, linewidth=1)
+    ax.set_xlim(-0.02, 1.02)
+    ax.set_ylim(-0.02, 1.02)
+    ax.set_xlabel("ISR (Info-Source Rate)")
+    ax.set_ylabel("NAR (Noise Adoption Rate)")
+    ax.set_title(title or "ISR vs NAR by Method")
+    ax.legend(title="Method")
     return _save(fig, out_path)
 
 

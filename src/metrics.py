@@ -3,20 +3,42 @@
 公式（与 PLAN.html 一致）：
 - NS  = (S_clean - S_noisy) / S_clean          噪音敏感度
 - NRS = ΔScore / ΔNoiseRatio                  噪音抵抗曲线斜率
-- ISR = positive 文档贡献 token / 答案 token   信息溯源率
-- NAR = negative 文档贡献 token / 答案 token   噪音采纳率
+- ISR = positive 文档贡献片段 / 答案有效片段   信息溯源率
+- NAR = negative 文档贡献片段 / 答案有效片段   噪音采纳率
 - CRR = (S_corr - S_noisy) / (S_clean - S_noisy)  矫正恢复率
+
+ISR/NAR 归因策略（v2）：
+- 中文以 bigram (2-gram) 为最小溯源单位，避免单字"的/是/在"全文必中导致 ISR 虚高
+- 英文/数字按词
+- 过滤高频功能字 / stopword
+- 去重：每个 unique 片段最多计一次
+- 命中两类：按片段在 positive vs negative 的出现次数差额分配，不再无脑 positive 优先
 """
 from __future__ import annotations
 
 import math
 import re
+from collections import Counter
 from dataclasses import dataclass
 
 import numpy as np
 
 _CHINESE_RANGE = ("\u4e00", "\u9fff")
 _TOKEN_PAT = re.compile(r"[A-Za-z0-9]+|[\u4e00-\u9fff]")
+_CJK_PAT = re.compile(r"[\u4e00-\u9fff]")
+
+CN_STOPCHARS: frozenset[str] = frozenset(
+    "的了是在和与或及对于把被这那些个其之也都就还又或而但即如则若以及"
+    "我你他她它我们你们他们她们它们自己也是因为所以但是然后于是因此"
+    "一二三四五六七八九十百千万年月日时分秒上下左右前后内外中之间"
+    "可能应该或许大概一种一些什么怎么如何为何为什么"
+)
+EN_STOPWORDS: frozenset[str] = frozenset(
+    "a an the of to in on at by for from with and or but if then so as is "
+    "are was were be been being have has had do does did this that these "
+    "those it its their there here which who whom whose what when where why how"
+    .split()
+)
 
 
 def tokenize(text: str) -> list[str]:
@@ -28,6 +50,60 @@ def tokenize(text: str) -> list[str]:
 
 def token_set(text: str) -> set[str]:
     return set(tokenize(text))
+
+
+def _is_cjk(token: str) -> bool:
+    return bool(token) and _CJK_PAT.fullmatch(token) is not None
+
+
+def attribution_grams(text: str) -> list[str]:
+    """提取用于 ISR/NAR 归因的"有意义片段"。
+
+    规则：
+    - 中文连续单字合并为 bigram（"司马懿" -> ["司马", "马懿"]）
+    - 英文/数字 token 按词，单字英文丢弃
+    - 过滤 stopword / 高频功能字
+    - 保留出现顺序与重复（调用方自行去重）
+    """
+    if not text:
+        return []
+    grams: list[str] = []
+    raw = tokenize(text)
+    cjk_buffer: list[str] = []
+
+    def flush_cjk() -> None:
+        if len(cjk_buffer) >= 2:
+            for i in range(len(cjk_buffer) - 1):
+                bg = cjk_buffer[i] + cjk_buffer[i + 1]
+                if cjk_buffer[i] in CN_STOPCHARS and cjk_buffer[i + 1] in CN_STOPCHARS:
+                    continue
+                grams.append(bg)
+        elif len(cjk_buffer) == 1:
+            ch = cjk_buffer[0]
+            if ch not in CN_STOPCHARS:
+                grams.append(ch)
+        cjk_buffer.clear()
+
+    for tok in raw:
+        if _is_cjk(tok):
+            cjk_buffer.append(tok)
+            continue
+        flush_cjk()
+        if len(tok) <= 1:
+            continue
+        if tok in EN_STOPWORDS:
+            continue
+        grams.append(tok)
+    flush_cjk()
+    return grams
+
+
+def attribution_grams_set(text: str) -> set[str]:
+    return set(attribution_grams(text))
+
+
+def attribution_grams_counter(text: str) -> Counter:
+    return Counter(attribution_grams(text))
 
 
 def _safe_div(a: float, b: float, default: float = 0.0) -> float:
@@ -51,18 +127,29 @@ def noise_resistance_slope(ratios: list[float], scores: list[float]) -> float:
     return slope
 
 
-# ---------- ISR / NAR (token 级溯源) ----------
+# ---------- ISR / NAR (片段级溯源) ----------
 
 @dataclass
 class SourceAttribution:
-    """答案信息的来源归因结果。"""
+    """答案信息的来源归因结果。
 
-    n_answer_tokens: int
+    n_answer_grams = 答案中有效溯源片段的"种类数"（去重后）。
+    n_from_positive / n_from_negative / n_from_neither 之和 = n_answer_grams。
+    同时命中两类时按"该片段在两类中的出现次数差"分配（pos_cnt > neg_cnt 归 pos，
+    反之归 neg，相等则视为不可判别 → neither，防止 positive 单边占便宜）。
+    """
+
+    n_answer_grams: int
     n_from_positive: int
     n_from_negative: int
     n_from_neither: int
     isr: float
     nar: float
+
+    # 兼容旧字段名
+    @property
+    def n_answer_tokens(self) -> int:
+        return self.n_answer_grams
 
 
 def attribute_answer(
@@ -70,36 +157,40 @@ def attribute_answer(
     docs: list[str],
     labels: list[str],
     *,
-    min_token_len: int = 2,
+    min_token_len: int | None = None,
 ) -> SourceAttribution:
-    """把答案 token 归因到 positive / negative / 无 三类来源。
+    """把答案归因到 positive / negative / 无 三类来源（片段级 + 频次比较）。
 
-    简化做法：对答案中的每个 token，看它是否出现在某类文档里；同时命中两类
-    时按 positive 优先（更保守的 ISR 估计）。
+    `min_token_len` 参数保留仅为向后兼容，已不再使用——过滤策略全部走
+    `attribution_grams` 的 stopword + bigram 逻辑。
     """
-    ans_tokens = [t for t in tokenize(answer) if len(t) >= min_token_len]
-    if not ans_tokens:
+    _ = min_token_len  # 兼容签名
+
+    ans_grams = set(attribution_grams(answer))
+    if not ans_grams:
         return SourceAttribution(0, 0, 0, 0, 0.0, 0.0)
 
     pos_text = " ".join(d for d, l in zip(docs, labels) if l == "positive")
     neg_text = " ".join(d for d, l in zip(docs, labels) if l != "positive")
-    pos_set = token_set(pos_text)
-    neg_set = token_set(neg_text)
+    pos_cnt = attribution_grams_counter(pos_text)
+    neg_cnt = attribution_grams_counter(neg_text)
 
     n_pos = n_neg = n_neither = 0
-    for tk in ans_tokens:
-        in_pos = tk in pos_set
-        in_neg = tk in neg_set
-        if in_pos:
+    for g in ans_grams:
+        cp = pos_cnt.get(g, 0)
+        cn = neg_cnt.get(g, 0)
+        if cp == 0 and cn == 0:
+            n_neither += 1
+        elif cp > cn:
             n_pos += 1
-        elif in_neg:
+        elif cn > cp:
             n_neg += 1
         else:
             n_neither += 1
 
-    total = len(ans_tokens)
+    total = len(ans_grams)
     return SourceAttribution(
-        n_answer_tokens=total,
+        n_answer_grams=total,
         n_from_positive=n_pos,
         n_from_negative=n_neg,
         n_from_neither=n_neither,

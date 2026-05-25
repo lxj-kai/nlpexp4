@@ -37,14 +37,14 @@
 \contentsline {subsubsection}{\numberline {6.5.1}Confidence 消融实验}{17}{subsubsection.6.5.1}%
 \contentsline {subsubsection}{\numberline {6.5.2}语义级 ISR/NAR}{18}{subsubsection.6.5.2}%
 \contentsline {subsubsection}{\numberline {6.5.3}自适应矫正器}{18}{subsubsection.6.5.3}%
-\contentsline {subsubsection}{\numberline {6.5.4}迭代自纠正}{18}{subsubsection.6.5.4}%
+\contentsline {subsubsection}{\numberline {6.5.4}迭代自纠正}{19}{subsubsection.6.5.4}%
 \contentsline {section}{\numberline {7}系统实现与前端演示}{19}{section.7}%
 \contentsline {subsection}{\numberline {7.1}后端接口}{19}{subsection.7.1}%
 \contentsline {subsection}{\numberline {7.2}前端界面}{19}{subsection.7.2}%
-\contentsline {section}{\numberline {8}当前进度}{19}{section.8}%
-\contentsline {section}{\numberline {9}与现有方法的比较}{20}{section.9}%
+\contentsline {section}{\numberline {8}当前进度}{20}{section.8}%
+\contentsline {section}{\numberline {9}与现有方法的比较}{21}{section.9}%
 \contentsline {section}{\numberline {10}局限与未来工作}{21}{section.10}%
 \contentsline {subsection}{\numberline {10.1}局限性}{21}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}未来方向}{21}{subsection.10.2}%
-\contentsline {section}{\numberline {11}运行方式}{21}{section.11}%
-\contentsline {section}{\numberline {12}总结}{22}{section.12}%
+\contentsline {subsection}{\numberline {10.2}未来方向}{22}{subsection.10.2}%
+\contentsline {section}{\numberline {11}运行方式}{22}{section.11}%
+\contentsline {section}{\numberline {12}总结}{23}{section.12}%

@@ -5,9 +5,12 @@
   2. exp1 中文 main 位置子实验（N=300, ratio=0.5）
   3. exp1 中文 fact 全量（counterfactual 专题）
   4. exp2 中文矫正方法对比 (N=300, methods=naive+4)
-  5. exp3 案例研究（N=100, pick=20）
-  6. exp1 英文 main 中等规模（N=100, 控制 token）
-  7. exp2 英文矫正中等规模（N=50）
+  5. exp3 中文 main 全量案例 (N=300, 全量分类, corrector=confidence)
+  6. exp3 英文 main 全量案例 (N=300, 全量分类)
+  7. exp3 中文 fact 全量案例 (N=100, 全量分类)
+  8. exp3 英文 fact 全量案例 (N=100, 全量分类)
+  9. exp1 英文 main 中等规模（N=100, 控制 token）
+ 10. exp2 英文矫正中等规模（N=50）
 
 每个 step 单独可 enable/disable，默认全部开启。
 跑前会做 token 用量预估 + 用户确认。
@@ -95,13 +98,45 @@ def _make_steps() -> list[Step]:
         ),
         Step(
             key="exp3_zh",
-            desc="exp3 · 中文 case study (N=100, pick=20, corrector=confidence)",
+            desc="exp3 · 中文 main 全量案例 (N=300, 全量分类, corrector=confidence)",
             cmd=[
                 sys.executable, "-m", "experiments.exp3_case_study",
-                "--n", "100", "--pick", "20",
+                "--n", "300", "--pick", "30",
                 "--language", "zh", "--corrector", "confidence",
             ],
-            samples=100, calls_per_sample=3,
+            samples=300, calls_per_sample=7,  # 1 clean + 3 ratios × 2 methods
+        ),
+        Step(
+            key="exp3_en",
+            desc="exp3 · 英文 main 全量案例 (N=300, 全量分类, corrector=confidence)",
+            cmd=[
+                sys.executable, "-m", "experiments.exp3_case_study",
+                "--n", "300", "--pick", "30",
+                "--language", "en", "--corrector", "confidence",
+            ],
+            samples=300, calls_per_sample=7,
+        ),
+        Step(
+            key="exp3_zh_fact",
+            desc="exp3 · 中文 fact 全量案例 (N=100, 全量分类, corrector=confidence)",
+            cmd=[
+                sys.executable, "-m", "experiments.exp3_case_study",
+                "--n", "100", "--pick", "30",
+                "--language", "zh", "--subset", "fact",
+                "--corrector", "confidence",
+            ],
+            samples=100, calls_per_sample=7,
+        ),
+        Step(
+            key="exp3_en_fact",
+            desc="exp3 · 英文 fact 全量案例 (N=100, 全量分类, corrector=confidence)",
+            cmd=[
+                sys.executable, "-m", "experiments.exp3_case_study",
+                "--n", "100", "--pick", "30",
+                "--language", "en", "--subset", "fact",
+                "--corrector", "confidence",
+            ],
+            samples=100, calls_per_sample=7,
         ),
         Step(
             key="exp1_en_main",

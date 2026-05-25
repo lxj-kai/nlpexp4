@@ -1,18 +1,23 @@
 <template>
-  <section>
-    <h2>Stage A · 原始检索池</h2>
-    <div class="field-row">
-      <div class="field">
-        <label>问题</label>
-        <div class="readonly-box">{{ exp.query.value || "—" }}</div>
-      </div>
-      <div class="field">
-        <label>标准答案</label>
-        <div class="readonly-box">{{ exp.gold.value || "—" }}</div>
-      </div>
+  <section class="stage">
+    <div class="stage-head">
+      <span class="stage-num">1</span>
+      <span class="stage-title">检索池</span>
     </div>
-    <div v-if="exp.retrievalHtml.value" v-html="exp.retrievalHtml.value" class="doc-stage" />
-    <p v-else class="stage-summary">选择样本后自动加载检索池</p>
+    <div class="stage-body">
+      <div class="qa-row">
+        <div class="qa-item">
+          <label>Q 问题</label>
+          <div class="val">{{ exp.query.value || "—" }}</div>
+        </div>
+        <div class="qa-item">
+          <label>A 标准答案</label>
+          <div class="val">{{ exp.gold.value || "—" }}</div>
+        </div>
+      </div>
+      <div v-if="exp.retrievalHtml.value" v-html="exp.retrievalHtml.value" class="doc-stage" />
+      <p v-else class="stage-empty">选择样本后加载</p>
+    </div>
   </section>
 </template>
 

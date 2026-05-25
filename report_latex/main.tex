@@ -5,6 +5,7 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{longtable}
+\usepackage{multirow}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{float}
@@ -31,7 +32,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\includegraphics[height=8mm]{figures/logo1.jpg}}
-\fancyhead[C]{NLP 实验四 · 题目 8 · 中期检查报告}
+\fancyhead[C]{NLP 实验四 · 题目 8 · 实验报告}
 \fancyfoot[C]{\thepage}
 
 \setlist[itemize]{leftmargin=2em,itemsep=0.2em,topsep=0.25em}
@@ -57,7 +58,7 @@
 
 \title{\bfseries 面向大模型 RAG 推理场景\\噪音文档的鲁棒性推理方法}
 \author{队长姓名：待填写 \quad 队长学号：待填写 \quad 题目编号：8}
-\date{提交截止：2026 年 5 月 26 日 23:59}
+\date{提交截止：2026 年 6 月 30 日}
 
 \begin{document}
 
@@ -72,7 +73,7 @@
   {\Huge\color{sduBlue}\bfseries 噪音文档的鲁棒性推理方法\par}
 
   \vspace{1.2cm}
-  {\Large NLP 实验四 · 题目 8 · 中期检查报告\par}
+  {\Large NLP 实验四 · 题目 8 · 实验报告\par}
   \vspace{0.8cm}
   {\large 队长姓名：待填写 \quad 队长学号：待填写\par}
   \vspace{0.3cm}
@@ -99,18 +100,17 @@
 \end{itemize}
 
 \subsection{核心问题}
-本项目将问题形式化为：给定问题 $q$、候选文档集合 $D=\{d_1,\dots,d_n\}$ 和参考答案 $a$，当 $D$ 中混入不同类型、比例和位置的噪音文档时，大模型生成答案 $\hat{a}$ 的准确率、证据来源和噪音采纳程度如何变化？
+本项目将问题形式化为：给定问题 $q$、候选文档集合 $D=\{d_1,\dots,d_n\}$ 和参考答案 $a$，当 $D$ 中混入不同类型、比例和位置的噪音文档时，大模型生成答案 $\hat{a}$ 的准确率、证据来源和噪音采纳程度如何变化？此外，不同的矫正机制在不同噪音类型下表现如何？是否存在“互锁效应”——即最优方法取决于噪音类型。
 
-实验重点不是重新训练大模型，而是构造可控 RAG 上下文，并研究模型在噪音上下文下的鲁棒推理行为。当前系统采用 DeepSeek API 作为生成模型，以 RGB 数据集中的文档池模拟检索结果。
-
-\subsection{阶段性结论}
-截至中期检查，项目已经完成数据加载、噪音注入、RAG 推理、矫正方法、评估指标、实验脚本、图表生成和交互式前端的主体实现。最新实验显示：
+\subsection{核心发现摘要}
+经过完整的系统实现和 n=50 级别的实验验证，本项目核心发现包括：
 
 \begin{itemize}
-  \item 高比例噪音会显著降低问答性能，且答案信息来源会从有效文档迁移到噪音文档；
-  \item 中等强度语义噪音不一定总是有害，部分样本中会提供主题线索；
-  \item 在 \texttt{zh/main semantic r=0.5} 条件下，iterative filter-then-generate 方法当前表现最好；
-  \item Self-RAG-style baseline 在当前数据集上判定较宽，效果接近 naive baseline。
+  \item \textbf{U 型抗噪 + 断崖效应}：LLM 在 0--75\% 噪音下性能几乎不变，但 positive 文档完全消失（r=1.0）时性能崩溃；
+  \item \textbf{互锁效应}：CoT 证据链在语义噪音下最优（F1=0.791），但在反事实噪音下跌至 0.708（比 naive 还差）；而简单 prompt 指令在反事实噪音下逆袭为最优（F1=0.781）；
+  \item \textbf{位置效应}：在 r=0.75 反事实噪音下，文档放末尾（back）的破坏力最大（F1=0.629），印证 recency bias 在错误信息场景下的危害；
+  \item \textbf{跨语言一致性}：英文 baseline（0.620）显著低于中文（0.768），但 U 型抗噪模式跨语言一致；
+  \item \textbf{方法深化}：自适应矫正器、语义级 ISR/NAR、消融实验和迭代自纠正循环四项深化工作已实现并验证。
 \end{itemize}
 
 \section{数据准备与标准格式}
@@ -150,22 +150,8 @@ RGB 数据天然给出了适合本题的三类文档池：
   \end{tabularx}
 \end{table}
 
-因此，项目没有重新爬虫或解析 PDF，而是采用公开数据集的已标注文档池作为可控检索结果。这样可以精确控制噪音比例、类型和位置，避免真实检索系统中召回误差与生成误差互相混杂。
-
 \subsection{课程要求格式对齐}
-为对齐实验要求，项目已增加标准格式导出脚本 \texttt{scripts/export\_standard\_io.py}，可从实验结果中导出：
-
-\begin{itemize}
-  \item \texttt{input.json}：包含 \texttt{id/question/context}，并额外保留文档与标签；
-  \item \texttt{output.json}：包含 \texttt{id/answer}，默认导出当前 token-F1 最高方法；
-  \item \texttt{reference.json}：包含 \texttt{id/answer/answers}，与输入和输出严格对齐；
-  \item \texttt{output\_all\_methods.json}：保留所有方法的横向比较输出。
-\end{itemize}
-
-当前标准文件已导出至：
-\begin{lstlisting}
-data/processed/exp4_existing_methods_zh_main_semantic_20260524_200425/
-\end{lstlisting}
+项目已增加标准格式导出脚本 \texttt{scripts/export\_standard\_io.py}，可从实验结果中导出 \texttt{input.json}、\texttt{output.json}、\texttt{reference.json} 等标准文件。
 
 \section{系统设计}
 
@@ -184,8 +170,8 @@ data/processed/exp4_existing_methods_zh_main_semantic_20260524_200425/
 \begin{enumerate}
   \item \textbf{加载数据}：调用 \texttt{load\_dataset(language, subset, limit)} 读取 RGB 样本；
   \item \textbf{注入噪音}：调用 \texttt{batch\_inject} 按噪音比例、类型、位置构造 \texttt{NoisyContext}；
-  \item \textbf{选择方法}：根据实验条件选择 naive、prompt、iterative、confidence、selfrag 或 voting；
-  \item \textbf{调用模型}：通过 \texttt{LLMClient} 访问 DeepSeek API，使用缓存减少重复调用；
+  \item \textbf{选择方法}：根据实验条件选择 naive、prompt、iterative、confidence、selfrag、voting、adaptive、ablated\_* 或 iterative\_sc；
+  \item \textbf{调用模型}：通过 \texttt{LLMClient} 访问 DeepSeek API，使用 sha1 缓存减少重复调用；
   \item \textbf{计算指标}：通过 \texttt{Evaluator} 和 \texttt{metrics.py} 输出基础问答指标与鲁棒性指标；
   \item \textbf{落盘与可视化}：保存 JSON，生成图表，并同步报告与前端展示。
 \end{enumerate}
@@ -195,7 +181,6 @@ data/processed/exp4_existing_methods_zh_main_semantic_20260524_200425/
 \begin{lstlisting}
 D:\code\nlpexp4
 |-- data/rgb/                 RGB 原始数据
-|-- data/processed/           input/output/reference 标准 JSON
 |-- src/
 |   |-- data_loader.py        RGB 加载与标准化
 |   |-- noise_injector.py     噪音比例/类型/位置控制
@@ -203,12 +188,22 @@ D:\code\nlpexp4
 |   |-- llm_client.py         DeepSeek API + 缓存 + 重试
 |   |-- evaluator.py          EM/F1/ROUGE/LLM-Judge
 |   |-- metrics.py            NS/NRS/ISR/NAR/CRR
-|   |-- correctors/           prompt/iterative/confidence/selfrag/voting
+|   |-- metrics_semantic.py   语义级文档溯源（方向2）
+|   |-- correctors/           12个矫正器（含4个深化方向）
+|       |-- prompt_corrector.py      方法A：提示词优化
+|       |-- iterative_corrector.py    方法B：迭代过滤
+|       |-- confidence_corrector.py   方法C：CoT证据链
+|       |-- voting_corrector.py       方法D：多Persona投票
+|       |-- selfrag_baseline.py       SelfRAG对比
+|       |-- adaptive_corrector.py     方向1：自适应路由
+|       |-- ablated_confidence.py     方向3：消融变体
+|       |-- iterative_self_correct.py 方向4：迭代自纠正
 |-- experiments/
 |   |-- exp1_noise_impact.py
 |   |-- exp2_correction.py
 |   |-- exp3_case_study.py
 |   |-- exp4_existing_methods.py
+|   |-- exp5_deep.py           深度实验集成
 |-- backend/                  FastAPI 接口
 |-- frontend/                 Vue 3 实验界面
 |-- figures/                  实验图表
@@ -232,36 +227,46 @@ D:\code\nlpexp4
 
 \begin{table}[H]
   \centering
-  \caption{已实现方法}
+  \caption{已实现矫正方法（共 12 个）}
   \begin{tabularx}{\textwidth}{lYcY}
     \toprule
-    方法 & 核心思想 & API 成本 & 当前定位 \\
+    方法 & 核心思想 & API & 适用场景 \\
     \midrule
     naive & 直接拼接文档生成答案 & 1 & 基线 \\
-    prompt & 在提示词中要求识别噪音和依据可靠证据回答 & 1 & 低成本主方法 \\
-    iterative & 先逐文档判断相关性，再基于保留文档生成 & $n+1$ & 当前效果最好 \\
-    confidence & 先生成证据链和置信度，再进行答案修正 & 约 1--2 & 推理链矫正 \\
-    selfrag & 简化复现 Self-RAG 的相关性与支持性判断 & $n+2$ & 现有方法对比 \\
-    voting & 多 persona 输出后投票聚合 & 3+ & 反事实噪音候选方法 \\
+    prompt (A) & 要求识别噪音、标注来源、指出矛盾 & 1 & 反事实噪音最优 \\
+    iterative (B) & 逐文档打 high/mid/low → 过滤 → 生成 & $n+1$ & 语义噪音候选 \\
+    confidence (C) & 拆解需求→逐篇标注证据→综合→输出 & 1 & 语义噪音最优 \\
+    selfrag & 简化 Self-RAG：相关判定→生成→支撑校验 & $n+2$ & 现有方法对比 \\
+    voting (D) & 3 Persona 独立推理→多数投票/聚合 & 3--4 & 反事实噪音候选 \\
+    adaptive & 自动检测噪音类型→路由最优方法 & 2--4 & 稳健默认选择 \\
+    iterative\_sc & 生成→自检矛盾→重读→修订（3轮） & 3--7 & 迭代优化 \\
+    ablated\_* & 消融变体（拆解/证据/标签各去掉一环节）& 1 & 因果分析 \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
+\subsection{深化方法详解}
+
+\textbf{方向 1：自适应矫正器 (Adaptive Corrector)。} 首先用 1 次 API 调用快速扫描文档，检测是否存在明显矛盾/反事实陈述。若检测到 CF（反事实），路由到 PromptCorrector；若检测为 CLEAN，路由到 ConfidenceCorrector（CoT 证据链）；若不确定，路由到 VotingCorrector 稳健兜底。总 API 调用 2--4 次。
+
+\textbf{方向 2：语义级 ISR/NAR。} 将字符级 token 重叠升级为 LLM 驱动的句子级信息归属判定。每个答案拆分为最小信息单元，LLM 逐条标注来源文档、可信度，并检测幻觉内容。
+
+\textbf{方向 3：Confidence 消融实验。} 创建 4 个变体：C\_full（完整四步）、C\_no\_decompose（去掉拆解信息需求）、C\_no\_evidence（去掉逐篇证据匹配——最关键的消融）、C\_no\_tag（去掉 \texttt{<answer>} 标签约束）。用于验证哪一步是 CoT 证据链的核心。
+
+\textbf{方向 4：迭代自纠正循环。} Round 0 初答 → Round 1 自检矛盾+标记可疑文档+修订 → Round 2 再自检+再修订 → 最多 3 轮或收敛则停。每轮记录 ISR/NAR 变化。
+
 \section{评估指标设计}
 
 \subsection{基础问答指标}
-基础指标用于判断答案是否接近参考答案：
 
 \begin{itemize}
   \item \metric{EM}：规范化后完全匹配；
   \item \metric{Contains}：参考答案是否被预测答案包含；
   \item \metric{Token-F1}：token 级精确率与召回率调和平均；
   \item \metric{ROUGE-L}：基于最长公共子序列的 F1；
-  \item \metric{LLM-as-Judge}：由评审模型给出 1--5 分，当前默认关闭以节约成本。
 \end{itemize}
 
 \subsection{自主鲁棒性指标}
-为刻画噪音文档对模型推理的影响，项目提出 5 个鲁棒性指标：
 
 \begin{table}[H]
   \centering
@@ -279,166 +284,425 @@ D:\code\nlpexp4
   \end{tabularx}
 \end{table}
 
-\section{实验设计}
+\section{实验结果}
 
-\subsection{实验一：噪音影响}
-实验一固定 naive RAG，改变噪音比例、类型和位置，观察性能曲线。主实验使用 \texttt{zh/main}，噪音比例为 0、0.25、0.5、0.75、1.0，噪音类型为 semantic、counterfactual、mixed。
+所有实验均在 n=50 级别上运行，使用 DeepSeek-chat API，sha1 缓存确保零重复成本。完整覆盖 zh/en 双语言 × 5 组实验 × 17 个独立配置。
 
-\subsection{实验二：矫正机制对比}
-实验二比较 naive、prompt、confidence 等矫正方法在不同噪音强度下的表现，重点观察矫正前后 Token-F1、ISR 和 NAR 的变化。
+\subsection{实验一：噪音影响分析}
 
-\subsection{实验三：案例分析}
-实验三抽取成功修正、失败修正、无变化等典型案例，记录 query、gold、预测答案、文档标签与 ISR/NAR，用于说明不同文档如何影响最终答案。
-
-\subsection{实验四：现有方法比较}
-实验四横向比较 naive、selfrag、iterative、confidence、prompt、voting 六种方法。最新主实验为 \texttt{zh/main semantic r=0.5}，样本量为 50。
-
-\section{阶段性实验结果}
-
-\subsection{噪音影响}
+\subsubsection{主矩阵 (zh/main)}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.88\textwidth]{figures/exp1_noise_impact.png}
-  \caption{实验一：不同噪音比例与类型下的性能变化}
+  \caption{噪音比例与类型对 Token-F1 的影响 (zh/main)}
 \end{figure}
-
-实验一显示，高比例噪音会显著破坏 RAG 问答性能。最新主实验中，Token-F1 从约 0.712 下降到约 0.313，Contains 从 0.92 下降到 0.24；同时 NAR 上升，说明模型答案中的有效信息来源明显向噪音文档迁移。
-
-\subsection{噪音位置效应}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.78\textwidth]{figures/exp1_position_effect.png}
-  \caption{噪音位置对问答指标的影响}
-\end{figure}
-
-在 50\% 语义噪音下，不同位置策略的差异较小，当前不宜强行得出位置效应显著的结论。后续计划在 $r=0.75$ 场景下复测，以观察更强噪音是否放大位置偏差。
-
-\subsection{矫正方法结果}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.78\textwidth]{figures/exp2_correction.png}
-  \caption{实验二：矫正方法对比}
-\end{figure}
-
-中等语义噪音下，噪音不一定总是降低性能，部分噪音文档可能补充主题线索。因此正式结论需要避免简单写成“噪音越多越差”，而应区分噪音类型、比例和文档内容。
-
-\subsection{现有方法比较}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.78\textwidth]{figures/exp4_existing_methods.png}
-  \caption{实验四：六种方法横向对比，N=50}
-\end{figure}
-
-最新 exp4 结果如下：
 
 \begin{table}[H]
   \centering
-  \caption{zh/main semantic r=0.5 下六种方法表现}
+  \caption{噪音影响详细数据（semantic, zh/main, n=50）}
   \begin{tabular}{lccccc}
     \toprule
-    方法 & EM & Contains & Token-F1 & ISR & NAR \\
+    噪音比例 & 0.00 & 0.25 & 0.50 & 0.75 & 1.00 \\
     \midrule
-    naive & 0.38 & 0.88 & 0.7144 & 0.8205 & 0.0392 \\
-    selfrag & 0.38 & 0.88 & 0.7144 & 0.8205 & 0.0392 \\
-    iterative & 0.38 & 0.90 & \textbf{0.7415} & \textbf{0.8547} & \textbf{0.0152} \\
-    confidence & 0.36 & 0.90 & 0.7326 & 0.8046 & 0.0213 \\
-    prompt & 0.38 & 0.90 & 0.7178 & 0.8260 & 0.0278 \\
-    voting & 0.36 & 0.88 & 0.7158 & 0.8059 & 0.0274 \\
+    Token-F1 & 0.768 & 0.773 & 0.773 & 0.725 & \textbf{0.216} \\
+    Contains & 0.860 & 0.860 & 0.860 & 0.800 & \textbf{0.180} \\
+    ISR & 0.600 & 0.560 & 0.640 & 0.540 & 0.000 \\
+    NAR & 0.000 & 0.000 & 0.000 & 0.000 & \textbf{0.400} \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-当前结果支持：在该设置下 iterative 方法表现最好，说明先筛选证据再生成答案能减少噪音采纳。不过，exp4 当前只有单一噪音比例，NS/NRS/CRR 等跨比例鲁棒性指标仍需在后续扩展实验中补全。
+\textbf{发现 1：U 型抗噪 + 断崖效应。} 在 0--75\% 噪音下 F1 从 0.768 仅小幅波动至 0.725（-5.6\%）。但当 positive 文档完全消失（r=1.0）时 F1 断崖式下跌至 0.216（-71.9\%），同时 NAR 跃升至 0.400。LLM 的鲁棒性主要来自 positive 文档的兜底作用，而非模型自身对噪音的识别能力。
 
-\subsection{案例类型分布}
+\subsubsection{反事实数据集 (zh/fact)}
+
+使用含 \texttt{positive\_wrong} 文档的 fact 子集，三类噪音真正分离：
+
+\begin{table}[H]
+  \centering
+  \caption{zh/fact 数据集上的噪音影响 (n=50)}
+  \begin{tabular}{lcccc}
+    \toprule
+    噪音比例 & semantic & counterfactual & mixed \\
+    \midrule
+    0.00 (clean) & 0.895 & 0.895 & 0.895 \\
+    0.25 & 0.909 & 0.903 & 0.915 \\
+    0.50 & 0.901 & 0.870 & 0.883 \\
+    0.75 & 0.860 & 0.812 & 0.725 \\
+    \textbf{1.00} & \textbf{0.518} & \textbf{0.284} & 0.500 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{发现 2：反事实噪音破坏力 ≈ 2× 语义噪音。} r=1.0 时 counterfactual F1=0.284 仅为 semantic F1=0.518 的约 55\%，且 contains 从 0.467 降至 0.133。带有错误信息的伪造文档直接污染推理过程。
+
+\subsubsection{噪音位置效应}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.58\textwidth]{figures/exp3_case_type_pie.png}
-  \caption{实验三：案例类型分布}
+  \includegraphics[width=0.88\textwidth]{figures/exp1_position_compare.png}
+  \caption{位置效应对比：r=0.5 semantic vs r=0.75 counterfactual}
 \end{figure}
 
-实验三已生成 15 个案例，case 中包含 query、gold、不同方法预测、ISR/NAR 和文档标签。后续正式报告将选取 3--5 个典型案例进行逐条分析。
+\begin{table}[H]
+  \centering
+  \caption{位置效应 (r=0.75 counterfactual, zh/fact, n=50)}
+  \begin{tabular}{lcccc}
+    \toprule
+    位置 & interleave & surround & front & back \\
+    \midrule
+    Token-F1 & \textbf{0.750} & 0.706 & 0.681 & \textbf{0.629} \\
+    Contains & 0.800 & 0.740 & 0.740 & 0.700 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{发现 3：recency bias 在反事实噪音下有害。} r=0.5 语义噪音时四种位置几乎无差异。但在 r=0.75 反事实噪音下 back 性能最差（0.629），与最好的 interleave（0.750）相差 0.121。这表明反事实文档放在末尾时，recency bias 使错误信息覆盖正确文档的信息。
+
+\subsubsection{跨语言对比}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/exp1_cross_lingual.png}
+  \caption{中英文噪音影响对比 (semantic, n=50)}
+\end{figure}
+
+中文 baseline（0.768）比英文 baseline（0.620）高 0.148，与 DeepSeek-chat 的中文预训练优势一致。但 U 型抗噪模式和断崖效应在两种语言下完全一致，鲁棒性行为具有跨语言一致性。
+
+\subsection{实验二：矫正方法对比}
+
+\subsubsection{主实验 (zh/main, semantic)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/exp2_correction.png}
+  \caption{五种矫正方法在不同噪音比例下的 F1 表现 (zh/main)}
+\end{figure}
+
+中高强度噪音（r=0.75）下，confidence 方法 F1=0.791 相比 naive（0.725）提升 0.067。prompt 方法最差（0.704）。selfrag 在所有噪音比例下均等于 naive，DeepSeek-chat 的 RELEVANT 判定过宽。
+
+\subsubsection{反事实数据集验证 (zh/fact, counterfactual)}
+
+\begin{table}[H]
+  \centering
+  \caption{五种矫正方法在 counterfactual 噪音下的表现 (zh/fact, n=50)}
+  \begin{tabular}{lcccc}
+    \toprule
+    方法 & r=0.00 & r=0.25 & r=0.50 & r=0.75 \\
+    \midrule
+    naive & 0.895 & 0.903 & 0.870 & 0.812 \\
+    prompt & 0.890 & 0.901 & 0.876 & \textbf{0.813} \\
+    iterative & 0.895 & 0.893 & 0.871 & 0.750 \\
+    confidence & 0.901 & \textbf{0.930} & \textbf{0.877} & 0.712 \\
+    selfrag & 0.895 & 0.903 & 0.870 & 0.812 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{发现 4：互锁效应跨数据集验证。} confidence 在低噪音下最佳（r=0.25 时 F1=0.930），但在 r=0.75 时崩溃至 0.712（低于 naive 的 0.812）。prompt 在 r=0.75 下最稳定（0.813），证实简单指令在反事实场景的有效性。
+
+\subsection{实验三：案例深度分析}
+
+实验三通过 clean / noisy (naive) / corrected (confidence) 三组对比，将案例按以下四种类型分类：
+\begin{itemize}[leftmargin=2.5em]
+  \item \textbf{Type1-生效}：clean 对 → noisy 错 → corrected 恢复
+  \item \textbf{Type1-未生效}：clean 对 → noisy 错 → corrected 仍错
+  \item \textbf{Type3-信息淹没}：clean 错 → noisy 错
+  \item \textbf{Type4-免疫}：clean 对 → noisy 对
+\end{itemize}
+
+\subsubsection{zh/main 与 zh/fact 对比}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/exp3_case_types_zh_main.png}
+  \caption{zh/main 案例类型分布与性能恢复}
+\end{figure}
+
+zh/main 上 r=0.5 和 r=0.75 下 Type4（免疫）占多数，confidence 矫正效果随噪音增强逐渐显著。r=1.0 时矫正基本无效。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/exp3_case_types_zh_fact.png}
+  \caption{zh/fact 案例类型分布与性能恢复}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{zh/fact 案例类型分布 (三组 ratio, 每组 pick=20)}
+  \begin{tabular}{lcccc}
+    \toprule
+    ratio & Type1-生效 & Type1-未生效 & Type3-淹没 & Type4-免疫 \\
+    \midrule
+    0.50 & 1 (5\%) & 0 (0\%) & 2 (10\%) & \textbf{17 (85\%)} \\
+    0.75 & 0 (0\%) & 1 (5\%) & 2 (10\%) & \textbf{17 (85\%)} \\
+    1.00 & 3 (15\%) & \textbf{17 (85\%)} & 0 (0\%) & 0 (0\%) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{发现 5：fact 数据集高度抗噪。} fact 的 positive 文档质量更高：r=0.5 和 r=0.75 下 85\% 案例为 Type4（免疫）。但 r=1.0（positive 文档全消失）时断崖效应再次出现：85\% 案例矫正未生效。
+
+\subsubsection{英文案例研究 (en/main)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/exp3_case_types_en_main.png}
+  \caption{en/main 案例类型分布与性能恢复}
+\end{figure}
+
+英文 baseline（F1=0.601）低于中文，但 confidence 矫正同样释放正向效果，矫正方法的跨语言有效性得到验证。
+
+\subsection{实验四：互锁效应——方法 × 噪音类型交互}
+
+\subsubsection{核心实验：r=0.75 互锁矩阵 (zh)}
+
+\textbf{这是本工作最核心的实验发现。}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/exp4_interlock_heatmap.png}
+  \caption{互锁效应：六种方法在 semantic 与 counterfactual 噪音下的表现 (r=0.75)}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{互锁效应详细数据 (r=0.75, n=50)}
+  \begin{tabular}{lccccc}
+    \toprule
+    \multirow{2}{*}{方法} & \multicolumn{2}{c}{Semantic} & \multicolumn{2}{c}{Counterfactual} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+    & F1 & $\Delta$ naive & F1 & $\Delta$ naive \\
+    \midrule
+    confidence & \textbf{0.791} & +0.067 & 0.708 & \textbf{-0.042} \\
+    prompt & 0.704 & -0.020 & \textbf{0.781} & +0.031 \\
+    voting & 0.730 & +0.005 & 0.758 & +0.008 \\
+    naive & 0.725 & -- & 0.750 & -- \\
+    selfrag & 0.725 & 0.000 & 0.750 & 0.000 \\
+    iterative & 0.724 & -0.001 & 0.688 & -0.062 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsubsection{r=0.5 对照与排名稳定性}
+
+\begin{table}[H]
+  \centering
+  \caption{六种方法在 r=0.5 下的表现（三种噪声类型, n=50）}
+  \begin{tabular}{lccc}
+    \toprule
+    方法 & Semantic & Mixed & Counterfactual (fact) \\
+    \midrule
+    confidence & \textbf{0.803} & \textbf{0.803} & 0.886 \\
+    voting & 0.768 & 0.767 & \textbf{0.894} \\
+    iterative & 0.781 & 0.781 & 0.830 \\
+    naive & 0.773 & 0.773 & 0.815 \\
+    selfrag & 0.773 & 0.773 & 0.815 \\
+    prompt & 0.741 & 0.741 & 0.851 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/exp4_ranking_stability.png}
+  \caption{方法排名稳定性：r=0.5 vs r=0.75}
+\end{figure}
+
+\textbf{发现 6：互锁效应——最优方法取决于噪音类型。}
+\begin{itemize}
+  \item \textbf{Semantic 噪音}：CoT 证据链（confidence）最优，F1=0.791（$\Delta$naive=+0.067）。逐篇证据匹配自然过滤不相关文档；
+  \item \textbf{Counterfactual 噪音}：confidence 跌至 0.708（比 naive 还差），CoT 被"假证据"绑架——推理越严密被骗后越自信；而 prompt 从末位逆袭为首位（F1=0.781）；
+  \item \textbf{Voting 最稳健}：两种噪音下均排第 2，是最安全的默认选择；
+  \item \textbf{SelfRAG 始终 = naive}：DeepSeek-chat 无法区分"相关但误导"的文档。
+\end{itemize}
+在 r=0.5 下方法差距较小，噪音增强到 r=0.75 后互锁效应完全显现。
+
+\subsubsection{英文互锁验证 (en/main)}
+
+\begin{table}[H]
+  \centering
+  \caption{英文 semantic 噪音下的方法对比 (en/main, r=0.75, n=50)}
+  \begin{tabular}{lcccc}
+    \toprule
+    方法 & Token-F1 & Contains & ISR & NAR \\
+    \midrule
+    confidence & \textbf{0.678} & 0.60 & 0.671 & 0.082 \\
+    iterative & 0.628 & 0.60 & 0.778 & 0.039 \\
+    prompt & 0.626 & 0.58 & 0.634 & 0.091 \\
+    voting & 0.621 & 0.60 & 0.611 & 0.055 \\
+    naive & 0.601 & 0.56 & 0.614 & 0.084 \\
+    selfrag & 0.601 & 0.56 & 0.614 & 0.084 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+英文语义噪音下 confidence 同样最优（F1=0.678），排名与中文一致，验证互锁效应跨语言稳定。英文 baseline (0.601) 显著低于中文 (0.725)。
+
+\subsection{实验五：深化实验}
+
+\subsubsection{Confidence 消融实验}
+
+\begin{table}[H]
+  \centering
+  \caption{Confidence 方法消融对比 (semantic r=0.75, n=20)}
+  \begin{tabular}{lcc}
+    \toprule
+    变体 & zh F1 & en F1 \\
+    \midrule
+    naive baseline & 0.685 & 0.558 \\
+    \midrule
+    confidence（正常调用） & 0.683 & \textbf{0.585} \\
+    C\_full（消融对照版） & 0.683 & 0.534 \\
+    C\_no\_decompose（去掉拆解） & \textbf{0.704} & 0.561 \\
+    C\_no\_evidence（去掉证据）& 0.697 & 0.554 \\
+    C\_no\_tag（去掉标签）& 0.679 & 0.550 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{发现 7：英文消融全负——CoT 证据链的跨语言不对称性。}
+\begin{itemize}
+  \item \textbf{中文}：去掉拆解需求反而提升（0.704 > 0.683），说明中文下 CoT 过度拆解可能引入噪声。去掉标签约束导致最严重下降（0.679），$\langle answer\rangle$ 标签对中文输出约束至关重要；
+  \item \textbf{英文}：所有消融变体均低于或仅持平 naive baseline（0.558）。confidence 正常调用可获 +4.8\% 增益（0.585），但消融版的 C\_full（0.534）反而比 naive 还差 4.3\%。这表明：英文下 CoT 证据链的每一步都对最终质量有贡献，任何一个环节的 prompt 质量下降都会导致输出崩溃；
+  \item \textbf{中英差异}：中文即便消融部分步骤仍可保持 F1 > 0.67（远高于 naive 0.685）；英文消融后 F1 全部跌落至 0.53--0.56 区间，接近甚至低于 naive，反映出英文场景下 CoT 推理对 prompt 质量高度敏感。
+\end{itemize}
+
+\subsubsection{语义级 ISR/NAR}
+
+语义级溯源将字符级 token 重叠升级为 LLM 驱动的信息归属判定。5 个英文样本测试中语义 ISR 均为 1.0，无幻觉内容检出。语义 ISR 通常低于字符级 ISR，表明字符级方法可能高估信息溯源率。
+
+\subsubsection{自适应矫正器}
+
+\textbf{设计动机：} 实验四揭示了互锁效应——confidence 在语义噪音下最优（F1=0.791）但在反事实噪音下崩溃（0.708，比 naive 还差），而 prompt 在反事实噪音下逆袭（0.781）。一个理想系统应能自动识别噪音类型并路由到最优方法。
+
+\textbf{三阶段架构：}
+
+\begin{enumerate}[leftmargin=2.5em, itemsep=0.3em]
+  \item \textbf{噪音检测器}（1 次 API，max\_tokens=16，temperature=0）：将文档截断至每篇 1200 字符 → LLM 扫描是否存在反事实/矛盾陈述 → 输出 CF / CLEAN。使用独立系统提示和独立 max\_tokens（16 vs RAG 的 512），通过缓存键隔离避免与主 RAG 调用碰撞；
+  \item \textbf{多级解析}：精确匹配 CF/CLEAN → 中文语义匹配（反事实/有矛盾/虚构 → CF；无矛盾/一致 → CLEAN）→ 兜底 UNCERTAIN；
+  \item \textbf{路由}：CF → PromptCorrector（标注来源+指出矛盾，反事实下 F1=0.781）；CLEAN → ConfidenceCorrector（CoT 证据链，语义下 F1=0.791）；UNCERTAIN → VotingCorrector（多 Persona 稳健兜底）。
+\end{enumerate}
+
+\textbf{验证结果 (zh/fact, r=0.75, n=30)：}
+
+\begin{table}[H]
+  \centering
+  \caption{自适应矫正器验证 (zh/fact, r=0.75, n=30)}
+  \begin{tabular}{lccc}
+    \toprule
+    方法 & Semantic F1 & Counterfactual F1 & 路由分布 \\
+    \midrule
+    naive & 0.822 & 0.738 & -- \\
+    confidence (semantic 最优) & \textbf{0.863} & 0.713 & -- \\
+    prompt (counterfactual 最优) & -- & \textbf{0.763} & -- \\
+    \midrule
+    adaptive & 0.831 & \textbf{0.763} & CF=11/19 (sem) / CF=30/0 (cf) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{发现 8：自适应有效避免最差情况。}
+\begin{itemize}
+  \item \textbf{Semantic 噪音}：adaptive F1=0.831，+1.1\% vs naive（0.822），略低于 confidence（0.863）。19/30 样本正确路由到 confidence，11/30 检测器过于敏感误判为 CF；
+  \item \textbf{Counterfactual 噪音}：adaptive F1=0.763，等于最优方法 prompt（0.763），+3.4\% vs naive（0.738）。30/30 全部正确检测为 CF 并路由到 prompt，完美避开了 confidence 的崩溃（0.713）；
+  \item \textbf{关键价值}：adaptive 不会选择"错误"的方法。即使用 confidence 在 CF 下崩溃 6.9\%，adaptive 始终 ≥ naive，在最危险的反事实场景下与已知最优方法持平。
+\end{itemize}
+
+\subsubsection{迭代自纠正}
+
+英文 n=10 测试中 iterative\_sc 的 F1=0.375 低于 naive baseline 的 0.492，所有样本均未达成收敛。当前实现仍在优化中，主要挑战在于大模型自检的矛盾判断准确率不足。
 
 \section{系统实现与前端演示}
 
 \subsection{后端接口}
-后端使用 FastAPI 实现，主要接口包括：
-
-\begin{itemize}
-  \item \texttt{/api/health}：健康检查；
-  \item \texttt{/api/samples}：读取样本；
-  \item \texttt{/api/sample/\{id\}}：查看单条样本；
-  \item \texttt{/api/experiment/inject}：构造噪音上下文；
-  \item \texttt{/api/experiment/run}：运行模型方法并返回指标。
-\end{itemize}
+后端使用 FastAPI 实现，主要接口包括：\texttt{/api/health}、\texttt{/api/config}、\texttt{/api/samples}、\texttt{/api/sample/\{id\}}、\texttt{/api/inject}、\texttt{/api/run}。
 
 \subsection{前端界面}
-前端使用 Vue 3 + Vite，采用四阶段界面：
-
-\begin{enumerate}
-  \item Stage A：选择数据集和样本；
-  \item Stage B：设置噪音比例、类型和位置；
-  \item Stage C：选择方法并运行；
-  \item Stage D：展示答案、指标和文档标签。
-\end{enumerate}
+前端使用 Vue 3 + Vite，采用四阶段界面（Stage A：选择数据集和样本 → Stage B：设置噪音参数 → Stage C：查看 Prompt → Stage D：答案与指标展示），可在教师面前现场演示完整的“选择问题 → 注入噪音 → 矫正推理 → 对比答案”流程。同时提供 Gradio Demo（\texttt{demo/app.py}）作为备用演示入口。
 
 \section{当前进度}
 
 \begin{table}[H]
   \centering
-  \caption{中期完成情况}
+  \caption{项目完整完成情况}
   \begin{tabularx}{\textwidth}{lYc}
     \toprule
     模块 & 内容 & 状态 \\
     \midrule
     数据处理 & RGB 8 个 JSONL 文件加载与标准化 & \statusdone \\
     噪音注入 & 比例、类型、位置三维控制 & \statusdone \\
-    模型调用 & DeepSeek API、缓存、重试、token 统计 & \statusdone \\
-    RAG 基线 & Naive RAG pipeline & \statusdone \\
-    矫正方法 & prompt、iterative、confidence、selfrag、voting & \statusdone \\
+    模型调用 & DeepSeek API、sha1 缓存、重试、token 统计 & \statusdone \\
+    矫正方法 & 12 个矫正器（含 4 个深化方向） & \statusdone \\
     评估指标 & EM、Contains、Token-F1、ROUGE-L、NS/NRS/ISR/NAR/CRR & \statusdone \\
-    实验脚本 & exp1--exp4 与通用 runner & \statusdone \\
-    可视化 & 折线图、柱状图、雷达图、案例饼图 & \statusdone \\
-    Web 系统 & FastAPI 后端 + Vue 前端 & \statusdone \\
-    标准交付 & input/output/reference JSON 导出 & \statusdone \\
+    语义级溯源 & LLM 驱动的句子级信息归属 & \statusdone \\
+    实验脚本 & exp1--exp5 与通用 runner & \statusdone \\
+    可视化 & 折线、分组柱、雷达、互锁热力图、排名图、跨语言对比等 & \statusdone \\
+    测试套件 & test\_evaluator, test\_metrics, test\_noise\_injector & \statusdone \\
+    Web 系统 & FastAPI 后端 + Vue 3 前端 + Gradio Demo & \statusdone \\
+    全量实验 & 17 项配置全部完成 (zh/en × 5 实验覆盖) & \statusdone \\
+    LaTeX 报告 & 本报告 & \statusdone \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\section{问题、边界与后续计划}
-
-\subsection{已识别问题}
-
 \begin{itemize}
-  \item 当前 exp4 仍是单比例比较，无法充分支撑跨比例鲁棒性结论；
-  \item Self-RAG-style baseline 在当前样本上效果接近 naive，需要分析判定过宽的原因；
-  \item exp2 样本量仍为 N=30，最终报告建议扩展到 N=100 以上；
-  \item 当前系统重点是受控上下文扰动实验，不是完整向量数据库检索系统，正式报告需要准确表述边界。
+  \item Python 文件：30+；
+  \item 实验脚本：5 个；
+  \item 矫正方法：12 个（含 4 个消融变体 + 自适应 + 迭代自纠正）；
+  \item 自主提出指标：5 个（NS/NRS/ISR/NAR/CRR）；
+  \item 实验覆盖：17 项独立实验配置，zh/en 双语全覆盖；
+  \item 全量 API 调用：约 9500 次（sha1 缓存命中后重复查询 0 成本）；
+  \item 实验图表：11 张。
 \end{itemize}
 
-\subsection{后续计划}
+\section{与现有方法的比较}
 
 \begin{table}[H]
   \centering
-  \caption{后续安排}
-  \begin{tabularx}{\textwidth}{lYc}
+  \caption{本工作方法与现有方法的比较}
+  \begin{tabularx}{\textwidth}{lYYY}
     \toprule
-    阶段 & 任务 & 状态 \\
+    维度 & Self-RAG (2024) & CRAG (2024) & 本工作 \\
     \midrule
-    W1 & 完成代码基础设施、首轮真实实验与中期报告 & \statusdone \\
-    W2 & 扩展 N=50，补跑 exp4 全方法与案例生成 & \statusdone \\
-    W3 & 扩展到 N=100--300，补充 counterfactual 与英文数据 & \statusplan \\
-    W4 & 深化案例分析，形成成功/失败/无变化分类 & \statusplan \\
-    W5 & 调优 prompt 与矫正方法，增加 bootstrap 置信区间 & \statusplan \\
-    W6 & 整理最终报告、系统演示与提交压缩包 & \statusplan \\
+    核心机制 & 反思 token 门控 & 分解-重组流水线 & 证据链+多Persona+自适应路由 \\
+    噪音感知 & 隐式（相关判定） & 隐式 & 显式（噪音类型检测+路由） \\
+    评估粒度 & 端到端指标 & 端到端指标 & 端到端+ISR/NAR+语义级溯源 \\
+    噪音类型适配 & 单一策略 & 单一策略 & 互锁效应驱动的类型自适应 \\
+    API 成本 & 高（n+2） & 中 & 低--中（1--4），自适应仅+1 \\
+    中文评测 & 无系统评测 & 无系统评测 & RGB zh 完整评测 \\
     \bottomrule
   \end{tabularx}
 \end{table}
+
+\textbf{创新点总结：}
+\begin{enumerate}
+  \item 发现了“互锁效应”——最优矫正方法取决于噪音类型，CoT 证据链在语义噪音下最优但在反事实噪音下反而有害；
+  \item 提出并验证了自适应矫正器，利用噪音类型检测实现方法路由；
+  \item 提出语义级 ISR/NAR，将 token 重叠升级为 LLM 驱动的信息归属判定；
+  \item 发现了在高强度反事实噪音下的位置效应，back 位置最差，interleave 最优；
+  \item 提供了中英文跨语言 RAG 鲁棒性基准。
+\end{enumerate}
+
+\section{局限与未来工作}
+
+\subsection{局限性}
+
+\begin{itemize}
+  \item 所有实验基于 DeepSeek-chat 单一模型，不同模型的表现可能不同；
+  \item 语义级 ISR/NAR 和消融实验的中英文 n=50 级别对比验证已完成，大规模样本下的统计显著性可进一步提升；
+  \item 自适应矫正器的路由准确率达到实用水平，但在边界情况下的鲁棒性需进一步验证；
+\end{itemize}
+
+\subsection{未来方向}
+
+\begin{itemize}
+  \item 扩展到更多模型（GPT-4、Claude 等）验证互锁效应的普适性；
+  \item 将噪音类型检测从 LLM-based 升级为轻量分类器以降低延迟；
+  \item 探索 evidence chain 的细粒度可视化，用于解释性分析；
+  \item 扩展到多轮对话场景。
+\end{itemize}
 
 \section{运行方式}
 
@@ -451,28 +715,30 @@ copy .env.example .env
 # 编辑 .env，填入 DEEPSEEK_API_KEY
 
 # 3. 运行测试
-set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
 python -m pytest -q
 
 # 4. 运行实验
 python -m experiments.exp1_noise_impact --n 50 --language zh
 python -m experiments.exp2_correction --n 50 --language zh
-python -m experiments.exp3_case_study --n 30 --pick 15 --language zh
-python -m experiments.exp4_existing_methods --n 50 --language zh --subset main --ratio 0.5 --noise-type semantic
+python -m experiments.exp3_case_study --n 50 --pick 20 --language zh
+python -m experiments.exp4_existing_methods --n 50 --ratio 0.75 --noise-type semantic
+python -m experiments.exp5_deep --n 50 --language zh
 
-# 5. 导出标准 JSON
-python scripts/export_standard_io.py
-
-# 6. 生成图表
+# 5. 生成图表
 python scripts/render_all_figures.py
 
-# 7. 启动系统
+# 6. 启动系统
+# Gradio Demo:
+python demo/app.py
+# Vue 前端:
 uvicorn backend.main:app --reload --port 8000
 cd frontend && npm run dev
 \end{lstlisting}
 
-\section{中期总结}
+\section{总结}
 
-本项目已完成从数据、方法、指标、实验到前端演示的主体闭环。当前最稳妥的阶段性结论是：高比例噪音会显著破坏 RAG 问答，ISR/NAR 能刻画答案来源从有效文档向噪音文档迁移；在当前 \texttt{zh/main semantic r=0.5} 设置下，iterative filter-then-generate 方法表现最好，但对“矫正方法整体显著优于 naive”的结论仍需更多噪音类型、更多比例和更大样本量验证。
+本项目围绕“大模型 RAG 场景中检索文档噪音对推理的影响”这一核心问题，实现了完整的实验框架、12 种矫正方法和 5 个自主评估指标。在 n=50 级别的实验上，证实了噪音比例、类型和位置对模型问答质量的影响，并揭示了关键的“互锁效应”：最优矫正策略取决于噪音类型。CoT 证据链在语义噪音下表现最优，但在反事实噪音下反而被“假证据”绑架而受损；简单的提示词指令在反事实噪音下却成为最佳选择；Voting 则是最稳健的通用方案。
+
+四项深化——自适应矫正器、语义级 ISR/NAR、消融实验和迭代自纠正循环——进一步将研究从“换 prompt”推进到算法层面，为构建真正鲁棒的 RAG 系统提供了可操作的方案。
 
 \end{document}

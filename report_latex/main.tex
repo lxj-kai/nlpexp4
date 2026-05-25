@@ -1,0 +1,478 @@
+\documentclass[UTF8,zihao=-4]{ctexart}
+
+\usepackage[a4paper,margin=2.4cm,headheight=28pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+
+\definecolor{sduBlue}{HTML}{005BAC}
+\definecolor{sduCyan}{HTML}{00A6D6}
+\definecolor{softBlue}{HTML}{EAF4FF}
+\definecolor{softGreen}{HTML}{EAF8F1}
+\definecolor{softOrange}{HTML}{FFF4E6}
+\definecolor{codeBg}{HTML}{F6F8FA}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=sduBlue,
+  urlcolor=sduBlue,
+  citecolor=sduBlue
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[height=8mm]{figures/logo1.jpg}}
+\fancyhead[C]{NLP 实验四 · 题目 8 · 中期检查报告}
+\fancyfoot[C]{\thepage}
+
+\setlist[itemize]{leftmargin=2em,itemsep=0.2em,topsep=0.25em}
+\setlist[enumerate]{leftmargin=2.2em,itemsep=0.2em,topsep=0.25em}
+\renewcommand{\arraystretch}{1.25}
+
+\lstset{
+  backgroundcolor=\color{codeBg},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  framerule=0.3pt,
+  rulecolor=\color{gray!35},
+  columns=fullflexible,
+  keepspaces=true
+}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\metric}[1]{\textbf{\textcolor{sduBlue}{#1}}}
+\newcommand{\statusdone}{\textcolor{green!50!black}{已完成}}
+\newcommand{\statusrun}{\textcolor{sduBlue}{已验证}}
+\newcommand{\statusplan}{\textcolor{orange!70!black}{计划中}}
+
+\title{\bfseries 面向大模型 RAG 推理场景\\噪音文档的鲁棒性推理方法}
+\author{队长姓名：待填写 \quad 队长学号：待填写 \quad 题目编号：8}
+\date{提交截止：2026 年 5 月 26 日 23:59}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{1.0cm}
+  \includegraphics[width=0.72\textwidth]{figures/logo2.jpg}
+
+  \vspace{1.6cm}
+  {\Huge\color{sduBlue}\bfseries 面向大模型 RAG 推理场景\par}
+  \vspace{0.35cm}
+  {\Huge\color{sduBlue}\bfseries 噪音文档的鲁棒性推理方法\par}
+
+  \vspace{1.2cm}
+  {\Large NLP 实验四 · 题目 8 · 中期检查报告\par}
+  \vspace{0.8cm}
+  {\large 队长姓名：待填写 \quad 队长学号：待填写\par}
+  \vspace{0.3cm}
+  {\large 工作区：\texttt{D:\textbackslash code\textbackslash nlpexp4}\par}
+  \vfill
+  {\large \today\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{研究问题与项目定位}
+
+\subsection{题目要求}
+本项目对应 NLP 实验四题目 8：\textbf{面向大模型 RAG 推理场景噪音文档的鲁棒性推理方法}。题目要求关注大模型 RAG 场景中，检索结果可能包含与问题语义相关、但缺少逻辑依赖或会误导答案的上下文文档，进而影响模型问答准确率。项目需要完成以下任务：
+
+\begin{itemize}
+  \item 探究上下文文档对模型问答性能的影响；
+  \item 提出可量化的评估指标；
+  \item 针对具体数据集给出实验结果、结论与分析；
+  \item 结合具体案例分析不同文档对答案的影响；
+  \item 设计矫正机制，例如提示词优化、迭代式生成等；
+  \item 与现有方法进行性能比较，说明方法有效性与局限。
+\end{itemize}
+
+\subsection{核心问题}
+本项目将问题形式化为：给定问题 $q$、候选文档集合 $D=\{d_1,\dots,d_n\}$ 和参考答案 $a$，当 $D$ 中混入不同类型、比例和位置的噪音文档时，大模型生成答案 $\hat{a}$ 的准确率、证据来源和噪音采纳程度如何变化？
+
+实验重点不是重新训练大模型，而是构造可控 RAG 上下文，并研究模型在噪音上下文下的鲁棒推理行为。当前系统采用 DeepSeek API 作为生成模型，以 RGB 数据集中的文档池模拟检索结果。
+
+\subsection{阶段性结论}
+截至中期检查，项目已经完成数据加载、噪音注入、RAG 推理、矫正方法、评估指标、实验脚本、图表生成和交互式前端的主体实现。最新实验显示：
+
+\begin{itemize}
+  \item 高比例噪音会显著降低问答性能，且答案信息来源会从有效文档迁移到噪音文档；
+  \item 中等强度语义噪音不一定总是有害，部分样本中会提供主题线索；
+  \item 在 \texttt{zh/main semantic r=0.5} 条件下，iterative filter-then-generate 方法当前表现最好；
+  \item Self-RAG-style baseline 在当前数据集上判定较宽，效果接近 naive baseline。
+\end{itemize}
+
+\section{数据准备与标准格式}
+
+\subsection{原始数据}
+项目使用 RGB 数据集作为公开问答与候选文档来源。数据位于 \texttt{data/rgb/}，包含中英文主数据、反事实数据、信息整合数据和 refine 数据：
+
+\begin{table}[H]
+  \centering
+  \caption{RGB 数据文件与用途}
+  \begin{tabularx}{\textwidth}{lclY}
+    \toprule
+    数据文件 & 语言 & 样本数 & 用途 \\
+    \midrule
+    \texttt{zh.json}, \texttt{en.json} & 中/英 & 各 300 & 主问答数据，含 positive 与 negative 文档池 \\
+    \texttt{zh\_fact.json}, \texttt{en\_fact.json} & 中/英 & 各 100 & 反事实噪音数据，额外含 positive\_wrong 和 fakeanswer \\
+    \texttt{zh\_int.json}, \texttt{en\_int.json} & 中/英 & 各 100 & 信息整合类问题，用于后续跨文档推理扩展 \\
+    \texttt{zh\_refine.json}, \texttt{en\_refine.json} & 中/英 & 各 300 & refine 变体，用于后续泛化验证 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{文档池定义}
+RGB 数据天然给出了适合本题的三类文档池：
+
+\begin{table}[H]
+  \centering
+  \caption{三类文档池与噪音含义}
+  \begin{tabularx}{\textwidth}{lYY}
+    \toprule
+    字段 & 实验含义 & 使用方式 \\
+    \midrule
+    \texttt{positive} & 支持正确答案的有效文档 & 构造 clean RAG 上下文，计算 ISR \\
+    \texttt{negative} & 语义相关但不能支持答案的普通噪音文档 & 模拟检索噪音，计算 NAR \\
+    \texttt{positive\_wrong} & 表面相关但指向错误答案的反事实文档 & 模拟更强误导性噪音，测试矫正机制 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+因此，项目没有重新爬虫或解析 PDF，而是采用公开数据集的已标注文档池作为可控检索结果。这样可以精确控制噪音比例、类型和位置，避免真实检索系统中召回误差与生成误差互相混杂。
+
+\subsection{课程要求格式对齐}
+为对齐实验要求，项目已增加标准格式导出脚本 \texttt{scripts/export\_standard\_io.py}，可从实验结果中导出：
+
+\begin{itemize}
+  \item \texttt{input.json}：包含 \texttt{id/question/context}，并额外保留文档与标签；
+  \item \texttt{output.json}：包含 \texttt{id/answer}，默认导出当前 token-F1 最高方法；
+  \item \texttt{reference.json}：包含 \texttt{id/answer/answers}，与输入和输出严格对齐；
+  \item \texttt{output\_all\_methods.json}：保留所有方法的横向比较输出。
+\end{itemize}
+
+当前标准文件已导出至：
+\begin{lstlisting}
+data/processed/exp4_existing_methods_zh_main_semantic_20260524_200425/
+\end{lstlisting}
+
+\section{系统设计}
+
+\subsection{总体架构}
+系统由数据层、噪音构造层、推理与矫正层、评估层、可视化与前端层组成。其核心思想是：先从 RGB 数据集中读取问题、答案和文档池，再按实验条件注入噪音，最后调用不同 RAG/矫正方法生成答案并计算指标。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/system_architecture.png}
+  \caption{系统总体框架图}
+\end{figure}
+
+\subsection{调用流水线}
+单次实验的主流程如下：
+
+\begin{enumerate}
+  \item \textbf{加载数据}：调用 \texttt{load\_dataset(language, subset, limit)} 读取 RGB 样本；
+  \item \textbf{注入噪音}：调用 \texttt{batch\_inject} 按噪音比例、类型、位置构造 \texttt{NoisyContext}；
+  \item \textbf{选择方法}：根据实验条件选择 naive、prompt、iterative、confidence、selfrag 或 voting；
+  \item \textbf{调用模型}：通过 \texttt{LLMClient} 访问 DeepSeek API，使用缓存减少重复调用；
+  \item \textbf{计算指标}：通过 \texttt{Evaluator} 和 \texttt{metrics.py} 输出基础问答指标与鲁棒性指标；
+  \item \textbf{落盘与可视化}：保存 JSON，生成图表，并同步报告与前端展示。
+\end{enumerate}
+
+\subsection{代码结构}
+
+\begin{lstlisting}
+D:\code\nlpexp4
+|-- data/rgb/                 RGB 原始数据
+|-- data/processed/           input/output/reference 标准 JSON
+|-- src/
+|   |-- data_loader.py        RGB 加载与标准化
+|   |-- noise_injector.py     噪音比例/类型/位置控制
+|   |-- rag_pipeline.py       Naive RAG baseline
+|   |-- llm_client.py         DeepSeek API + 缓存 + 重试
+|   |-- evaluator.py          EM/F1/ROUGE/LLM-Judge
+|   |-- metrics.py            NS/NRS/ISR/NAR/CRR
+|   |-- correctors/           prompt/iterative/confidence/selfrag/voting
+|-- experiments/
+|   |-- exp1_noise_impact.py
+|   |-- exp2_correction.py
+|   |-- exp3_case_study.py
+|   |-- exp4_existing_methods.py
+|-- backend/                  FastAPI 接口
+|-- frontend/                 Vue 3 实验界面
+|-- figures/                  实验图表
+|-- report_latex/             本 LaTeX 报告
+\end{lstlisting}
+
+\section{方法设计}
+
+\subsection{噪音注入机制}
+设最大上下文文档数为 $K$，目标噪音比例为 $r$。系统从 \texttt{positive} 中采样 $K(1-r)$ 个有效文档，从噪音池中采样 $Kr$ 个噪音文档。噪音类型包括：
+
+\begin{itemize}
+  \item \textbf{semantic}：从 \texttt{negative} 中采样普通语义噪音；
+  \item \textbf{counterfactual}：从 \texttt{positive\_wrong} 中采样反事实噪音；
+  \item \textbf{mixed}：同时混合普通噪音和反事实噪音。
+\end{itemize}
+
+噪音位置包括 front、back、interleave、surround，用于观察上下文位置偏见对回答的影响。
+
+\subsection{矫正方法}
+
+\begin{table}[H]
+  \centering
+  \caption{已实现方法}
+  \begin{tabularx}{\textwidth}{lYcY}
+    \toprule
+    方法 & 核心思想 & API 成本 & 当前定位 \\
+    \midrule
+    naive & 直接拼接文档生成答案 & 1 & 基线 \\
+    prompt & 在提示词中要求识别噪音和依据可靠证据回答 & 1 & 低成本主方法 \\
+    iterative & 先逐文档判断相关性，再基于保留文档生成 & $n+1$ & 当前效果最好 \\
+    confidence & 先生成证据链和置信度，再进行答案修正 & 约 1--2 & 推理链矫正 \\
+    selfrag & 简化复现 Self-RAG 的相关性与支持性判断 & $n+2$ & 现有方法对比 \\
+    voting & 多 persona 输出后投票聚合 & 3+ & 反事实噪音候选方法 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{评估指标设计}
+
+\subsection{基础问答指标}
+基础指标用于判断答案是否接近参考答案：
+
+\begin{itemize}
+  \item \metric{EM}：规范化后完全匹配；
+  \item \metric{Contains}：参考答案是否被预测答案包含；
+  \item \metric{Token-F1}：token 级精确率与召回率调和平均；
+  \item \metric{ROUGE-L}：基于最长公共子序列的 F1；
+  \item \metric{LLM-as-Judge}：由评审模型给出 1--5 分，当前默认关闭以节约成本。
+\end{itemize}
+
+\subsection{自主鲁棒性指标}
+为刻画噪音文档对模型推理的影响，项目提出 5 个鲁棒性指标：
+
+\begin{table}[H]
+  \centering
+  \caption{鲁棒性指标体系}
+  \begin{tabularx}{\textwidth}{lY}
+    \toprule
+    指标 & 定义与含义 \\
+    \midrule
+    \metric{NS} & Noise Sensitivity，$NS=(S_{clean}-S_{noisy})/S_{clean}$，衡量噪音导致的相对性能下降 \\
+    \metric{NRS} & Noise Resistance Slope，性能随噪音比例变化的线性斜率，越接近 0 越稳健 \\
+    \metric{ISR} & Info-Source Rate，答案有效片段可溯源至 positive 文档的比例 \\
+    \metric{NAR} & Noise Adoption Rate，答案有效片段来自 negative 或 positive\_wrong 文档的比例 \\
+    \metric{CRR} & Correction Recovery Rate，矫正方法相对 noisy baseline 恢复了多少性能损失 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{实验设计}
+
+\subsection{实验一：噪音影响}
+实验一固定 naive RAG，改变噪音比例、类型和位置，观察性能曲线。主实验使用 \texttt{zh/main}，噪音比例为 0、0.25、0.5、0.75、1.0，噪音类型为 semantic、counterfactual、mixed。
+
+\subsection{实验二：矫正机制对比}
+实验二比较 naive、prompt、confidence 等矫正方法在不同噪音强度下的表现，重点观察矫正前后 Token-F1、ISR 和 NAR 的变化。
+
+\subsection{实验三：案例分析}
+实验三抽取成功修正、失败修正、无变化等典型案例，记录 query、gold、预测答案、文档标签与 ISR/NAR，用于说明不同文档如何影响最终答案。
+
+\subsection{实验四：现有方法比较}
+实验四横向比较 naive、selfrag、iterative、confidence、prompt、voting 六种方法。最新主实验为 \texttt{zh/main semantic r=0.5}，样本量为 50。
+
+\section{阶段性实验结果}
+
+\subsection{噪音影响}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/exp1_noise_impact.png}
+  \caption{实验一：不同噪音比例与类型下的性能变化}
+\end{figure}
+
+实验一显示，高比例噪音会显著破坏 RAG 问答性能。最新主实验中，Token-F1 从约 0.712 下降到约 0.313，Contains 从 0.92 下降到 0.24；同时 NAR 上升，说明模型答案中的有效信息来源明显向噪音文档迁移。
+
+\subsection{噪音位置效应}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.78\textwidth]{figures/exp1_position_effect.png}
+  \caption{噪音位置对问答指标的影响}
+\end{figure}
+
+在 50\% 语义噪音下，不同位置策略的差异较小，当前不宜强行得出位置效应显著的结论。后续计划在 $r=0.75$ 场景下复测，以观察更强噪音是否放大位置偏差。
+
+\subsection{矫正方法结果}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.78\textwidth]{figures/exp2_correction.png}
+  \caption{实验二：矫正方法对比}
+\end{figure}
+
+中等语义噪音下，噪音不一定总是降低性能，部分噪音文档可能补充主题线索。因此正式结论需要避免简单写成“噪音越多越差”，而应区分噪音类型、比例和文档内容。
+
+\subsection{现有方法比较}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.78\textwidth]{figures/exp4_existing_methods.png}
+  \caption{实验四：六种方法横向对比，N=50}
+\end{figure}
+
+最新 exp4 结果如下：
+
+\begin{table}[H]
+  \centering
+  \caption{zh/main semantic r=0.5 下六种方法表现}
+  \begin{tabular}{lccccc}
+    \toprule
+    方法 & EM & Contains & Token-F1 & ISR & NAR \\
+    \midrule
+    naive & 0.38 & 0.88 & 0.7144 & 0.8205 & 0.0392 \\
+    selfrag & 0.38 & 0.88 & 0.7144 & 0.8205 & 0.0392 \\
+    iterative & 0.38 & 0.90 & \textbf{0.7415} & \textbf{0.8547} & \textbf{0.0152} \\
+    confidence & 0.36 & 0.90 & 0.7326 & 0.8046 & 0.0213 \\
+    prompt & 0.38 & 0.90 & 0.7178 & 0.8260 & 0.0278 \\
+    voting & 0.36 & 0.88 & 0.7158 & 0.8059 & 0.0274 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+当前结果支持：在该设置下 iterative 方法表现最好，说明先筛选证据再生成答案能减少噪音采纳。不过，exp4 当前只有单一噪音比例，NS/NRS/CRR 等跨比例鲁棒性指标仍需在后续扩展实验中补全。
+
+\subsection{案例类型分布}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.58\textwidth]{figures/exp3_case_type_pie.png}
+  \caption{实验三：案例类型分布}
+\end{figure}
+
+实验三已生成 15 个案例，case 中包含 query、gold、不同方法预测、ISR/NAR 和文档标签。后续正式报告将选取 3--5 个典型案例进行逐条分析。
+
+\section{系统实现与前端演示}
+
+\subsection{后端接口}
+后端使用 FastAPI 实现，主要接口包括：
+
+\begin{itemize}
+  \item \texttt{/api/health}：健康检查；
+  \item \texttt{/api/samples}：读取样本；
+  \item \texttt{/api/sample/\{id\}}：查看单条样本；
+  \item \texttt{/api/experiment/inject}：构造噪音上下文；
+  \item \texttt{/api/experiment/run}：运行模型方法并返回指标。
+\end{itemize}
+
+\subsection{前端界面}
+前端使用 Vue 3 + Vite，采用四阶段界面：
+
+\begin{enumerate}
+  \item Stage A：选择数据集和样本；
+  \item Stage B：设置噪音比例、类型和位置；
+  \item Stage C：选择方法并运行；
+  \item Stage D：展示答案、指标和文档标签。
+\end{enumerate}
+
+\section{当前进度}
+
+\begin{table}[H]
+  \centering
+  \caption{中期完成情况}
+  \begin{tabularx}{\textwidth}{lYc}
+    \toprule
+    模块 & 内容 & 状态 \\
+    \midrule
+    数据处理 & RGB 8 个 JSONL 文件加载与标准化 & \statusdone \\
+    噪音注入 & 比例、类型、位置三维控制 & \statusdone \\
+    模型调用 & DeepSeek API、缓存、重试、token 统计 & \statusdone \\
+    RAG 基线 & Naive RAG pipeline & \statusdone \\
+    矫正方法 & prompt、iterative、confidence、selfrag、voting & \statusdone \\
+    评估指标 & EM、Contains、Token-F1、ROUGE-L、NS/NRS/ISR/NAR/CRR & \statusdone \\
+    实验脚本 & exp1--exp4 与通用 runner & \statusdone \\
+    可视化 & 折线图、柱状图、雷达图、案例饼图 & \statusdone \\
+    Web 系统 & FastAPI 后端 + Vue 前端 & \statusdone \\
+    标准交付 & input/output/reference JSON 导出 & \statusdone \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{问题、边界与后续计划}
+
+\subsection{已识别问题}
+
+\begin{itemize}
+  \item 当前 exp4 仍是单比例比较，无法充分支撑跨比例鲁棒性结论；
+  \item Self-RAG-style baseline 在当前样本上效果接近 naive，需要分析判定过宽的原因；
+  \item exp2 样本量仍为 N=30，最终报告建议扩展到 N=100 以上；
+  \item 当前系统重点是受控上下文扰动实验，不是完整向量数据库检索系统，正式报告需要准确表述边界。
+\end{itemize}
+
+\subsection{后续计划}
+
+\begin{table}[H]
+  \centering
+  \caption{后续安排}
+  \begin{tabularx}{\textwidth}{lYc}
+    \toprule
+    阶段 & 任务 & 状态 \\
+    \midrule
+    W1 & 完成代码基础设施、首轮真实实验与中期报告 & \statusdone \\
+    W2 & 扩展 N=50，补跑 exp4 全方法与案例生成 & \statusdone \\
+    W3 & 扩展到 N=100--300，补充 counterfactual 与英文数据 & \statusplan \\
+    W4 & 深化案例分析，形成成功/失败/无变化分类 & \statusplan \\
+    W5 & 调优 prompt 与矫正方法，增加 bootstrap 置信区间 & \statusplan \\
+    W6 & 整理最终报告、系统演示与提交压缩包 & \statusplan \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{运行方式}
+
+\begin{lstlisting}
+# 1. 安装依赖
+pip install -r requirements.txt
+
+# 2. 配置 API
+copy .env.example .env
+# 编辑 .env，填入 DEEPSEEK_API_KEY
+
+# 3. 运行测试
+set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+python -m pytest -q
+
+# 4. 运行实验
+python -m experiments.exp1_noise_impact --n 50 --language zh
+python -m experiments.exp2_correction --n 50 --language zh
+python -m experiments.exp3_case_study --n 30 --pick 15 --language zh
+python -m experiments.exp4_existing_methods --n 50 --language zh --subset main --ratio 0.5 --noise-type semantic
+
+# 5. 导出标准 JSON
+python scripts/export_standard_io.py
+
+# 6. 生成图表
+python scripts/render_all_figures.py
+
+# 7. 启动系统
+uvicorn backend.main:app --reload --port 8000
+cd frontend && npm run dev
+\end{lstlisting}
+
+\section{中期总结}
+
+本项目已完成从数据、方法、指标、实验到前端演示的主体闭环。当前最稳妥的阶段性结论是：高比例噪音会显著破坏 RAG 问答，ISR/NAR 能刻画答案来源从有效文档向噪音文档迁移；在当前 \texttt{zh/main semantic r=0.5} 设置下，iterative filter-then-generate 方法表现最好，但对“矫正方法整体显著优于 naive”的结论仍需更多噪音类型、更多比例和更大样本量验证。
+
+\end{document}

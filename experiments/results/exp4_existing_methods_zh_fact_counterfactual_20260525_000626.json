@@ -1,0 +1,5980 @@
+{
+  "experiment": "exp4_existing_methods_zh_fact_counterfactual",
+  "timestamp": "20260525_000626",
+  "config": {
+    "api_base": "https://api.deepseek.com/v1",
+    "model": "deepseek-chat",
+    "judge_model": "deepseek-chat",
+    "timeout": 60,
+    "max_retries": 3,
+    "temperature": 0.0,
+    "max_tokens": 512,
+    "project_root": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main",
+    "data_dir": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/data/rgb",
+    "results_dir": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/experiments/results",
+    "cache_dir": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/.cache",
+    "figures_dir": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures",
+    "report_dir": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/report",
+    "zh_main": "zh.json",
+    "zh_fact": "zh_fact.json",
+    "zh_int": "zh_int.json",
+    "zh_refine": "zh_refine.json",
+    "en_main": "en.json",
+    "en_fact": "en_fact.json",
+    "noise_ratios": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "noise_types": [
+      "semantic",
+      "counterfactual",
+      "mixed"
+    ],
+    "noise_positions": [
+      "front",
+      "back",
+      "interleave",
+      "surround"
+    ],
+    "max_docs": 10,
+    "min_positive_docs": 1,
+    "seed": 42,
+    "smoke_test_size": 50,
+    "judge_score_max": 5,
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "correctors_enabled": [
+      "prompt",
+      "iterative",
+      "confidence",
+      "selfrag"
+    ]
+  },
+  "results": [
+    {
+      "condition": {
+        "method": "naive",
+        "noise_ratio": 0.75,
+        "noise_type": "counterfactual",
+        "noise_position": "interleave",
+        "label": "naive"
+      },
+      "summary": {
+        "method": "naive",
+        "n": 50,
+        "em": 0.52,
+        "contains": 0.8,
+        "token_f1": 0.7504,
+        "rouge_l": 0.7612,
+        "judge_score": null,
+        "isr": 0.26,
+        "nar": 0.04
+      },
+      "elapsed": 0.02,
+      "n": 50,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "70个议席。",
+          "gold": [
+            "70"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "1361万人。",
+          "gold": [
+            "1361万"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.9090909090909091,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "武汉",
+          "gold": [
+            "武汉"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2020赛季中超冠军是江苏苏宁。",
+          "gold": [
+            "江苏苏宁"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.4210526315789474,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "广州恒大淘宝",
+          "gold": [
+            "广州恒大"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "5.48‰",
+          "gold": [
+            "10.48‰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.6666666666666665,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "10.94‰或5.94‰（文档中存在矛盾数据）。",
+          "gold": [
+            "10.94‰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.25,
+          "rouge_l": 0.4166666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2.3%",
+          "gold": [
+            "2.3%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "6.1%",
+          "gold": [
+            "6.1%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "史蒂文·斯皮尔伯格",
+          "gold": [
+            "史蒂文·斯皮尔伯格"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 10,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "布莱恩·辛格（主）和德克斯特·弗莱彻（副）。",
+          "gold": [
+            "布莱恩·辛格"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5217391304347826,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 11,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "郭敬明",
+          "gold": [
+            "郭敬明"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 12,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2021年2月12日。",
+          "gold": [
+            "2021年2月12日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 13,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "澳大利亚悉尼",
+          "gold": [
+            "澳大利亚",
+            "悉尼"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 14,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2021年7月23日。",
+          "gold": [
+            "2021年7月23日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 15,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2016年8月5日",
+          "gold": [
+            "2016年8月5日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 16,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "大阪",
+          "gold": [
+            "东京"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 17,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "沙盒游戏。",
+          "gold": [
+            "沙盒"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 18,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "詹姆斯·卡梅隆。",
+          "gold": [
+            "詹姆斯·卡梅隆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 19,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "斯蒂夫·康拉德",
+          "gold": [
+            "斯蒂夫·康拉德"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 20,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "切尔西"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 21,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "拜仁慕尼黑"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 22,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "利物浦",
+          "gold": [
+            "利物浦"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 23,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "林郑月娥",
+          "gold": [
+            "林郑月娥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 24,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "梁振英",
+          "gold": [
+            "梁振英"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 25,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "广东宏远",
+          "gold": [
+            "广东"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 26,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "南非",
+          "gold": [
+            "南非"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 27,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "德国",
+          "gold": [
+            "法国"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 28,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "郭敬明",
+          "gold": [
+            "郭帆"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.4,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 29,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "陈凯歌",
+          "gold": [
+            "陈凯歌"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 30,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "堪萨斯城酋长队",
+          "gold": [
+            "费城老鹰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.18181818181818182,
+          "rouge_l": 0.18181818181818182,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 31,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "7.0级",
+          "gold": [
+            "7.0级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 32,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2008年5月12日14时28分04秒",
+          "gold": [
+            "5月12日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.4166666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 33,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "7.1级",
+          "gold": [
+            "7.1级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 34,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2020年8月31日",
+          "gold": [
+            "8月31日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 35,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "巴西",
+          "gold": [
+            "巴西"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 36,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "南非",
+          "gold": [
+            "南非"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 37,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "约翰·威尔克斯·布斯",
+          "gold": [
+            "约翰·威尔克斯·布斯"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 38,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "李·哈维·奥斯瓦尔德。",
+          "gold": [
+            "['李·哈维·奥斯瓦尔德', '李·奥斯瓦尔德', '李•哈维•奥斯瓦尔德']"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5333333333333333,
+          "rouge_l": 0.5405405405405406,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 39,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "骁龙810处理器。",
+          "gold": [
+            "骁龙845"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4444444444444444,
+          "rouge_l": 0.4615384615384615,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 1.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 40,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "骁龙810处理器。",
+          "gold": [
+            "骁龙835"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4444444444444444,
+          "rouge_l": 0.4615384615384615,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 1.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 41,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "骁龙821处理器。",
+          "gold": [
+            "骁龙821"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 42,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "美国、英国等8个合作国家。",
+          "gold": [
+            "美国"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.3076923076923077,
+          "rouge_l": 0.3076923076923077,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 43,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "中国",
+          "gold": [
+            "中国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 44,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "法国",
+          "gold": [
+            "法国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 45,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "郭帆",
+          "gold": [
+            "黄渤"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 46,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "是枝裕和。",
+          "gold": [
+            "是枝裕和"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 47,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "德国",
+          "gold": [
+            "德国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 48,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2013年11月15日（北美）。",
+          "gold": [
+            "2013年11月15日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8571428571428571,
+          "rouge_l": 0.9166666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 49,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2017年3月3日。",
+          "gold": [
+            "2017年3月3日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "confidence",
+        "noise_ratio": 0.75,
+        "noise_type": "counterfactual",
+        "noise_position": "interleave",
+        "label": "confidence"
+      },
+      "summary": {
+        "method": "confidence",
+        "n": 50,
+        "em": 0.52,
+        "contains": 0.74,
+        "token_f1": 0.7079,
+        "rouge_l": 0.7173,
+        "judge_score": null,
+        "isr": 0.26,
+        "nar": 0.04
+      },
+      "elapsed": 63.2,
+      "n": 50,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "70个议席",
+          "gold": [
+            "70"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "1361万人",
+          "gold": [
+            "1361万"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.9090909090909091,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "武汉",
+          "gold": [
+            "武汉"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "江苏苏宁",
+          "gold": [
+            "江苏苏宁"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "江苏苏宁",
+          "gold": [
+            "广州恒大"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "5.48‰",
+          "gold": [
+            "10.48‰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.6666666666666665,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "5.94‰或10.94‰（文档矛盾）",
+          "gold": [
+            "10.94‰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.3636363636363636,
+          "rouge_l": 0.5263157894736842,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2.3%",
+          "gold": [
+            "2.3%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "6.1%",
+          "gold": [
+            "6.1%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "布莱恩·辛格",
+          "gold": [
+            "史蒂文·斯皮尔伯格"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.15384615384615385,
+          "rouge_l": 0.26666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 10,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "布莱恩·辛格（主）和德克斯特·弗莱彻（副）",
+          "gold": [
+            "布莱恩·辛格"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5217391304347826,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 11,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "郭敬明",
+          "gold": [
+            "郭敬明"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 12,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2021年2月12日",
+          "gold": [
+            "2021年2月12日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 13,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "澳大利亚悉尼",
+          "gold": [
+            "澳大利亚",
+            "悉尼"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 14,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2021年7月23日",
+          "gold": [
+            "2021年7月23日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 15,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2016年8月5日",
+          "gold": [
+            "2016年8月5日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 16,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "大阪",
+          "gold": [
+            "东京"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 17,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "沙盒游戏",
+          "gold": [
+            "沙盒"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 18,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "斯蒂夫·康拉德和詹姆斯·卡梅隆",
+          "gold": [
+            "詹姆斯·卡梅隆"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.631578947368421,
+          "rouge_l": 0.6363636363636364,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 19,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "斯蒂夫·康拉德",
+          "gold": [
+            "斯蒂夫·康拉德"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 20,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "切尔西"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 21,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "拜仁慕尼黑"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 22,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "利物浦",
+          "gold": [
+            "利物浦"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 23,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "林郑月娥",
+          "gold": [
+            "林郑月娥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 24,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "梁振英",
+          "gold": [
+            "梁振英"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 25,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "广东宏远",
+          "gold": [
+            "广东"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 26,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "日本",
+          "gold": [
+            "南非"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 27,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "德国",
+          "gold": [
+            "法国"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 28,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "郭帆",
+          "gold": [
+            "郭帆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 29,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "陈凯歌",
+          "gold": [
+            "陈凯歌"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 30,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "堪萨斯城酋长队",
+          "gold": [
+            "费城老鹰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.18181818181818182,
+          "rouge_l": 0.18181818181818182,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 31,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "7.0级",
+          "gold": [
+            "7.0级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 32,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2008年5月12日14时28分04秒",
+          "gold": [
+            "5月12日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.4166666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 33,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "7.1级",
+          "gold": [
+            "7.1级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 34,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2020年8月31日",
+          "gold": [
+            "8月31日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 35,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "巴西",
+          "gold": [
+            "巴西"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 36,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "中国",
+          "gold": [
+            "南非"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 37,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "约翰·威尔克斯·布斯",
+          "gold": [
+            "约翰·威尔克斯·布斯"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 38,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "李·哈维·奥斯瓦尔德",
+          "gold": [
+            "['李·哈维·奥斯瓦尔德', '李·奥斯瓦尔德', '李•哈维•奥斯瓦尔德']"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5333333333333333,
+          "rouge_l": 0.5405405405405406,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 39,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "骁龙810处理器",
+          "gold": [
+            "骁龙845"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4444444444444444,
+          "rouge_l": 0.4615384615384615,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 1.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 40,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "骁龙810",
+          "gold": [
+            "骁龙835"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 1.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 41,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "骁龙821",
+          "gold": [
+            "骁龙821"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 42,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "美国及8个合作国家（共10国）",
+          "gold": [
+            "美国"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.2857142857142857,
+          "rouge_l": 0.2666666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 43,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "中国",
+          "gold": [
+            "中国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 44,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "法国",
+          "gold": [
+            "法国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 45,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "郭帆",
+          "gold": [
+            "黄渤"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 46,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "是枝裕和",
+          "gold": [
+            "是枝裕和"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 47,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "德国",
+          "gold": [
+            "德国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 48,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2013年11月15日",
+          "gold": [
+            "2013年11月15日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 49,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2017年3月3日",
+          "gold": [
+            "2017年3月3日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "voting",
+        "noise_ratio": 0.75,
+        "noise_type": "counterfactual",
+        "noise_position": "interleave",
+        "label": "voting"
+      },
+      "summary": {
+        "method": "voting",
+        "n": 50,
+        "em": 0.54,
+        "contains": 0.8,
+        "token_f1": 0.7577,
+        "rouge_l": 0.7692,
+        "judge_score": null,
+        "isr": 0.26,
+        "nar": 0.02
+      },
+      "elapsed": 98.51,
+      "n": 50,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "70个议席。",
+          "gold": [
+            "70"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "1361万人",
+          "gold": [
+            "1361万"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.9090909090909091,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "武汉",
+          "gold": [
+            "武汉"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "江苏苏宁",
+          "gold": [
+            "江苏苏宁"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "广州恒大淘宝",
+          "gold": [
+            "广州恒大"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "5.48‰",
+          "gold": [
+            "10.48‰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.6666666666666665,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "10.94‰",
+          "gold": [
+            "10.94‰"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "2.3%",
+          "gold": [
+            "2.3%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "6.1%",
+          "gold": [
+            "6.1%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "史蒂文·斯皮尔伯格",
+          "gold": [
+            "史蒂文·斯皮尔伯格"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 10,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "布莱恩·辛格（主）和德克斯特·弗莱彻（副）",
+          "gold": [
+            "布莱恩·辛格"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5217391304347826,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 11,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "郭敬明",
+          "gold": [
+            "郭敬明"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 12,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "2021年2月12日",
+          "gold": [
+            "2021年2月12日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 13,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "澳大利亚悉尼",
+          "gold": [
+            "澳大利亚",
+            "悉尼"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 14,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "2021年7月23日",
+          "gold": [
+            "2021年7月23日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 15,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "2016年8月5日",
+          "gold": [
+            "2016年8月5日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 16,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "大阪",
+          "gold": [
+            "东京"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 17,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "沙盒游戏。",
+          "gold": [
+            "沙盒"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 18,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "詹姆斯·卡梅隆",
+          "gold": [
+            "詹姆斯·卡梅隆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 19,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "斯蒂夫·康拉德",
+          "gold": [
+            "斯蒂夫·康拉德"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 20,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "切尔西"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 21,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "拜仁慕尼黑"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 22,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "利物浦",
+          "gold": [
+            "利物浦"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 23,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "林郑月娥",
+          "gold": [
+            "林郑月娥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 24,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "梁振英",
+          "gold": [
+            "梁振英"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 25,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "广东宏远",
+          "gold": [
+            "广东"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 26,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "南非",
+          "gold": [
+            "南非"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 27,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "德国",
+          "gold": [
+            "法国"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 28,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "郭敬明",
+          "gold": [
+            "郭帆"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.4,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 29,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "陈凯歌",
+          "gold": [
+            "陈凯歌"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 30,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "堪萨斯城酋长队",
+          "gold": [
+            "费城老鹰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.18181818181818182,
+          "rouge_l": 0.18181818181818182,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 31,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "7.0级",
+          "gold": [
+            "7.0级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 32,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "2008年5月12日14时28分04秒",
+          "gold": [
+            "5月12日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.4166666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 33,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "7.1级",
+          "gold": [
+            "7.1级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 34,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "2020年8月31日",
+          "gold": [
+            "8月31日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 35,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "巴西",
+          "gold": [
+            "巴西"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 36,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "中国",
+          "gold": [
+            "南非"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 37,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "约翰·威尔克斯·布斯",
+          "gold": [
+            "约翰·威尔克斯·布斯"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 38,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "李·哈维·奥斯瓦尔德。",
+          "gold": [
+            "['李·哈维·奥斯瓦尔德', '李·奥斯瓦尔德', '李•哈维•奥斯瓦尔德']"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5333333333333333,
+          "rouge_l": 0.5405405405405406,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 39,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "骁龙810处理器",
+          "gold": [
+            "骁龙845"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4444444444444444,
+          "rouge_l": 0.4615384615384615,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 1.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 40,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "骁龙835处理器。",
+          "gold": [
+            "骁龙835"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 41,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "骁龙821处理器。",
+          "gold": [
+            "骁龙821"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 42,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "美国、英国等8个合作国家。",
+          "gold": [
+            "美国"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.3076923076923077,
+          "rouge_l": 0.3076923076923077,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 43,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "中国",
+          "gold": [
+            "中国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 44,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "法国",
+          "gold": [
+            "法国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 45,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "郭帆",
+          "gold": [
+            "黄渤"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 46,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "是枝裕和",
+          "gold": [
+            "是枝裕和"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 47,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "德国",
+          "gold": [
+            "德国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 48,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "2013年11月15日（北美发行）。",
+          "gold": [
+            "2013年11月15日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.7499999999999999,
+          "rouge_l": 0.846153846153846,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 49,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "voting",
+          "prediction": "2017年3月3日",
+          "gold": [
+            "2017年3月3日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "iterative",
+        "noise_ratio": 0.75,
+        "noise_type": "counterfactual",
+        "noise_position": "interleave",
+        "label": "iterative"
+      },
+      "summary": {
+        "method": "iterative",
+        "n": 50,
+        "em": 0.52,
+        "contains": 0.78,
+        "token_f1": 0.6879,
+        "rouge_l": 0.7021,
+        "judge_score": null,
+        "isr": 0.3,
+        "nar": 0.0
+      },
+      "elapsed": 46.63,
+      "n": 50,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "70个议席。",
+          "gold": [
+            "70"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "1361万人。",
+          "gold": [
+            "1361万"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.9090909090909091,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "武汉",
+          "gold": [
+            "武汉"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "2020赛季中超冠军是江苏苏宁。",
+          "gold": [
+            "江苏苏宁"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.4210526315789474,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "江苏苏宁",
+          "gold": [
+            "广州恒大"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "5.48‰",
+          "gold": [
+            "10.48‰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.6666666666666665,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "10.94‰或5.94‰（文档中存在矛盾数据）。",
+          "gold": [
+            "10.94‰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.25,
+          "rouge_l": 0.4166666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "2.3%",
+          "gold": [
+            "2.3%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "6.1%",
+          "gold": [
+            "6.1%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "史蒂文·斯皮尔伯格",
+          "gold": [
+            "史蒂文·斯皮尔伯格"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 10,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "布莱恩·辛格（主）和德克斯特·弗莱彻（副）。",
+          "gold": [
+            "布莱恩·辛格"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5217391304347826,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 11,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "郭敬明",
+          "gold": [
+            "郭敬明"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 12,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "2021年2月12日。",
+          "gold": [
+            "2021年2月12日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 13,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "悉尼",
+          "gold": [
+            "澳大利亚",
+            "悉尼"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 14,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "2021年7月23日。",
+          "gold": [
+            "2021年7月23日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 15,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "2016年8月5日",
+          "gold": [
+            "2016年8月5日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 16,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "日本大阪",
+          "gold": [
+            "东京"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 17,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "沙盒类电子游戏。",
+          "gold": [
+            "沙盒"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4444444444444445,
+          "rouge_l": 0.4444444444444445,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 18,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "詹姆斯·卡梅隆",
+          "gold": [
+            "詹姆斯·卡梅隆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 19,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "斯蒂夫·康拉德",
+          "gold": [
+            "斯蒂夫·康拉德"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 20,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "切尔西"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 21,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "拜仁慕尼黑"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 22,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "利物浦",
+          "gold": [
+            "利物浦"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 23,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "梁振英",
+          "gold": [
+            "林郑月娥"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 24,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "梁振英",
+          "gold": [
+            "梁振英"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 25,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "无法回答",
+          "gold": [
+            "广东"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 26,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "日本",
+          "gold": [
+            "南非"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 27,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "法国",
+          "gold": [
+            "法国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 28,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "郭帆",
+          "gold": [
+            "郭帆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 29,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "陈凯歌",
+          "gold": [
+            "陈凯歌"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 30,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "无法回答",
+          "gold": [
+            "费城老鹰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 31,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "7.0级",
+          "gold": [
+            "7.0级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 32,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "2008年5月12日14时28分04秒",
+          "gold": [
+            "5月12日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.4166666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 33,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "7.1级",
+          "gold": [
+            "7.1级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 34,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "2020年8月31日",
+          "gold": [
+            "8月31日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 35,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "巴西",
+          "gold": [
+            "巴西"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 36,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "中国",
+          "gold": [
+            "南非"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 37,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "约翰·威尔克斯·布斯",
+          "gold": [
+            "约翰·威尔克斯·布斯"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 38,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "李·哈维·奥斯瓦尔德。",
+          "gold": [
+            "['李·哈维·奥斯瓦尔德', '李·奥斯瓦尔德', '李•哈维•奥斯瓦尔德']"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5333333333333333,
+          "rouge_l": 0.5405405405405406,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 39,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "骁龙845处理器。",
+          "gold": [
+            "骁龙845"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 40,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "骁龙835处理器。",
+          "gold": [
+            "骁龙835"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 41,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "骁龙821处理器。",
+          "gold": [
+            "骁龙821"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 42,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "美国与其它8个合作国家。",
+          "gold": [
+            "美国"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.3076923076923077,
+          "rouge_l": 0.3076923076923077,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 43,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "中国",
+          "gold": [
+            "中国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 44,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "法国",
+          "gold": [
+            "法国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 45,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "郭帆",
+          "gold": [
+            "黄渤"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 46,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "是枝裕和",
+          "gold": [
+            "是枝裕和"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 47,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "德国",
+          "gold": [
+            "德国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 48,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "2013年11月15日（北美）。",
+          "gold": [
+            "2013年11月15日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8571428571428571,
+          "rouge_l": 0.9166666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 49,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "iterative",
+          "prediction": "2017年3月3日。",
+          "gold": [
+            "2017年3月3日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "selfrag",
+        "noise_ratio": 0.75,
+        "noise_type": "counterfactual",
+        "noise_position": "interleave",
+        "label": "selfrag"
+      },
+      "summary": {
+        "method": "selfrag",
+        "n": 50,
+        "em": 0.52,
+        "contains": 0.8,
+        "token_f1": 0.7504,
+        "rouge_l": 0.7612,
+        "judge_score": null,
+        "isr": 0.26,
+        "nar": 0.04
+      },
+      "elapsed": 53.88,
+      "n": 50,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "70个议席。",
+          "gold": [
+            "70"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "1361万人。",
+          "gold": [
+            "1361万"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.9090909090909091,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "武汉",
+          "gold": [
+            "武汉"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "2020赛季中超冠军是江苏苏宁。",
+          "gold": [
+            "江苏苏宁"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.4210526315789474,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "广州恒大淘宝",
+          "gold": [
+            "广州恒大"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "5.48‰",
+          "gold": [
+            "10.48‰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.6666666666666665,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "10.94‰或5.94‰（文档中存在矛盾数据）。",
+          "gold": [
+            "10.94‰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.25,
+          "rouge_l": 0.4166666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "2.3%",
+          "gold": [
+            "2.3%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "6.1%",
+          "gold": [
+            "6.1%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "史蒂文·斯皮尔伯格",
+          "gold": [
+            "史蒂文·斯皮尔伯格"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 10,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "布莱恩·辛格（主）和德克斯特·弗莱彻（副）。",
+          "gold": [
+            "布莱恩·辛格"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5217391304347826,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 11,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "郭敬明",
+          "gold": [
+            "郭敬明"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 12,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "2021年2月12日。",
+          "gold": [
+            "2021年2月12日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 13,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "澳大利亚悉尼",
+          "gold": [
+            "澳大利亚",
+            "悉尼"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 14,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "2021年7月23日。",
+          "gold": [
+            "2021年7月23日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 15,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "2016年8月5日",
+          "gold": [
+            "2016年8月5日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 16,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "大阪",
+          "gold": [
+            "东京"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 17,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "沙盒游戏。",
+          "gold": [
+            "沙盒"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 18,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "詹姆斯·卡梅隆。",
+          "gold": [
+            "詹姆斯·卡梅隆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 19,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "斯蒂夫·康拉德",
+          "gold": [
+            "斯蒂夫·康拉德"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 20,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "切尔西"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 21,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "拜仁慕尼黑"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 22,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "利物浦",
+          "gold": [
+            "利物浦"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 23,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "林郑月娥",
+          "gold": [
+            "林郑月娥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 24,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "梁振英",
+          "gold": [
+            "梁振英"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 25,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "广东宏远",
+          "gold": [
+            "广东"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 26,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "南非",
+          "gold": [
+            "南非"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 27,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "德国",
+          "gold": [
+            "法国"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 28,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "郭敬明",
+          "gold": [
+            "郭帆"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.4,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 29,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "陈凯歌",
+          "gold": [
+            "陈凯歌"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 30,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "堪萨斯城酋长队",
+          "gold": [
+            "费城老鹰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.18181818181818182,
+          "rouge_l": 0.18181818181818182,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 31,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "7.0级",
+          "gold": [
+            "7.0级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 32,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "2008年5月12日14时28分04秒",
+          "gold": [
+            "5月12日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.4166666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 33,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "7.1级",
+          "gold": [
+            "7.1级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 34,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "2020年8月31日",
+          "gold": [
+            "8月31日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 35,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "巴西",
+          "gold": [
+            "巴西"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 36,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "南非",
+          "gold": [
+            "南非"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 37,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "约翰·威尔克斯·布斯",
+          "gold": [
+            "约翰·威尔克斯·布斯"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 38,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "李·哈维·奥斯瓦尔德。",
+          "gold": [
+            "['李·哈维·奥斯瓦尔德', '李·奥斯瓦尔德', '李•哈维•奥斯瓦尔德']"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5333333333333333,
+          "rouge_l": 0.5405405405405406,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 39,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "骁龙810处理器。",
+          "gold": [
+            "骁龙845"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4444444444444444,
+          "rouge_l": 0.4615384615384615,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 1.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 40,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "骁龙810处理器。",
+          "gold": [
+            "骁龙835"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4444444444444444,
+          "rouge_l": 0.4615384615384615,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 1.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 41,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "骁龙821处理器。",
+          "gold": [
+            "骁龙821"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 42,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "美国、英国等8个合作国家。",
+          "gold": [
+            "美国"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.3076923076923077,
+          "rouge_l": 0.3076923076923077,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 43,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "中国",
+          "gold": [
+            "中国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 44,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "法国",
+          "gold": [
+            "法国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 45,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "郭帆",
+          "gold": [
+            "黄渤"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 46,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "是枝裕和。",
+          "gold": [
+            "是枝裕和"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 47,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "德国",
+          "gold": [
+            "德国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 48,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "2013年11月15日（北美）。",
+          "gold": [
+            "2013年11月15日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8571428571428571,
+          "rouge_l": 0.9166666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 49,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "selfrag",
+          "prediction": "2017年3月3日。",
+          "gold": [
+            "2017年3月3日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "prompt",
+        "noise_ratio": 0.75,
+        "noise_type": "counterfactual",
+        "noise_position": "interleave",
+        "label": "prompt"
+      },
+      "summary": {
+        "method": "prompt",
+        "n": 50,
+        "em": 0.58,
+        "contains": 0.86,
+        "token_f1": 0.7809,
+        "rouge_l": 0.7912,
+        "judge_score": null,
+        "isr": 0.3,
+        "nar": 0.02
+      },
+      "elapsed": 35.49,
+      "n": 50,
+      "rows": [
+        {
+          "sample_id": 0,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "70个议席。",
+          "gold": [
+            "70"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.5714285714285715,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "1361万人",
+          "gold": [
+            "1361万"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.9090909090909091,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 2,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "武汉",
+          "gold": [
+            "武汉"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 3,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "广州恒大",
+          "gold": [
+            "江苏苏宁"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 4,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "广州恒大淘宝",
+          "gold": [
+            "广州恒大"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "5.48‰",
+          "gold": [
+            "10.48‰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.6666666666666665,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 6,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "10.94‰",
+          "gold": [
+            "10.94‰"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 7,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2.3%",
+          "gold": [
+            "2.3%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 8,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "6.1%",
+          "gold": [
+            "6.1%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 9,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "史蒂文·斯皮尔伯格",
+          "gold": [
+            "史蒂文·斯皮尔伯格"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 10,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "布莱恩·辛格（主）和德克斯特·弗莱彻（副）",
+          "gold": [
+            "布莱恩·辛格"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.5217391304347826,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 11,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "郭敬明",
+          "gold": [
+            "郭敬明"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 12,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2021年2月12日",
+          "gold": [
+            "2021年2月12日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 13,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "澳大利亚悉尼",
+          "gold": [
+            "澳大利亚",
+            "悉尼"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 14,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2021年7月23日",
+          "gold": [
+            "2021年7月23日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 15,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2016年8月5日",
+          "gold": [
+            "2016年8月5日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 16,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2020年奥运会在日本东京举办。",
+          "gold": [
+            "东京"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.2857142857142857,
+          "rouge_l": 0.23529411764705882,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 17,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "沙盒游戏。",
+          "gold": [
+            "沙盒"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 18,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "詹姆斯·卡梅隆",
+          "gold": [
+            "詹姆斯·卡梅隆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 19,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "无法回答",
+          "gold": [
+            "斯蒂夫·康拉德"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 20,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "切尔西",
+          "gold": [
+            "切尔西"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 21,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "拜仁慕尼黑",
+          "gold": [
+            "拜仁慕尼黑"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 22,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "利物浦",
+          "gold": [
+            "利物浦"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 23,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "林郑月娥",
+          "gold": [
+            "林郑月娥"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 24,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "梁振英",
+          "gold": [
+            "梁振英"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 25,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "广东宏远",
+          "gold": [
+            "广东"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 26,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "南非",
+          "gold": [
+            "南非"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 27,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "法国",
+          "gold": [
+            "法国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 28,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "郭帆",
+          "gold": [
+            "郭帆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 29,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "陈凯歌",
+          "gold": [
+            "陈凯歌"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 30,
+          "noise_ratio": 0.714,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2018年超级碗冠军是堪萨斯城酋长队。",
+          "gold": [
+            "费城老鹰"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.10526315789473685,
+          "rouge_l": 0.0909090909090909,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 31,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "7.0级",
+          "gold": [
+            "7.0级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 32,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2008年5月12日14时28分04秒",
+          "gold": [
+            "5月12日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5,
+          "rouge_l": 0.4166666666666667,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 33,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "7.1级",
+          "gold": [
+            "7.1级"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 34,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2020年8月31日",
+          "gold": [
+            "8月31日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 35,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "巴西",
+          "gold": [
+            "巴西"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 36,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "南非",
+          "gold": [
+            "南非"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 37,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "约翰·威尔克斯·布斯",
+          "gold": [
+            "约翰·威尔克斯·布斯"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 38,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "李·哈维·奥斯瓦尔德",
+          "gold": [
+            "['李·哈维·奥斯瓦尔德', '李·奥斯瓦尔德', '李•哈维•奥斯瓦尔德']"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.5333333333333333,
+          "rouge_l": 0.5405405405405406,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 39,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "骁龙810处理器。",
+          "gold": [
+            "骁龙845"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.4444444444444444,
+          "rouge_l": 0.4615384615384615,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 1.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 40,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "骁龙835处理器。",
+          "gold": [
+            "骁龙835"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 41,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "骁龙821处理器。",
+          "gold": [
+            "骁龙821"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 42,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "美国、英国、意大利、荷兰、土耳其、澳大利亚、挪威、丹麦、加拿大。",
+          "gold": [
+            "美国"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.16,
+          "rouge_l": 0.16,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 43,
+          "noise_ratio": 0.75,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "中国",
+          "gold": [
+            "中国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 44,
+          "noise_ratio": 0.778,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "法国",
+          "gold": [
+            "法国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 45,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "郭帆",
+          "gold": [
+            "黄渤"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 46,
+          "noise_ratio": 0.8,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "是枝裕和",
+          "gold": [
+            "是枝裕和"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 47,
+          "noise_ratio": 0.667,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "德国",
+          "gold": [
+            "德国"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 48,
+          "noise_ratio": 0.5,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2013年11月15日（北美发行）。",
+          "gold": [
+            "2013年11月15日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.7499999999999999,
+          "rouge_l": 0.846153846153846,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        },
+        {
+          "sample_id": 49,
+          "noise_ratio": 0.6,
+          "noise_type": "counterfactual",
+          "noise_position": "interleave",
+          "method": "prompt",
+          "prediction": "2017年3月3日",
+          "gold": [
+            "2017年3月3日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.75
+        }
+      ]
+    }
+  ],
+  "robustness_table": [
+    {
+      "method": "confidence",
+      "score_clean": null,
+      "score_noisy_avg": 0.7079,
+      "NS": null,
+      "NRS": 0.0,
+      "ISR_avg": 0.26,
+      "NAR_avg": 0.04,
+      "n_conditions": 1
+    },
+    {
+      "method": "iterative",
+      "score_clean": null,
+      "score_noisy_avg": 0.6879,
+      "NS": null,
+      "NRS": 0.0,
+      "ISR_avg": 0.3,
+      "NAR_avg": 0.0,
+      "n_conditions": 1
+    },
+    {
+      "method": "naive",
+      "score_clean": null,
+      "score_noisy_avg": 0.7504,
+      "NS": null,
+      "NRS": 0.0,
+      "ISR_avg": 0.26,
+      "NAR_avg": 0.04,
+      "n_conditions": 1
+    },
+    {
+      "method": "prompt",
+      "score_clean": null,
+      "score_noisy_avg": 0.7809,
+      "NS": null,
+      "NRS": 0.0,
+      "ISR_avg": 0.3,
+      "NAR_avg": 0.02,
+      "n_conditions": 1
+    },
+    {
+      "method": "selfrag",
+      "score_clean": null,
+      "score_noisy_avg": 0.7504,
+      "NS": null,
+      "NRS": 0.0,
+      "ISR_avg": 0.26,
+      "NAR_avg": 0.04,
+      "n_conditions": 1
+    },
+    {
+      "method": "voting",
+      "score_clean": null,
+      "score_noisy_avg": 0.7577,
+      "NS": null,
+      "NRS": 0.0,
+      "ISR_avg": 0.26,
+      "NAR_avg": 0.02,
+      "n_conditions": 1
+    }
+  ],
+  "args": {
+    "n": 50,
+    "language": "zh",
+    "subset": "fact",
+    "ratio": 0.75,
+    "noise_type": "counterfactual",
+    "methods": "naive,confidence,voting,iterative,selfrag,prompt"
+  }
+}

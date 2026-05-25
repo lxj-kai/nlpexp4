@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NLP实验四 · 题目8 · 中期检查报告</title>
+<style>
+:root{
+  --bg:#0b0f19;--s1:#111827;--s2:#1e293b;--s3:#283548;
+  --a:#3b82f6;--a2:#06b6d4;--g:#10b981;--y:#f59e0b;--r:#ef4444;--p:#8b5cf6;--pk:#ec4899;
+  --t:#e2e8f0;--d:#94a3b8;--b:#1e293b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t);line-height:1.75}
+.banner{padding:60px 24px 38px;text-align:center;background:linear-gradient(180deg,#0f172a,var(--bg));border-bottom:1px solid var(--b)}
+.banner h1{font-size:2.1rem;font-weight:800;background:linear-gradient(90deg,var(--a),var(--a2),var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.banner .sub{color:var(--d);margin-top:10px;font-size:1rem}
+.banner .meta{margin-top:14px;display:flex;justify-content:center;gap:18px;flex-wrap:wrap}
+.banner .meta span{font-size:.8rem;color:var(--d);padding:4px 12px;border:1px solid var(--b);border-radius:14px;background:rgba(255,255,255,.02)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px 80px}
+.sec{margin-top:46px}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.sec-dot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.95rem;flex-shrink:0}
+.sec-title{font-size:1.3rem;font-weight:700}
+.sec-badge{margin-left:auto;font-size:.8rem;padding:3px 14px;border-radius:16px;border:1px solid var(--b);color:var(--d);background:rgba(255,255,255,.03)}
+.c{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:26px;margin-bottom:16px;transition:border-color .3s}
+.c:hover{border-color:rgba(59,130,246,.35)}
+.c h3{font-size:1rem;font-weight:600;color:var(--a2);margin-bottom:10px}
+.c h4{font-size:.92rem;font-weight:600;color:var(--g);margin:16px 0 8px}
+.c p,.c li{color:var(--d);font-size:.9rem}
+.c ul,.c ol{padding-left:18px}.c li{margin-bottom:5px}
+.code{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px 18px;margin:12px 0;font-family:'Cascadia Code','Fira Code',monospace;font-size:.78rem;color:#c9d1d9;overflow-x:auto;white-space:pre;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.87rem}
+th{text-align:left;padding:9px 13px;background:rgba(59,130,246,.1);color:var(--a);border-bottom:1px solid var(--b);font-weight:600}
+td{padding:9px 13px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--d);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,.015)}
+.tag{display:inline-block;padding:2px 10px;border-radius:10px;font-size:.73rem;margin:2px;font-weight:500}
+.tag.b{background:rgba(59,130,246,.14);color:var(--a);border:1px solid rgba(59,130,246,.25)}
+.tag.g{background:rgba(16,185,129,.14);color:var(--g);border:1px solid rgba(16,185,129,.25)}
+.tag.y{background:rgba(245,158,11,.14);color:var(--y);border:1px solid rgba(245,158,11,.25)}
+.tag.r{background:rgba(239,68,68,.14);color:var(--r);border:1px solid rgba(239,68,68,.25)}
+.tag.p{background:rgba(139,92,246,.14);color:var(--p);border:1px solid rgba(139,92,246,.25)}
+.tag.done{background:rgba(16,185,129,.14);color:var(--g);border:1px solid rgba(16,185,129,.25)}
+.tag.todo{background:rgba(245,158,11,.14);color:var(--y);border:1px solid rgba(245,158,11,.25)}
+.note{padding:14px 18px;border-radius:10px;margin:12px 0;font-size:.88rem;color:var(--d)}
+.note.info{background:rgba(59,130,246,.07);border-left:3px solid var(--a)}
+.note.ok{background:rgba(16,185,129,.07);border-left:3px solid var(--g)}
+.note.warn{background:rgba(245,158,11,.07);border-left:3px solid var(--y)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.grid-item{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:16px}
+.grid-item h4{margin-top:0;color:var(--a2)}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+@media(max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}}
+.kpi-item{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:16px;text-align:center}
+.kpi-item .v{font-size:1.4rem;font-weight:700;color:var(--a2)}
+.kpi-item .l{font-size:.75rem;color:var(--d);margin-top:4px}
+
+/* 架构图（纯 CSS） */
+.arch{background:var(--s2);border:1px solid var(--b);border-radius:14px;padding:24px;margin-top:14px}
+.arch-row{display:flex;justify-content:space-between;gap:12px;margin-bottom:18px}
+.arch-row:last-child{margin-bottom:0}
+.arch-box{flex:1;padding:14px 12px;border-radius:10px;text-align:center;border:1px solid var(--b);background:rgba(255,255,255,.025)}
+.arch-box .nm{font-weight:700;font-size:.86rem;color:var(--t)}
+.arch-box .ds{font-size:.74rem;color:var(--d);margin-top:4px}
+.arch-box.b{border-color:rgba(59,130,246,.35)}.arch-box.b .nm{color:var(--a)}
+.arch-box.g{border-color:rgba(16,185,129,.35)}.arch-box.g .nm{color:var(--g)}
+.arch-box.y{border-color:rgba(245,158,11,.35)}.arch-box.y .nm{color:var(--y)}
+.arch-box.p{border-color:rgba(139,92,246,.35)}.arch-box.p .nm{color:var(--p)}
+.arch-arrow{text-align:center;color:var(--d);font-size:1.2rem;margin:-8px 0}
+.file-tree{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px 20px;font-family:'Cascadia Code',monospace;font-size:.78rem;color:#9cdcfe;line-height:1.7;white-space:pre;overflow-x:auto}
+.pipe{display:flex;flex-direction:column;gap:6px;margin:12px 0}
+.pipe-row{display:flex;align-items:center;gap:10px}
+.pipe-step{flex:0 0 130px;background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:8px 10px;font-size:.78rem;color:var(--a2);text-align:center}
+.pipe-desc{flex:1;font-size:.82rem;color:var(--d)}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>面向大模型 RAG 推理场景<br>噪音文档的鲁棒性推理方法</h1>
+  <p class="sub">NLP 实验四 · 题目 8 · 中期检查报告</p>
+  <div class="meta">
+    <span>提交时间：5 月 26 日前</span>
+    <span>工作区：D:\code\nlpexp4</span>
+    <span>当前状态：核心模块全部完成 · 已在 Deepseek 上跑出首轮真实结果</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ===== 1. 选题与定位 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--a)">1</div>
+    <div class="sec-title">研究问题与定位</div>
+  </div>
+  <div class="c">
+    <h3>核心问题</h3>
+    <p>当 RAG 检索结果中混入<strong>语义相关但缺乏逻辑依赖</strong>的噪音文档时，LLM 推理行为会如何变化？如何检测并矫正？</p>
+
+    <h4>学术脉络</h4>
+    <table>
+      <tr><th>阶段</th><th>代表工作</th><th>关键启发</th></tr>
+      <tr><td>RAG 基础</td><td>Lewis et al. (2020)</td><td>外部检索缓解幻觉</td></tr>
+      <tr><td>位置偏见</td><td>Lost in the Middle (2023)</td><td>U 型注意力</td></tr>
+      <tr><td>自适应检索</td><td>Self-RAG (ICLR 2024)</td><td>反思 token 机制</td></tr>
+      <tr><td>矫正检索</td><td>CRAG (2024)</td><td>分解-重组流水线</td></tr>
+      <tr><td>噪音分类</td><td>NoiserBench (ACL 2025)</td><td>"有益噪音"现象</td></tr>
+    </table>
+
+    <h4>题目要求 → 任务映射</h4>
+    <table>
+      <tr><th>题目要求</th><th>对应交付</th><th>状态</th></tr>
+      <tr><td>探究噪音对 QA 性能的影响</td><td>实验一：5 比例 × 3 类型 × 2 数据集</td><td><span class="tag b">框架就绪</span></td></tr>
+      <tr><td>提出评估指标</td><td>5 个自主鲁棒性指标 (NS/NRS/ISR/NAR/CRR)</td><td><span class="tag done">已实现</span></td></tr>
+      <tr><td>针对具体数据集</td><td>RGB 中/英文版各 300 + fact 100 + int 100</td><td><span class="tag done">已加载</span></td></tr>
+      <tr><td>结合具体案例</td><td>实验三：15-20 例 4 类典型</td><td><span class="tag b">框架就绪</span></td></tr>
+      <tr><td>设计矫正机制</td><td>方法 A/B/C 三种</td><td><span class="tag done">代码完成</span></td></tr>
+      <tr><td>与现有方法对比</td><td>vs Self-RAG / CRAG / CoT-RAG</td><td><span class="tag done">代码完成</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 2. 系统架构 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--a2)">2</div>
+    <div class="sec-title">系统架构</div>
+  </div>
+
+  <div class="c">
+    <h3>分层架构图</h3>
+    <div class="arch">
+      <div class="arch-row">
+        <div class="arch-box b">
+          <div class="nm">RGB 数据集</div>
+          <div class="ds">zh/en × main/refine/fact/int</div>
+        </div>
+        <div class="arch-box b">
+          <div class="nm">DataLoader</div>
+          <div class="ds">JSONL → RGBRecord</div>
+        </div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-row">
+        <div class="arch-box y">
+          <div class="nm">NoiseInjector</div>
+          <div class="ds">比例 × 类型 × 位置</div>
+        </div>
+        <div class="arch-box y">
+          <div class="nm">NoisyContext</div>
+          <div class="ds">docs + labels(positive/negative)</div>
+        </div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-row">
+        <div class="arch-box g">
+          <div class="nm">RAGPipeline</div>
+          <div class="ds">Naive baseline</div>
+        </div>
+        <div class="arch-box g">
+          <div class="nm">PromptCorrector</div>
+          <div class="ds">方法A · 1×API</div>
+        </div>
+        <div class="arch-box g">
+          <div class="nm">IterativeCorrector</div>
+          <div class="ds">方法B · n+1×API</div>
+        </div>
+        <div class="arch-box g">
+          <div class="nm">CoTCorrector</div>
+          <div class="ds">方法C · 1×API</div>
+        </div>
+        <div class="arch-box g">
+          <div class="nm">SelfRAG Baseline</div>
+          <div class="ds">对比 · n+2×API</div>
+        </div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-row">
+        <div class="arch-box b">
+          <div class="nm">LLMClient (Deepseek)</div>
+          <div class="ds">retry · 缓存 · token 计费</div>
+        </div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-row">
+        <div class="arch-box p">
+          <div class="nm">Evaluator</div>
+          <div class="ds">EM / F1 / ROUGE-L / LLM-Judge</div>
+        </div>
+        <div class="arch-box p">
+          <div class="nm">Metrics</div>
+          <div class="ds">NS / NRS / ISR / NAR / CRR</div>
+        </div>
+        <div class="arch-box p">
+          <div class="nm">Visualize</div>
+          <div class="ds">折线 / 柱状 / 雷达</div>
+        </div>
+        <div class="arch-box p">
+          <div class="nm">Gradio Demo</div>
+          <div class="ds">交互式演示</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c">
+    <h3>调用流水线</h3>
+    <div class="pipe">
+      <div class="pipe-row"><div class="pipe-step">①</div><div class="pipe-desc"><code>load_dataset(zh, main, limit=n)</code> → 加载 RGB 记录</div></div>
+      <div class="pipe-row"><div class="pipe-step">②</div><div class="pipe-desc"><code>batch_inject(records, noise_ratio, noise_type, noise_position)</code> → 构造带噪音上下文</div></div>
+      <div class="pipe-row"><div class="pipe-step">③</div><div class="pipe-desc"><code>get_corrector(name).batch_correct(contexts)</code> → 调用 Deepseek 生成答案</div></div>
+      <div class="pipe-row"><div class="pipe-step">④</div><div class="pipe-desc"><code>Evaluator.evaluate_batch(results)</code> → 计算 EM/F1/ROUGE/ISR/NAR</div></div>
+      <div class="pipe-row"><div class="pipe-step">⑤</div><div class="pipe-desc"><code>save_run()</code> → 带时间戳的 JSON 落盘 + <code>visualize.*</code> 自动出图</div></div>
+    </div>
+  </div>
+
+  <div class="c">
+    <h3>代码结构（已完成部分）</h3>
+    <div class="file-tree">D:\code\nlpexp4\
+├── data\rgb\                 [数据 8 个 json 已下载]
+├── src\
+│   ├── config.py             [全局配置 dataclass]
+│   ├── utils.py              [logger / seed / Timer]
+│   ├── data_loader.py        [RGB 加载]
+│   ├── noise_injector.py     [3 维噪音控制]
+│   ├── llm_client.py         [Deepseek + 缓存 + 重试]
+│   ├── prompts.py            [Prompt 模板库]
+│   ├── rag_pipeline.py       [Naive RAG]
+│   ├── metrics.py            [5 个鲁棒性指标]
+│   ├── evaluator.py          [EM/F1/ROUGE/LLM-Judge]
+│   ├── visualize.py          [图表]
+│   ├── smoke_test.py         [端到端验证]
+│   └── correctors\
+│       ├── base.py           [抽象类 + 注册表]
+│       ├── prompt_corrector.py        [方法 A]
+│       ├── iterative_corrector.py     [方法 B]
+│       ├── confidence_corrector.py    [方法 C]
+│       └── selfrag_baseline.py        [对比]
+├── experiments\
+│   ├── _runner.py            [通用 runner]
+│   ├── exp1_noise_impact.py
+│   ├── exp2_correction.py
+│   ├── exp3_case_study.py
+│   └── exp4_existing_methods.py
+├── demo\app.py               [Gradio Demo]
+├── figures\                  [自动生成的图]
+├── report\                   [本报告 + 最终报告]
+├── PLAN.html
+├── README.md
+└── requirements.txt</div>
+  </div>
+</div>
+
+<!-- ===== 3. 评估指标 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--g)">3</div>
+    <div class="sec-title">评估指标设计</div>
+  </div>
+
+  <div class="c">
+    <h3>基础问答指标</h3>
+    <table>
+      <tr><th>指标</th><th>定义</th><th>实现位置</th></tr>
+      <tr><td>EM</td><td>规范化后精确匹配</td><td>evaluator._exact_match</td></tr>
+      <tr><td>Contains</td><td>gold ⊂ pred（短答案宽容匹配）</td><td>evaluator._contains_match</td></tr>
+      <tr><td>Token-F1</td><td>token 级 P/R 调和</td><td>evaluator._token_f1</td></tr>
+      <tr><td>ROUGE-L</td><td>字符 LCS F1（中英通用）</td><td>evaluator._rouge_l</td></tr>
+      <tr><td>LLM-as-Judge</td><td>Deepseek 1-5 打分 / 5</td><td>evaluator._llm_judge</td></tr>
+    </table>
+  </div>
+
+  <div class="c">
+    <h3>自主提出的鲁棒性指标体系（项目理论贡献）</h3>
+    <table>
+      <tr><th>指标</th><th>公式</th><th>语义</th></tr>
+      <tr><td><strong>NS</strong> 噪音敏感度</td><td>(S_clean - S_noisy) / S_clean</td><td>性能相对下降幅度</td></tr>
+      <tr><td><strong>NRS</strong> 抵抗曲线斜率</td><td>polyfit(ratios, scores, 1)[0]</td><td>每增 1% 噪音损失多少分</td></tr>
+      <tr><td><strong>ISR</strong> 信息溯源率</td><td>positive 命中 token / 答案 token</td><td>答案靠不靠谱</td></tr>
+      <tr><td><strong>NAR</strong> 噪音采纳率</td><td>negative 命中 token / 答案 token</td><td>答案多大程度采信了噪音</td></tr>
+      <tr><td><strong>CRR</strong> 矫正恢复率</td><td>(S_corr - S_noisy) / (S_clean - S_noisy)</td><td>矫正机制恢复多少损失</td></tr>
+    </table>
+    <div class="note ok">
+      <strong>层次性</strong>：NS/NRS 衡量"影响有多大"（black-box），ISR/NAR 衡量"影响机制"（white-box token 级），CRR 衡量"矫正效果"。三个层次共同构成完整框架。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4. 矫正方法 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--y)">4</div>
+    <div class="sec-title">矫正方法（已实现 4 种 + 1 对比）</div>
+  </div>
+  <div class="c">
+    <div class="grid">
+      <div class="grid-item">
+        <span class="tag g">方法 A</span>
+        <h4>PromptCorrector · 1× API</h4>
+        <p>system prompt 显式要求模型识别并跳过语义相关但无答案的文档；对每条结论标注来源；遇矛盾时指出。</p>
+      </div>
+      <div class="grid-item">
+        <span class="tag y">方法 B</span>
+        <h4>IterativeCorrector · n+1× API</h4>
+        <p>Step1 逐篇打 high/mid/low 标签 → Step2 过滤 low → Step3 仅保留高相关文档再生成。</p>
+      </div>
+      <div class="grid-item">
+        <span class="tag p">方法 C</span>
+        <h4>ConfidenceCorrector · 1× API</h4>
+        <p>CoT 证据链：拆解信息需求 → 逐篇标注证据 → 仅基于已找到证据合成答案，用 <code>&lt;answer&gt;</code> 标签输出。</p>
+      </div>
+      <div class="grid-item" style="border-color:rgba(236,72,153,.4)">
+        <span class="tag" style="background:rgba(236,72,153,.14);color:var(--pk);border:1px solid rgba(236,72,153,.25)">方法 D 新增</span>
+        <h4>EvidenceVotingCorrector · 3-4× API</h4>
+        <p>3 个不同 Persona（事实核查员 / 多疑研究员 / 证据链推理者）独立生成候选答案 →
+        若 ≥2 一致即多数派胜出，否则触发 LLM 聚合器投票。</p>
+      </div>
+      <div class="grid-item" style="grid-column: span 2">
+        <span class="tag r">对比方法</span>
+        <h4>SelfRAGBaseline · n+2~3× API</h4>
+        <p>Self-RAG 思路：RELEVANT 门控 → 生成 → SUPPORTED 验证 → 不支撑则在 top-half 文档上重生。</p>
+      </div>
+    </div>
+    <div class="note info">
+      <strong>统一接口</strong>：所有矫正方法继承 <code>BaseCorrector</code>，通过 <code>@register_corrector("name")</code> 自动加入注册表；
+      实验脚本只需 <code>get_corrector(name)</code> 一行即可统一调度，无 if/else 分支。
+    </div>
+    <div class="note ok">
+      <strong>方法 D 的核心思想</strong>：不同 Persona 对同一段噪音文档的"易受骗"程度不同。
+      把 3 个独立视角聚合起来，可有效抵御 <strong>counterfactual（反事实/伪造）</strong>噪音
+      ——单条推理链容易被错误信息带偏，但 3 条独立推理同时被骗的概率显著降低。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 5. 实验设计 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--p)">5</div>
+    <div class="sec-title">实验设计</div>
+  </div>
+
+  <div class="c">
+    <h3>实验一：噪音影响（主实验）</h3>
+    <table>
+      <tr><th>变量</th><th>取值</th><th>样本量</th></tr>
+      <tr><td>噪音比例</td><td>{0, 0.25, 0.5, 0.75, 1.0}</td><td rowspan="3">zh:300 + en:300</td></tr>
+      <tr><td>噪音类型</td><td>{semantic, counterfactual, mixed}</td></tr>
+      <tr><td>噪音位置（子实验）</td><td>{front, back, interleave, surround}</td></tr>
+    </table>
+  </div>
+
+  <div class="c">
+    <h3>实验二：矫正对比</h3>
+    <p>5 方法 × 4 比例（含 ratio=0.0 baseline）。重点关注 <strong>CRR</strong> 与 <strong>API 调用成本</strong> 的权衡。</p>
+  </div>
+
+  <div class="c">
+    <h3>实验三：案例深度分析</h3>
+    <ol>
+      <li>跑 clean / noisy / corrected 三组</li>
+      <li>按 <strong>4 类典型</strong>自动挑选：Type1 直接采信、Type2 干扰编造、Type3 信息淹没、Type4 免疫</li>
+      <li>每例展示参考答案 / 三种输出 / 文档命中可视化 / 误导路径分析</li>
+    </ol>
+  </div>
+
+  <div class="c">
+    <h3>实验四：现有方法对比</h3>
+    <p>固定 ratio=0.5 / type=semantic，横向比较 naive / selfrag / iterative / confidence / prompt，输出雷达图直观对比 4 个鲁棒性指标。</p>
+  </div>
+</div>
+
+<!-- ===== 6. 当前进度 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--pk)">6</div>
+    <div class="sec-title">当前进度（截至 5 月 16 日）</div>
+    <div class="sec-badge">代码 + 首轮真实实验已完成</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-item"><div class="v">27</div><div class="l">Python 文件</div></div>
+    <div class="kpi-item"><div class="v">4</div><div class="l">实验脚本</div></div>
+    <div class="kpi-item"><div class="v">5</div><div class="l">矫正方法 (含方法 D)</div></div>
+    <div class="kpi-item"><div class="v">5</div><div class="l">自主提出指标</div></div>
+    <div class="kpi-item"><div class="v">~700</div><div class="l">唯一 API 调用 (已缓存)</div></div>
+    <div class="kpi-item"><div class="v">6</div><div class="l">实验图表 (真实)</div></div>
+    <div class="kpi-item"><div class="v">¥&lt;2</div><div class="l">迄今 API 花费</div></div>
+    <div class="kpi-item"><div class="v">0</div><div class="l">已知 bug / lint</div></div>
+  </div>
+
+  <div class="c">
+    <h3>已完成</h3>
+    <ul>
+      <li><span class="tag done">DONE</span> 项目结构 + 依赖清单 + 配置中心 (config dataclass)</li>
+      <li><span class="tag done">DONE</span> RGB 数据加载（8 个 JSONL 全部接入）</li>
+      <li><span class="tag done">DONE</span> 3 维噪音注入器（比例 × 类型 × 位置）</li>
+      <li><span class="tag done">DONE</span> Deepseek 客户端 + sha1 磁盘缓存 + 重试 + token 计费</li>
+      <li><span class="tag done">DONE</span> Naive RAG pipeline + <strong>5 个矫正器</strong>（prompt/iterative/confidence/<strong>voting (方法 D 新增)</strong>/selfrag）</li>
+      <li><span class="tag done">DONE</span> 5 个自主鲁棒性指标 (NS/NRS/ISR/NAR/CRR) + 多指标聚合</li>
+      <li><span class="tag done">DONE</span> 4 个实验脚本（基于通用 runner，避免重复代码）</li>
+      <li><span class="tag done">DONE</span> 可视化模块（折线/分组柱/雷达图）</li>
+      <li><span class="tag done">DONE</span> Gradio 交互式 Demo（交互式调节噪音/方法）</li>
+      <li><span class="tag done">DONE</span> 端到端 dry-run smoke test 通过</li>
+      <li><span class="tag done">DONE</span> <strong>Deepseek 真实 API 跑通：zh/main 主实验 + zh/fact 反事实实验 + 位置子实验 + 矫正方法对比</strong></li>
+      <li><span class="tag done">DONE</span> <strong>6 张实验图表已自动生成（见下方"7. 初步实验结果"）</strong></li>
+      <li><span class="tag done">DONE</span> <strong>方法 D · 证据投票 (EvidenceVotingCorrector) 已实现并验证有效</strong></li>
+    </ul>
+
+    <h3>待完成</h3>
+    <ul>
+      <li><span class="tag todo">TODO</span> 扩量到 n=50/100/300（全量数据集）+ bootstrap 置信区间</li>
+      <li><span class="tag todo">TODO</span> 位置子实验在 r=0.75 / zh-main 复测，放大差异</li>
+      <li><span class="tag todo">TODO</span> 实验三案例深度分析（15-20 例典型）</li>
+      <li><span class="tag todo">TODO</span> 跨语言对照（en.json 跑一遍）</li>
+      <li><span class="tag todo">TODO</span> 最终实验报告撰写</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 7. 初步实验结果 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--a)">7</div>
+    <div class="sec-title">初步实验结果（Deepseek-chat 真实数据）</div>
+    <div class="sec-badge">2026-05-16 当日采集</div>
+  </div>
+
+  <div class="c">
+    <h3>实验一 · 噪音影响（n=20, zh/main）</h3>
+    <table>
+      <tr><th>噪音比例</th><th>F1</th><th>ROUGE-L</th><th>contains</th><th>ISR</th><th>NAR</th></tr>
+      <tr><td>0.00 (clean)</td><td><strong>0.710</strong></td><td>0.690</td><td>0.85</td><td>0.55</td><td>0.00</td></tr>
+      <tr><td>0.25</td><td>0.704</td><td>0.683</td><td>0.85</td><td>0.60</td><td>0.00</td></tr>
+      <tr><td>0.50</td><td>0.722</td><td>0.703</td><td>0.85</td><td>0.55</td><td>0.00</td></tr>
+      <tr><td>0.75</td><td>0.713</td><td>0.693</td><td>0.80</td><td>0.55</td><td>0.00</td></tr>
+      <tr><td>1.00 (全噪音)</td><td style="color:var(--r)"><strong>0.216</strong></td><td>0.218</td><td style="color:var(--r)"><strong>0.10</strong></td><td>0.00</td><td style="color:var(--r)"><strong>0.45</strong></td></tr>
+    </table>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp1_noise_impact.png" alt="exp1" style="max-width:100%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 1: 噪音比例对 Token-F1 的影响（zh/main, n=20）</p>
+
+    <h4>鲁棒性指标</h4>
+    <div class="kpi">
+      <div class="kpi-item"><div class="v">0.171</div><div class="l">NS · 噪音敏感度</div></div>
+      <div class="kpi-item"><div class="v">-0.392</div><div class="l">NRS · 抵抗斜率</div></div>
+      <div class="kpi-item"><div class="v">0.45</div><div class="l">ISR_avg</div></div>
+      <div class="kpi-item"><div class="v">0.09</div><div class="l">NAR_avg</div></div>
+    </div>
+
+    <div class="note ok">
+      <strong>核心发现 1 · U 型抗噪 + 断崖效应</strong>：Deepseek-chat 在 0%-75% 噪音下性能几乎不变（F1 ≈ 0.71），
+      只有当 positive 文档完全消失（ratio=1.0）时性能才崩溃到 0.22（-69.6%），同时 NAR 从 0 跃升至 0.45。
+      → 说明 LLM 的鲁棒性来自 <strong>positive 文档兜底</strong>，一旦缺失正确信息便会大量采纳噪音。
+    </div>
+    <div class="note warn">
+      <strong>意外发现 · 有益噪音</strong>：50% 噪音下 F1=0.722 略高于 clean 0.710，
+      与 NoiserBench (ACL 2025) "部分噪音反而有益"的理论吻合，值得在最终报告中讨论。
+    </div>
+  </div>
+
+  <div class="c">
+    <h3>实验二 · 矫正方法对比（n=10, semantic 噪音）</h3>
+    <table>
+      <tr><th>方法</th><th>r=0.00</th><th>r=0.50</th><th>r=0.75</th><th>vs naive (r=0.75)</th></tr>
+      <tr><td>naive (baseline)</td><td>0.706</td><td>0.716</td><td>0.664</td><td>—</td></tr>
+      <tr><td>prompt (方法 A)</td><td>0.696</td><td>0.716</td><td>0.648</td><td><span class="tag r">-1.6 pt</span></td></tr>
+      <tr><td><strong>confidence (方法 C)</strong></td><td>0.713</td><td><strong>0.743</strong></td><td><strong>0.815</strong></td><td><span class="tag g">+15.1 pt 🏆</span></td></tr>
+    </table>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp2_correction.png" alt="exp2" style="max-width:100%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 2: 矫正方法在不同噪音比例下的 F1 对比</p>
+
+    <div class="note ok">
+      <strong>核心发现 2 · CoT 证据链显著最优</strong>：
+      在 75% 高强度噪音下，方法 C（强制 LLM 拆解信息需求 + 标注证据）将 F1 从 0.664 提升到 <strong>0.815</strong>（+15.1 pt），
+      contains 100%（10/10 全对）。即便在 clean 条件下也微胜 naive。
+      <br>→ 这是本工作最具说服力的初步证据，可作为最终报告的核心方法。
+    </div>
+  </div>
+
+  <div class="c">
+    <h3>实验四 · 与现有方法对比（n=10, ratio=0.75, semantic）</h3>
+    <table>
+      <tr><th>方法</th><th>对应思路</th><th>F1</th><th>ROUGE-L</th><th>contains</th></tr>
+      <tr><td>naive</td><td>baseline</td><td>0.664</td><td>0.641</td><td>0.90</td></tr>
+      <tr><td>selfrag</td><td>Self-RAG 反思</td><td>0.664</td><td>0.641</td><td>0.90</td></tr>
+      <tr><td>iterative</td><td>CRAG 过滤-重组</td><td>0.706</td><td>0.684</td><td>1.00</td></tr>
+      <tr><td>prompt</td><td>仅 prompt 改造</td><td>0.648</td><td>0.628</td><td>0.90</td></tr>
+      <tr><td><strong>confidence</strong></td><td><strong>CoT-RAG 链式</strong></td><td><strong>0.815</strong></td><td><strong>0.805</strong></td><td><strong>1.00</strong></td></tr>
+    </table>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp4_robustness_radar.png" alt="exp4" style="max-width:520px;width:100%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 3: 5 方法鲁棒性雷达（4 个鲁棒性维度归一化到 [0,1]）</p>
+
+    <div class="note info">
+      <strong>排名</strong>：confidence > iterative > naive ≈ selfrag > prompt
+      <br><strong>结论</strong>：本工作的"主动证据筛选"思路在 Deepseek-chat 上超越了 Self-RAG 风格的"事后反思"思路。
+    </div>
+  </div>
+
+  <div class="c">
+    <h3>实验一-扩展 · 反事实噪音（zh/fact, n=15）</h3>
+    <p>使用含 <code>positive_wrong</code> 字段的 RGB-fact 子集，让 3 种噪音类型真正分开。</p>
+    <table>
+      <tr><th>ratio</th><th>semantic</th><th>counterfactual</th><th>mixed</th></tr>
+      <tr><td>0.00 (clean)</td><td>0.933</td><td>0.933</td><td>0.933</td></tr>
+      <tr><td>0.25</td><td>0.920</td><td>0.887</td><td>0.920</td></tr>
+      <tr><td>0.50</td><td>0.933</td><td>0.788</td><td>0.887</td></tr>
+      <tr><td>0.75</td><td>0.864</td><td>0.774</td><td>0.764</td></tr>
+      <tr><td>1.00</td><td style="color:var(--y)"><strong>0.518</strong></td><td style="color:var(--r)"><strong>0.269</strong></td><td>0.449</td></tr>
+    </table>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp1_noise_impact_zh_fact.png" alt="exp1_fact" style="max-width:100%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 4: zh_fact 数据集上三种噪音类型的破坏力对比（n=15）</p>
+
+    <div class="note err">
+      <strong>核心发现 3 · 反事实噪音破坏力 ≈ 2× 语义噪音</strong>：
+      在 100% 全噪音条件下，counterfactual F1=0.269 << semantic F1=0.518，
+      contains 仅 0.133 (13.3%) vs semantic 0.467 (46.7%)。
+      <br>→ 这印证了 RAGuard / NoiserBench 的论文观点：<strong>"语义无关的噪音模型可以忽略；
+      但带错误信息的伪造文档会直接污染推理"</strong>。
+    </div>
+  </div>
+
+  <div class="c">
+    <h3>实验一-扩展 · 噪音位置效应（zh/fact, r=0.5 semantic, n=15）</h3>
+    <table>
+      <tr><th>位置策略</th><th>F1</th><th>ROUGE-L</th><th>contains</th><th>ISR</th></tr>
+      <tr><td>front (噪音在前)</td><td style="color:var(--y)"><strong>0.920</strong></td><td>0.939</td><td>1.000</td><td>0.400</td></tr>
+      <tr><td>back  (噪音在后)</td><td>0.933</td><td>0.952</td><td>1.000</td><td>0.400</td></tr>
+      <tr><td>interleave (穿插)</td><td>0.933</td><td>0.952</td><td>1.000</td><td>0.400</td></tr>
+      <tr><td>surround (噪音包围)</td><td>0.933</td><td>0.952</td><td>1.000</td><td>0.400</td></tr>
+    </table>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp1_position_effect.png" alt="exp1_position" style="max-width:100%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 5: 噪音位置对 QA 性能的影响</p>
+
+    <div class="note warn">
+      <strong>初步观察</strong>：front 位置（噪音放最前）F1 略低（-0.013），与"primacy bias"假设方向一致；
+      其他三种位置几乎相同。<strong>50% 强度下差异不显著</strong>，需要在 75% 高噪音场景下复测才能下结论。
+    </div>
+  </div>
+
+  <div class="c">
+    <h3>实验四-扩展 · 反事实噪音下的方法对比（zh/fact, r=0.75 CF, n=10）</h3>
+    <table>
+      <tr><th>方法</th><th>F1</th><th>ROUGE-L</th><th>contains</th><th>vs naive</th></tr>
+      <tr><td>naive</td><td>0.731</td><td>0.784</td><td>0.90</td><td>—</td></tr>
+      <tr><td>prompt (方法 A)</td><td>0.750</td><td>0.795</td><td>0.80</td><td><span class="tag b">+1.9 pt</span></td></tr>
+      <tr><td>confidence (方法 C)</td><td style="color:var(--r)">0.622</td><td>0.694</td><td>0.70</td><td><span class="tag r">-10.9 pt ⚠</span></td></tr>
+      <tr><td><strong>voting (方法 D 新增)</strong></td><td><strong>0.850</strong></td><td><strong>0.895</strong></td><td>0.90</td><td><span class="tag g">+11.9 pt 🏆</span></td></tr>
+    </table>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp4_counterfactual_methods.png" alt="exp4_cf" style="max-width:100%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 6: 反事实噪音下 4 种方法的 F1 对比</p>
+
+    <div class="note ok">
+      <strong>核心发现 4 · 噪音类型 × 矫正方法存在"互锁效应"</strong>：
+      <ul style="margin-top:8px">
+        <li><strong>semantic 噪音</strong> → confidence (CoT) 最优（exp2 中 +15.1 pt）</li>
+        <li><strong>counterfactual 噪音</strong> → voting (多 Persona) 最优（本表 +11.9 pt），
+          而 confidence 反而下降 -10.9 pt</li>
+      </ul>
+      <strong>解释</strong>：CoT 的"证据链推理"在面对伪造文档时容易被错误证据"绑架"——
+      单条推理路径越严密，被骗后越自信。而 voting 通过 3 个独立 Persona 分散风险，
+      降低了任一推理链被反事实文档误导的概率。
+      <br>→ 这是本工作的<strong>核心创新点</strong>之一，最终报告将重点讨论。
+    </div>
+  </div>
+
+  <div class="c">
+    <h3>已识别的待解决问题</h3>
+    <ul>
+      <li><strong>位置效应在 50% 噪音下不显著</strong>：需补跑 r=0.75 + zh/main 来放大差异</li>
+      <li><strong>selfrag 在此数据集下没体现优势</strong>：可能因 RELEVANT 判定过宽</li>
+      <li><strong>样本量仍需继续扩大</strong>：主线已扩到 n=50，最终建议扩到 n=100-300 并做 bootstrap 置信区间</li>
+      <li><strong>方法 D 在 semantic 噪音上优势不明显</strong>：最新 n=50 中 voting 略高于 naive，但低于 iterative/confidence</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 8. 最新实验同步 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--g)">8</div>
+    <div class="sec-title">最新实验同步（2026-05-24）</div>
+  </div>
+  <div class="c">
+    <div class="note ok">
+      <strong>说明</strong>：本节为 5 月 24 日同步后的最新结果，覆盖前文 5 月 16 日首轮小样本数字。
+      前文保留用于说明实验演进过程；正式报告应以本节 JSON 与图表为准。
+    </div>
+
+    <h3>最新结果文件</h3>
+    <table>
+      <tr><th>实验</th><th>最新 JSON</th><th>规模</th><th>用途</th></tr>
+      <tr><td>exp1 噪音比例/类型</td><td><code>exp1_noise_impact_zh_main_20260523_212441.json</code></td><td>15 conditions × 50</td><td>分析噪音比例、类型对性能的影响</td></tr>
+      <tr><td>exp1 位置子实验</td><td><code>exp1_noise_impact_zh_main_position_20260523_212649.json</code></td><td>4 positions × 50</td><td>分析 front/back/interleave/surround</td></tr>
+      <tr><td>exp2 矫正方法</td><td><code>exp2_correction_zh_20260523_212925.json</code></td><td>9 conditions × 30</td><td>naive/prompt/confidence 梯度对比</td></tr>
+      <tr><td>exp3 案例研究</td><td><code>exp3_case_study_zh_20260524_194830.json</code></td><td>3 conditions × 30，15 cases</td><td>矫正前后案例解释，已补全 query/docs/labels</td></tr>
+      <tr><td>exp4 现有方法比较</td><td><code>exp4_existing_methods_zh_main_semantic_20260524_200425.json</code></td><td>6 methods × 50</td><td>naive/selfrag/iterative/confidence/prompt/voting 横向比较</td></tr>
+    </table>
+
+    <h3>关键数值更新</h3>
+    <table>
+      <tr><th>观察点</th><th>最新结果</th><th>解释</th></tr>
+      <tr><td>高噪音破坏性</td><td>exp1 中 token-F1 从 0.712 下降到约 0.313，contains 从 0.92 下降到 0.24</td><td>当上下文完全由噪音构成时，模型无法稳定恢复答案；NAR 升至约 0.51，答案来源明显向噪音迁移。</td></tr>
+      <tr><td>中等语义噪音</td><td>exp2 中 naive token-F1 从 0.7176 升至 0.7381</td><td>中等语义噪音不必然有害，可能补充主题线索；正式结论需避免简单写成“噪音越多越差”。</td></tr>
+      <tr><td>位置效应</td><td>front=0.7164, back=0.7100, interleave=0.7144, surround=0.7264</td><td>50% 语义噪音下位置差异较小，暂不作强结论。</td></tr>
+      <tr><td>现有方法比较</td><td>iterative=0.7415 最高，confidence=0.7326，prompt=0.7178，naive=0.7144，voting=0.7158，selfrag=0.7144</td><td>在 zh/main semantic r=0.5 上，迭代式文档筛选当前最优；Self-RAG 判定过宽，几乎退化为 naive。</td></tr>
+      <tr><td>案例研究</td><td>exp3 已生成 15 个案例，case 中包含 query、gold、三种预测、ISR/NAR 与文档标签</td><td>可用于最终报告逐例解释“哪些文档被采纳、矫正机制如何改变答案”。</td></tr>
+    </table>
+
+    <h3>更新后的图表</h3>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp4_existing_methods.png" alt="exp4_methods_latest" style="max-width:100%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 7: exp4 最新 N=50 六方法横向比较</p>
+    <p style="text-align:center;margin:14px 0"><img src="../figures/exp3_case_type_pie.png" alt="exp3_cases_latest" style="max-width:70%;border-radius:10px;border:1px solid var(--b)"></p>
+    <p style="text-align:center;color:var(--d);font-size:.82rem">图 8: exp3 最新案例类型分布</p>
+
+    <div class="note warn">
+      <strong>结论边界</strong>：当前最新结果支持“高比例噪音显著损害 RAG 问答，ISR/NAR 能刻画答案来源迁移”；
+      对“矫正机制显著优于 naive”的论证仍需谨慎表述。现阶段更稳妥的结论是：
+      iterative 在 zh/main semantic r=0.5 条件下表现最好，但不同噪音类型和更大样本量下仍需继续验证。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 9. 实验要求对齐 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--b)">9</div>
+    <div class="sec-title">实验要求对齐</div>
+  </div>
+  <div class="c">
+    <h3>标准输入 / 输出 / 参考答案文件</h3>
+    <p>
+      为对齐课程要求，项目已将最新 exp4 结果导出为可直接检查的三件套：
+      <code>input.json</code>、<code>output.json</code>、<code>reference.json</code>。
+      文件位于 <code>data/processed/exp4_existing_methods_zh_main_semantic_20260524_200425/</code>。
+    </p>
+    <table>
+      <tr><th>文件</th><th>样本数</th><th>主要字段</th><th>说明</th></tr>
+      <tr><td><code>input.json</code></td><td>50</td><td><code>id / question / context</code></td><td>额外保留 <code>documents / document_labels / noise_*</code>，便于复查 RAG 噪音来源</td></tr>
+      <tr><td><code>output.json</code></td><td>50</td><td><code>id / answer</code></td><td>默认导出当前 token-F1 最高的 iterative 方法输出</td></tr>
+      <tr><td><code>reference.json</code></td><td>50</td><td><code>id / answer / answers</code></td><td>与输入 id 严格对齐，用于 EM、contains、Token-F1、ROUGE-L 等指标评估</td></tr>
+      <tr><td><code>output_all_methods.json</code></td><td>300</td><td><code>id / method / answer</code></td><td>保留 naive/selfrag/iterative/confidence/prompt/voting 六种方法的横向比较输出</td></tr>
+    </table>
+
+    <h3>原始数据准备说明</h3>
+    <p>
+      本项目使用公开 RGB 数据集作为问答与候选文档来源，而不是重新爬取网页或解析 PDF。
+      RGB 已提供 <code>positive</code>、<code>negative</code>、<code>positive_wrong</code> 三类文档池，正好对应本题所要求的
+      “相关但缺少逻辑依赖”噪音文档和反事实噪音文档。实验将这些已标注文档池建模为受控检索结果，从而能精确改变噪音比例、类型和位置。
+    </p>
+    <table>
+      <tr><th>字段</th><th>实验含义</th><th>用途</th></tr>
+      <tr><td><code>positive</code></td><td>支持正确答案的有效文档</td><td>构造 clean RAG 上下文与 ISR 归因</td></tr>
+      <tr><td><code>negative</code></td><td>语义相关但不能支持答案的噪音文档</td><td>模拟普通检索噪音，计算 NAR</td></tr>
+      <tr><td><code>positive_wrong</code></td><td>表面相关且指向错误答案的反事实文档</td><td>模拟更强误导性噪音，测试矫正机制鲁棒性</td></tr>
+    </table>
+
+    <div class="note warn">
+      <strong>表述边界</strong>：当前系统重点是“受控 RAG 上下文扰动实验”，不是完整向量数据库检索系统。
+      因此正式报告中会避免夸大为端到端检索优化，而是强调上下文文档组成对大模型问答结果的影响、指标设计和矫正前后比较。
+    </div>
+  </div>
+</div>
+
+<!-- ===== 10. 风险与计划 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--r)">10</div>
+    <div class="sec-title">风险与后续计划</div>
+  </div>
+  <div class="c">
+    <table>
+      <tr><th>风险</th><th>概率</th><th>应对</th></tr>
+      <tr><td>API 调用超预算（预估 ¥30-50）</td><td>低</td><td>已实现 sha1 磁盘缓存，重复 prompt 0 成本；先 50 条验证再全量</td></tr>
+      <tr><td>矫正效果不明显</td><td>中</td><td>多 prompt 变体；负结论本身也是结论</td></tr>
+      <tr><td>中英文性能差异大</td><td>中</td><td>作为讨论点分析</td></tr>
+      <tr><td>时间不够</td><td>中</td><td>优先级：实验一 &gt; 实验二 &gt; 实验三 &gt; 实验四</td></tr>
+    </table>
+
+    <h3>后续 6 周排期（基于真实进度更新）</h3>
+    <table>
+      <tr><th>周次</th><th>任务</th><th>状态</th></tr>
+      <tr><td>W1 (5.16-22)</td><td>代码基础设施 + 首轮真实实验 + 中期报告</td><td><span class="tag done">DONE</span></td></tr>
+      <tr><td>W2 (5.23-29)</td><td>扩量 n=50 + 跑 zh_fact 反事实噪音 + 位置子实验</td><td><span class="tag b">本周</span></td></tr>
+      <tr><td>W3 (5.30-6.5)</td><td>全量 n=300 跑 exp1/2 + 跑 en 数据集</td><td><span class="tag p">计划</span></td></tr>
+      <tr><td>W4 (6.6-6.12)</td><td>实验三案例深度分析 (15-20 例)</td><td><span class="tag p">计划</span></td></tr>
+      <tr><td>W5 (6.13-6.19)</td><td>调优 prompt + 拓展矫正方法 + 统计显著性检验</td><td><span class="tag p">计划</span></td></tr>
+      <tr><td>W6 (6.20-6.26)</td><td>Demo 抛光 + 系统演示彩排</td><td><span class="tag p">计划</span></td></tr>
+      <tr><td>W7 (6.27-6.30)</td><td>最终报告撰写 + 整理代码 + 打包提交</td><td><span class="tag p">计划</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 10. 命令速查 ===== -->
+<div class="sec">
+  <div class="sec-head">
+    <div class="sec-dot" style="background:var(--g)">10</div>
+    <div class="sec-title">运行方式</div>
+  </div>
+  <div class="c">
+    <div class="code"># 1. 安装依赖
+pip install -r requirements.txt
+
+# 2. 配置 API
+copy .env.example .env
+# 编辑 .env，填 DEEPSEEK_API_KEY
+
+# 3. Smoke test（先 dry-run 验证 pipeline，再跑真实小规模）
+python -m src.smoke_test --n 5 --dry
+python -m src.smoke_test --n 20
+
+# 4. 四个核心实验
+python -m experiments.exp1_noise_impact --n 50 --language zh
+python -m experiments.exp2_correction   --n 50 --language zh
+python -m experiments.exp3_case_study   --n 30 --pick 15 --language zh
+python -m experiments.exp4_existing_methods --n 50 --language zh --subset main --ratio 0.5 --noise-type semantic
+
+# 5. 生成最新图表
+python -m scripts.render_all_figures
+
+# 6. 启动 Demo
+python demo/app.py     # Gradio: http://127.0.0.1:7861
+cd frontend && npm run dev  # Vue: http://127.0.0.1:5173</div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

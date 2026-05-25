@@ -30,14 +30,14 @@ DEFAULT_METHODS = ("naive", "prompt", "iterative", "confidence", "selfrag")
 DEFAULT_RATIOS = (0.0, 0.25, 0.5, 0.75)
 
 
-def build_conditions(methods, ratios) -> list[RunCondition]:
+def build_conditions(methods, ratios, noise_type: str = "semantic") -> list[RunCondition]:
     return [
         RunCondition(
             method=m,
             noise_ratio=r,
-            noise_type="semantic",
+            noise_type=noise_type,
             noise_position="interleave",
-            label=f"{m}|r={r}",
+            label=f"{m}|r={r}|{noise_type}",
         )
         for m, r in product(methods, ratios)
     ]
@@ -47,6 +47,11 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--n", type=int, default=CONFIG.smoke_test_size)
     p.add_argument("--language", choices=("zh", "en"), default="zh")
+    p.add_argument("--subset", default="main", choices=("main", "refine", "fact", "int"))
+    p.add_argument(
+        "--noise-type", default="semantic", choices=("semantic", "counterfactual", "mixed"),
+        help="噪音类型（默认 semantic）",
+    )
     p.add_argument(
         "--methods",
         default=",".join(DEFAULT_METHODS),
@@ -62,12 +67,12 @@ def main() -> None:
     methods = tuple(m.strip() for m in args.methods.split(",") if m.strip())
     ratios = tuple(float(r) for r in args.ratios.split(",") if r.strip())
 
-    records = load_corpus(language=args.language, subset="main", limit=args.n)
-    conditions = build_conditions(methods, ratios)
+    records = load_corpus(language=args.language, subset=args.subset, limit=args.n)
+    conditions = build_conditions(methods, ratios, noise_type=args.noise_type)
     logger.info(f"exp2: {len(records)} samples × {len(conditions)} conditions")
     results = run_conditions(records=records, conditions=conditions, language=args.language)
     path = save_run(
-        experiment_name=f"exp2_correction_{args.language}",
+        experiment_name=f"exp2_correction_{args.language}_{args.subset}_{args.noise_type}",
         results=results,
         extras={"args": vars(args)},
     )

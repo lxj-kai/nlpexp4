@@ -86,6 +86,7 @@ def main() -> None:
     p.add_argument("--n", type=int, default=30, help="候选样本池大小")
     p.add_argument("--pick", type=int, default=20, help="每个 ratio 挑选案例数")
     p.add_argument("--language", choices=("zh", "en"), default="zh")
+    p.add_argument("--subset", default="main", choices=("main", "refine", "fact", "int"))
     p.add_argument(
         "--ratios",
         default="0.5,0.75,1.0",
@@ -100,7 +101,7 @@ def main() -> None:
 
     ratios = [float(r) for r in args.ratios.split(",")]
 
-    records = load_corpus(language=args.language, subset="main", limit=args.n)
+    records = load_corpus(language=args.language, subset=args.subset, limit=args.n)
 
     # clean 只跑一次，所有 ratio 共享
     conditions = [
@@ -149,7 +150,7 @@ def main() -> None:
         "args": vars(args),
     }
     path = save_run(
-        experiment_name=f"exp3_case_study_{args.language}",
+        experiment_name=f"exp3_case_study_{args.language}_{args.subset}",
         results=results,
         extras=extras,
     )

@@ -17,8 +17,8 @@ import numpy as np
 from src.visualize import _PALETTE, _setup_style, _save
 from src.config import CONFIG
 
-TYPE_ORDER = ["Type1-矫正生效", "Type1-矫正未生效", "Type3-信息淹没", "Type4-免疫"]
-TYPE_COLORS = ["#10b981", "#ef4444", "#f59e0b", "#3b82f6"]
+TYPE_ORDER = ["Type1-矫正生效", "Type1-矫正未生效", "Type3-信息淹没", "Type4-免疫", "Other"]
+TYPE_COLORS = ["#10b981", "#ef4444", "#f59e0b", "#3b82f6", "#94a3b8"]
 
 # ── 找最新 exp3 结果 ──
 files = sorted((ROOT / "experiments" / "results").glob("exp3_case_study_*.json"))

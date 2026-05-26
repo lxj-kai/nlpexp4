@@ -1,0 +1,2124 @@
+{
+  "experiment": "exp3_case_study_zh",
+  "timestamp": "20260523_212935",
+  "git_commit": "2cac25d366c16072fb0d79a63b9da5a9a6ba2dc4",
+  "config": {
+    "api_base": "https://api.deepseek.com/v1",
+    "model": "deepseek-chat",
+    "judge_model": "deepseek-chat",
+    "timeout": 60,
+    "max_retries": 3,
+    "temperature": 0.0,
+    "max_tokens": 512,
+    "project_root": "D:\\code\\nlpexp4",
+    "data_dir": "D:\\code\\nlpexp4\\data\\rgb",
+    "results_dir": "D:\\code\\nlpexp4\\experiments\\results",
+    "cache_dir": "D:\\code\\nlpexp4\\.cache",
+    "figures_dir": "D:\\code\\nlpexp4\\figures",
+    "report_dir": "D:\\code\\nlpexp4\\report",
+    "zh_main": "zh.json",
+    "zh_fact": "zh_fact.json",
+    "zh_int": "zh_int.json",
+    "zh_refine": "zh_refine.json",
+    "en_main": "en.json",
+    "en_fact": "en_fact.json",
+    "noise_ratios": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "noise_types": [
+      "semantic",
+      "counterfactual",
+      "mixed"
+    ],
+    "noise_positions": [
+      "front",
+      "back",
+      "interleave",
+      "surround"
+    ],
+    "max_docs": 10,
+    "min_positive_docs": 1,
+    "seed": 42,
+    "smoke_test_size": 50,
+    "judge_score_max": 5,
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "correctors_enabled": [
+      "prompt",
+      "iterative",
+      "confidence",
+      "selfrag"
+    ]
+  },
+  "results": [
+    {
+      "condition": {
+        "method": "naive",
+        "noise_ratio": 0.0,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "clean"
+      },
+      "summary": {
+        "method": "naive",
+        "noise_ratio_target": 0.0,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "n": 30,
+        "em": 0.3667,
+        "contains": 0.9333,
+        "token_f1": 0.7176,
+        "rouge_l": 0.7176,
+        "judge_score": null,
+        "isr": 0.8892,
+        "nar": 0.0
+      },
+      "elapsed": 0.04,
+      "n": 30,
+      "rows": [
+        {
+          "sample_id": 106,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "德劳帕迪·穆尔穆",
+          "gold": [
+            "德劳帕迪·穆尔穆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 239,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "高启强。",
+          "gold": [
+            "高启强"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 37,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "纳达尔",
+          "gold": [
+            "纳达尔"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 89,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "21人死亡。",
+          "gold": [
+            "21人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 32,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "《超越》讲述三代短道速滑运动员为祖国荣誉奋斗拼搏的故事。",
+          "gold": [
+            "短道速滑"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.2758620689655173,
+          "rouge_l": 0.2758620689655173,
+          "judge_score": null,
+          "isr": 0.875,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 250,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "965亿元。",
+          "gold": [
+            "965亿元"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 192,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "48支球队。",
+          "gold": [
+            "48"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.4,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 120,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "哈尔滨",
+          "gold": [
+            "哈尔滨"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 19,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "无法回答",
+          "gold": [
+            "189"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 225,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "山东泰山队",
+          "gold": [
+            "山东泰山"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.888888888888889,
+          "rouge_l": 0.888888888888889,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 24,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "1308.84亿斤。",
+          "gold": [
+            "['1308.84亿斤', '6544.2万吨']"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 295,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "6月25日",
+          "gold": [
+            "6月25日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 103,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "奈良县的近铁“大和西大寺站”。",
+          "gold": [
+            "奈良"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.2857142857142857,
+          "rouge_l": 0.2857142857142857,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 220,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "墨西哥城。",
+          "gold": [
+            "墨西哥城"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 205,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "利雅得胜利",
+          "gold": [
+            "利雅得胜利"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 297,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "7月6日至9日。",
+          "gold": [
+            "7月6日",
+            "9日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.7272727272727273,
+          "rouge_l": 0.7272727272727273,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 291,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2023年8月17日。",
+          "gold": [
+            "8月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 38,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）。",
+          "gold": [
+            "张艺谋",
+            "张和平",
+            "陆川"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.25,
+          "rouge_l": 0.25,
+          "judge_score": null,
+          "isr": 0.8,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 158,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "3.71万人",
+          "gold": [
+            "3.71万人"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 173,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "福建厦门。",
+          "gold": [
+            "厦门"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 245,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "当地时间2023年2月6日凌晨4时17分。",
+          "gold": [
+            "2023年2月6日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.5454545454545454,
+          "rouge_l": 0.5454545454545454,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "RCEP成员国包括东盟10国与中国、日本、韩国、澳大利亚、新西兰。",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.2857142857142857,
+          "rouge_l": 0.2857142857142857,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 224,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "成都。",
+          "gold": [
+            "成都"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 251,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "亚历山大·扬科维奇",
+          "gold": [
+            "扬科维奇"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 144,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "“三千孤儿入内蒙”真实历史事件。",
+          "gold": [
+            "三千孤儿入内蒙"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.7000000000000001,
+          "rouge_l": 0.7000000000000001,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 133,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "波兰和斯洛文尼亚。",
+          "gold": [
+            "波兰",
+            "斯洛文尼亚"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.7692307692307693,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 246,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "7.8级。",
+          "gold": [
+            "7.8"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 206,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "Permacrisis（长期危机）",
+          "gold": [
+            "Permacrisis"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.33333333333333337,
+          "rouge_l": 0.33333333333333337,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 86,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年6月3日。",
+          "gold": [
+            "6月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.0,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.0
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "naive",
+        "noise_ratio": 0.5,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "noisy"
+      },
+      "summary": {
+        "method": "naive",
+        "noise_ratio_target": 0.5,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "n": 30,
+        "em": 0.4333,
+        "contains": 0.9333,
+        "token_f1": 0.7381,
+        "rouge_l": 0.7381,
+        "judge_score": null,
+        "isr": 0.8549,
+        "nar": 0.0071
+      },
+      "elapsed": 0.03,
+      "n": 30,
+      "rows": [
+        {
+          "sample_id": 106,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "德劳帕迪·穆尔穆",
+          "gold": [
+            "德劳帕迪·穆尔穆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 239,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "高启强",
+          "gold": [
+            "高启强"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 37,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "纳达尔",
+          "gold": [
+            "纳达尔"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 89,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "21人死亡，包括19名儿童和2名成人。",
+          "gold": [
+            "21人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.23529411764705882,
+          "rouge_l": 0.23529411764705882,
+          "judge_score": null,
+          "isr": 0.9090909090909091,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 32,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "《超越》讲述短道速滑运动员陈冕从青岛队成长为国家队并站上冬奥赛场的故事。",
+          "gold": [
+            "短道速滑"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.21621621621621626,
+          "rouge_l": 0.21621621621621626,
+          "judge_score": null,
+          "isr": 0.6875,
+          "nar": 0.03125,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 250,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "965亿元。",
+          "gold": [
+            "965亿元"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 192,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "48支球队。",
+          "gold": [
+            "48"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.4,
+          "rouge_l": 0.4,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 120,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "哈尔滨",
+          "gold": [
+            "哈尔滨"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 19,
+          "noise_ratio": 0.833,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "无法回答",
+          "gold": [
+            "189"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 225,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "山东泰山队",
+          "gold": [
+            "山东泰山"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.888888888888889,
+          "rouge_l": 0.888888888888889,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 24,
+          "noise_ratio": 0.625,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "1308.84亿斤。",
+          "gold": [
+            "['1308.84亿斤', '6544.2万吨']"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 295,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "6月25日。",
+          "gold": [
+            "6月25日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 103,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "奈良市的近铁“大和西大寺站”。",
+          "gold": [
+            "奈良"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.2857142857142857,
+          "rouge_l": 0.2857142857142857,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 220,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "墨西哥城。",
+          "gold": [
+            "墨西哥城"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 205,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "利雅得胜利",
+          "gold": [
+            "利雅得胜利"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 297,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2023年7月6日至9日。",
+          "gold": [
+            "7月6日",
+            "9日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6153846153846153,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 291,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2023年8月17日",
+          "gold": [
+            "8月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.5,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 38,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）。",
+          "gold": [
+            "张艺谋",
+            "张和平",
+            "陆川"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.25,
+          "rouge_l": 0.25,
+          "judge_score": null,
+          "isr": 0.8,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 158,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "3.71万人",
+          "gold": [
+            "3.71万人"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 173,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "厦门",
+          "gold": [
+            "厦门"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 245,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2023年2月6日凌晨4时17分。",
+          "gold": [
+            "2023年2月6日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.38095238095238093,
+          "rouge_l": 0.38095238095238093,
+          "judge_score": null,
+          "isr": 0.9333333333333333,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 224,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "成都。",
+          "gold": [
+            "成都"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 251,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "亚历山大·扬科维奇",
+          "gold": [
+            "扬科维奇"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 144,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "“三千孤儿入内蒙”真实历史事件。",
+          "gold": [
+            "三千孤儿入内蒙"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.7000000000000001,
+          "rouge_l": 0.7000000000000001,
+          "judge_score": null,
+          "isr": 0.8181818181818182,
+          "nar": 0.18181818181818182,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 133,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "波兰和斯洛文尼亚。",
+          "gold": [
+            "波兰",
+            "斯洛文尼亚"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.7692307692307693,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 246,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "7.8级。",
+          "gold": [
+            "7.8"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 206,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "permacrisis",
+          "gold": [
+            "Permacrisis"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 86,
+          "noise_ratio": 0.625,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "2022年6月3日。",
+          "gold": [
+            "6月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.556,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "naive",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        }
+      ]
+    },
+    {
+      "condition": {
+        "method": "confidence",
+        "noise_ratio": 0.5,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "label": "corrected_confidence"
+      },
+      "summary": {
+        "method": "confidence",
+        "noise_ratio_target": 0.5,
+        "noise_type": "semantic",
+        "noise_position": "interleave",
+        "n": 30,
+        "em": 0.4333,
+        "contains": 0.9333,
+        "token_f1": 0.757,
+        "rouge_l": 0.757,
+        "judge_score": null,
+        "isr": 0.8373,
+        "nar": 0.0122
+      },
+      "elapsed": 0.24,
+      "n": 30,
+      "rows": [
+        {
+          "sample_id": 106,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "德劳帕迪·穆尔穆",
+          "gold": [
+            "德劳帕迪·穆尔穆"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 239,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "高启强",
+          "gold": [
+            "高启强"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 37,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "纳达尔",
+          "gold": [
+            "纳达尔"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 89,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "21人死亡",
+          "gold": [
+            "21人"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 32,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "讲述短道速滑运动员陈冕及三代运动员为祖国荣誉奋斗的故事。",
+          "gold": [
+            "短道速滑"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.25806451612903225,
+          "rouge_l": 0.25806451612903225,
+          "judge_score": null,
+          "isr": 0.6956521739130435,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 250,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "965亿元",
+          "gold": [
+            "965亿元"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 192,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "48支",
+          "gold": [
+            "48"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 0.5,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 120,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "黑龙江哈尔滨",
+          "gold": [
+            "哈尔滨"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 19,
+          "noise_ratio": 0.833,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "未找到相关数据",
+          "gold": [
+            "189"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.0,
+          "rouge_l": 0.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.16666666666666666,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 225,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "山东泰山",
+          "gold": [
+            "山东泰山"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 24,
+          "noise_ratio": 0.625,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "1308.84亿斤",
+          "gold": [
+            "['1308.84亿斤', '6544.2万吨']"
+          ],
+          "em": 0.0,
+          "contains": 0.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 295,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "6月25日",
+          "gold": [
+            "6月25日"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 103,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "奈良县近铁大和西大寺站",
+          "gold": [
+            "奈良"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.3076923076923077,
+          "rouge_l": 0.3076923076923077,
+          "judge_score": null,
+          "isr": 0.8888888888888888,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 220,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "墨西哥首都墨西哥城",
+          "gold": [
+            "墨西哥城"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6153846153846153,
+          "rouge_l": 0.6153846153846153,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 205,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "利雅得胜利",
+          "gold": [
+            "利雅得胜利"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 297,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "7月6日至9日",
+          "gold": [
+            "7月6日",
+            "9日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.7272727272727273,
+          "rouge_l": 0.7272727272727273,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 291,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2023年8月17日",
+          "gold": [
+            "8月17日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.5,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 38,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）",
+          "gold": [
+            "张艺谋",
+            "张和平",
+            "陆川"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.25,
+          "rouge_l": 0.25,
+          "judge_score": null,
+          "isr": 0.8,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 158,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "3.71万人",
+          "gold": [
+            "3.71万人"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 173,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "厦门",
+          "gold": [
+            "厦门"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 245,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2023年2月6日凌晨4时17分",
+          "gold": [
+            "2023年2月6日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 1,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "东盟10国、中国、日本、韩国、澳大利亚、新西兰",
+          "gold": [
+            "东盟",
+            "中国",
+            "日本",
+            "韩国",
+            "澳大利亚",
+            "新西兰"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.38095238095238093,
+          "rouge_l": 0.38095238095238093,
+          "judge_score": null,
+          "isr": 0.9333333333333333,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 224,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "成都",
+          "gold": [
+            "成都"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 251,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "亚历山大·扬科维奇",
+          "gold": [
+            "扬科维奇"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.6666666666666666,
+          "rouge_l": 0.6666666666666666,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 144,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "三千孤儿入内蒙",
+          "gold": [
+            "三千孤儿入内蒙"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.8,
+          "nar": 0.2,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 133,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "波兰和斯洛文尼亚",
+          "gold": [
+            "波兰",
+            "斯洛文尼亚"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.7692307692307693,
+          "rouge_l": 0.7692307692307693,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 246,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "7.8级",
+          "gold": [
+            "7.8"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 206,
+          "noise_ratio": 0.5,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "permacrisis",
+          "gold": [
+            "Permacrisis"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 86,
+          "noise_ratio": 0.625,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "2022年6月3日",
+          "gold": [
+            "6月3日"
+          ],
+          "em": 0.0,
+          "contains": 1.0,
+          "token_f1": 0.8,
+          "rouge_l": 0.8,
+          "judge_score": null,
+          "isr": 1.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        },
+        {
+          "sample_id": 5,
+          "noise_ratio": 0.556,
+          "noise_type": "semantic",
+          "noise_position": "interleave",
+          "method": "confidence",
+          "prediction": "6.4%",
+          "gold": [
+            "6.4%"
+          ],
+          "em": 1.0,
+          "contains": 1.0,
+          "token_f1": 1.0,
+          "rouge_l": 1.0,
+          "judge_score": null,
+          "isr": 0.0,
+          "nar": 0.0,
+          "noise_ratio_target": 0.5
+        }
+      ]
+    }
+  ],
+  "robustness_table": [
+    {
+      "method": "confidence",
+      "noise_type": "semantic",
+      "score_metric": "token_f1",
+      "score_clean": null,
+      "score_noisy_avg": 0.757,
+      "NS": null,
+      "NRS": null,
+      "CRR": -0.922,
+      "ISR_avg": 0.8373,
+      "NAR_avg": 0.0122,
+      "n_conditions": 1,
+      "ratios": [
+        0.5
+      ],
+      "scores": [
+        0.757
+      ],
+      "noise_ratio_actual": {
+        "mean": 0.5,
+        "std": 0.0
+      }
+    },
+    {
+      "method": "naive",
+      "noise_type": "semantic",
+      "score_metric": "token_f1",
+      "score_clean": 0.7176,
+      "score_noisy_avg": 0.7381,
+      "NS": -0.0286,
+      "NRS": 0.041,
+      "CRR": null,
+      "ISR_avg": 0.872,
+      "NAR_avg": 0.0036,
+      "n_conditions": 2,
+      "ratios": [
+        0.0,
+        0.5
+      ],
+      "scores": [
+        0.7176,
+        0.7381
+      ],
+      "noise_ratio_actual": {
+        "mean": 0.5,
+        "std": 0.0
+      }
+    }
+  ],
+  "cases": [
+    {
+      "sample_id": 1,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "pred_clean": "RCEP成员国包括东盟10国与中国、日本、韩国、澳大利亚、新西兰。",
+      "pred_noisy": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+      "pred_corrected": "东盟10国、中国、日本、韩国、澳大利亚、新西兰",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 1.0,
+      "isr_noisy": 0.9333333333333333,
+      "nar_noisy": 0.0,
+      "nar_corrected": 0.0
+    },
+    {
+      "sample_id": 5,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "6.4%"
+      ],
+      "pred_clean": "6.4%",
+      "pred_noisy": "6.4%",
+      "pred_corrected": "6.4%",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 0.0,
+      "isr_noisy": 0.0,
+      "nar_noisy": 0.0,
+      "nar_corrected": 0.0
+    },
+    {
+      "sample_id": 32,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "短道速滑"
+      ],
+      "pred_clean": "《超越》讲述三代短道速滑运动员为祖国荣誉奋斗拼搏的故事。",
+      "pred_noisy": "《超越》讲述短道速滑运动员陈冕从青岛队成长为国家队并站上冬奥赛场的故事。",
+      "pred_corrected": "讲述短道速滑运动员陈冕及三代运动员为祖国荣誉奋斗的故事。",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 0.875,
+      "isr_noisy": 0.6875,
+      "nar_noisy": 0.03125,
+      "nar_corrected": 0.0
+    },
+    {
+      "sample_id": 37,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "纳达尔"
+      ],
+      "pred_clean": "纳达尔",
+      "pred_noisy": "纳达尔",
+      "pred_corrected": "纳达尔",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 1.0,
+      "isr_noisy": 1.0,
+      "nar_noisy": 0.0,
+      "nar_corrected": 0.0
+    },
+    {
+      "sample_id": 38,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "张艺谋",
+        "张和平",
+        "陆川"
+      ],
+      "pred_clean": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）。",
+      "pred_noisy": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）。",
+      "pred_corrected": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 0.8,
+      "isr_noisy": 0.8,
+      "nar_noisy": 0.0,
+      "nar_corrected": 0.0
+    },
+    {
+      "sample_id": 86,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "6月3日"
+      ],
+      "pred_clean": "2022年6月3日。",
+      "pred_noisy": "2022年6月3日。",
+      "pred_corrected": "2022年6月3日",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 1.0,
+      "isr_noisy": 1.0,
+      "nar_noisy": 0.0,
+      "nar_corrected": 0.0
+    },
+    {
+      "sample_id": 89,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "21人"
+      ],
+      "pred_clean": "21人死亡。",
+      "pred_noisy": "21人死亡，包括19名儿童和2名成人。",
+      "pred_corrected": "21人死亡",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 1.0,
+      "isr_noisy": 0.9090909090909091,
+      "nar_noisy": 0.0,
+      "nar_corrected": 0.0
+    },
+    {
+      "sample_id": 103,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "奈良"
+      ],
+      "pred_clean": "奈良县的近铁“大和西大寺站”。",
+      "pred_noisy": "奈良市的近铁“大和西大寺站”。",
+      "pred_corrected": "奈良县近铁大和西大寺站",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 1.0,
+      "isr_noisy": 1.0,
+      "nar_noisy": 0.0,
+      "nar_corrected": 0.0
+    },
+    {
+      "sample_id": 106,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "德劳帕迪·穆尔穆"
+      ],
+      "pred_clean": "德劳帕迪·穆尔穆",
+      "pred_noisy": "德劳帕迪·穆尔穆",
+      "pred_corrected": "德劳帕迪·穆尔穆",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 1.0,
+      "isr_noisy": 1.0,
+      "nar_noisy": 0.0,
+      "nar_corrected": 0.0
+    },
+    {
+      "sample_id": 120,
+      "type": "Type4-免疫",
+      "query": "",
+      "gold": [
+        "哈尔滨"
+      ],
+      "pred_clean": "哈尔滨",
+      "pred_noisy": "哈尔滨",
+      "pred_corrected": "黑龙江哈尔滨",
+      "contains_clean": true,
+      "contains_noisy": true,
+      "contains_corrected": true,
+      "isr_clean": 1.0,
+      "isr_noisy": 1.0,
+      "nar_noisy": 0.0,
+      "nar_corrected": 0.0
+    }
+  ],
+  "args": {
+    "n": 30,
+    "pick": 10,
+    "language": "zh",
+    "corrector": "confidence"
+  }
+}

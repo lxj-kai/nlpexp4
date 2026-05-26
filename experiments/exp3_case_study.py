@@ -30,7 +30,7 @@ from src.utils import get_logger
 
 logger = get_logger("exp3")
 
-TYPE_ORDER = ["Type1-矫正生效", "Type1-矫正未生效", "Type3-信息淹没", "Type4-免疫", "Other"]
+TYPE_ORDER = ["Type1-矫正生效", "Type1-矫正未生效", "Type2-噪音激发", "Type3-信息淹没", "Type4-免疫", "Other"]
 
 
 def _classify_case(c: dict, n: dict, cor: dict | None) -> str:
@@ -41,6 +41,8 @@ def _classify_case(c: dict, n: dict, cor: dict | None) -> str:
         return "Type1-矫正未生效"
     elif c.get("contains") and n.get("contains"):
         return "Type4-免疫"
+    elif not c.get("contains") and n.get("contains"):
+        return "Type2-噪音激发"
     elif not c.get("contains") and not n.get("contains"):
         return "Type3-信息淹没"
     return "Other"
@@ -168,10 +170,11 @@ def _pick_display_cases(cases: list[dict], *, k: int) -> list[dict]:
     """从全量分类中按优先级排序，取 top-K 供报告展示。"""
     priority = {
         "Type1-矫正生效": 0,
-        "Other": 1,
-        "Type1-矫正未生效": 2,
-        "Type3-信息淹没": 3,
-        "Type4-免疫": 4,
+        "Type2-噪音激发": 1,
+        "Other": 2,
+        "Type1-矫正未生效": 3,
+        "Type3-信息淹没": 4,
+        "Type4-免疫": 5,
     }
     cases.sort(key=lambda x: (priority.get(x["type"], 5), x["sample_id"]))
     return cases[:k]

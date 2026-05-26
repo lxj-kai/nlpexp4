@@ -1,0 +1,517 @@
+{
+  "config": {
+    "api_base": "https://api.deepseek.com/v1",
+    "model": "deepseek-chat",
+    "judge_model": "deepseek-chat",
+    "timeout": 60,
+    "max_retries": 3,
+    "temperature": 0.0,
+    "max_tokens": 512,
+    "project_root": "D:\\code\\nlpexp4",
+    "data_dir": "D:\\code\\nlpexp4\\data\\rgb",
+    "results_dir": "D:\\code\\nlpexp4\\experiments\\results",
+    "cache_dir": "D:\\code\\nlpexp4\\.cache",
+    "figures_dir": "D:\\code\\nlpexp4\\figures",
+    "report_dir": "D:\\code\\nlpexp4\\report",
+    "zh_main": "zh.json",
+    "zh_fact": "zh_fact.json",
+    "zh_int": "zh_int.json",
+    "zh_refine": "zh_refine.json",
+    "en_main": "en.json",
+    "en_fact": "en_fact.json",
+    "noise_ratios": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "noise_types": [
+      "semantic",
+      "counterfactual",
+      "mixed"
+    ],
+    "noise_positions": [
+      "front",
+      "back",
+      "interleave",
+      "surround"
+    ],
+    "max_docs": 10,
+    "min_positive_docs": 1,
+    "seed": 42,
+    "smoke_test_size": 50,
+    "judge_score_max": 5,
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "correctors_enabled": [
+      "prompt",
+      "iterative",
+      "confidence",
+      "selfrag"
+    ]
+  },
+  "n_samples": 3,
+  "dry": true,
+  "methods": [
+    "naive",
+    "prompt",
+    "confidence"
+  ],
+  "summaries": [
+    {
+      "method": "naive",
+      "bucket": "clean",
+      "n": 3,
+      "em": 0.0,
+      "contains": 0.3333,
+      "token_f1": 0.0556,
+      "rouge_l": 0.1085,
+      "judge_score": null,
+      "isr": 0.3944,
+      "nar": 0.0
+    },
+    {
+      "method": "prompt",
+      "bucket": "clean",
+      "n": 3,
+      "em": 0.0,
+      "contains": 0.3333,
+      "token_f1": 0.0556,
+      "rouge_l": 0.1085,
+      "judge_score": null,
+      "isr": 0.3944,
+      "nar": 0.0
+    },
+    {
+      "method": "confidence",
+      "bucket": "clean",
+      "n": 3,
+      "em": 0.0,
+      "contains": 0.3333,
+      "token_f1": 0.0889,
+      "rouge_l": 0.163,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0
+    },
+    {
+      "method": "naive",
+      "bucket": "noisy",
+      "n": 3,
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0267,
+      "rouge_l": 0.0632,
+      "judge_score": null,
+      "isr": 0.3056,
+      "nar": 0.0833
+    },
+    {
+      "method": "prompt",
+      "bucket": "noisy",
+      "n": 3,
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0267,
+      "rouge_l": 0.0632,
+      "judge_score": null,
+      "isr": 0.3056,
+      "nar": 0.0833
+    },
+    {
+      "method": "confidence",
+      "bucket": "noisy",
+      "n": 3,
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0417,
+      "rouge_l": 0.0417,
+      "judge_score": null,
+      "isr": 0.3333,
+      "nar": 0.0
+    }
+  ],
+  "rows": [
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "[DRY] echo: 【检索文档】共6篇：\n[文档0] Nov 10, 2022",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.13793103448275862,
+      "judge_score": null,
+      "isr": 0.6,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "[DRY] echo: 【检索文档】共6篇：\n[文档0] RCEP最早由东盟十国发起",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.16666666666666669,
+      "rouge_l": 0.125,
+      "judge_score": null,
+      "isr": 0.3333333333333333,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "[DRY] echo: 【检索文档】共10篇：\n[文档0] 第04版:要闻·台港澳",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.0625,
+      "judge_score": null,
+      "isr": 0.25,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "[DRY] echo: 【检索文档】共6篇：\n[文档0] Nov 10, 2022",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.13793103448275862,
+      "judge_score": null,
+      "isr": 0.6,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "[DRY] echo: 【检索文档】共6篇：\n[文档0] RCEP最早由东盟十国发起",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.16666666666666669,
+      "rouge_l": 0.125,
+      "judge_score": null,
+      "isr": 0.3333333333333333,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "[DRY] echo: 【检索文档】共10篇：\n[文档0] 第04版:要闻·台港澳",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.0625,
+      "judge_score": null,
+      "isr": 0.25,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "confidence",
+      "prediction": "[文档0] Nov 10, 2022",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.26666666666666666,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "confidence",
+      "prediction": "[文档0] RCEP最早由东盟十国发起",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 1.0,
+      "token_f1": 0.2666666666666667,
+      "rouge_l": 0.2222222222222222,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.0,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "confidence",
+      "prediction": "[文档0] 第04版:要闻·台港澳",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.0,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "clean"
+    },
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "[DRY] echo: 【检索文档】共10篇：\n[文档0] 报道指出，莫尔维吊桥垮塌",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.0625,
+      "judge_score": null,
+      "isr": 0.3333333333333333,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "[DRY] echo: 【检索文档】共10篇：\n[文档0] 此外，成员国还在知识产权",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.08,
+      "rouge_l": 0.06451612903225806,
+      "judge_score": null,
+      "isr": 0.3333333333333333,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "naive",
+      "prediction": "[DRY] echo: 【检索文档】共10篇：\n[文档0] 第04版:要闻·台港澳",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.0625,
+      "judge_score": null,
+      "isr": 0.25,
+      "nar": 0.25,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "[DRY] echo: 【检索文档】共10篇：\n[文档0] 报道指出，莫尔维吊桥垮塌",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.0625,
+      "judge_score": null,
+      "isr": 0.3333333333333333,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "[DRY] echo: 【检索文档】共10篇：\n[文档0] 此外，成员国还在知识产权",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.08,
+      "rouge_l": 0.06451612903225806,
+      "judge_score": null,
+      "isr": 0.3333333333333333,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "prompt",
+      "prediction": "[DRY] echo: 【检索文档】共10篇：\n[文档0] 第04版:要闻·台港澳",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.0625,
+      "judge_score": null,
+      "isr": 0.25,
+      "nar": 0.25,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 0,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "confidence",
+      "prediction": "[文档0] 报道指出，莫尔维吊桥垮塌",
+      "gold": [
+        "12人"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.0,
+      "judge_score": null,
+      "isr": 0.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 1,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "confidence",
+      "prediction": "[文档0] 此外，成员国还在知识产权",
+      "gold": [
+        "东盟",
+        "中国",
+        "日本",
+        "韩国",
+        "澳大利亚",
+        "新西兰"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.125,
+      "rouge_l": 0.125,
+      "judge_score": null,
+      "isr": 0.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    },
+    {
+      "sample_id": 2,
+      "noise_ratio": 0.5,
+      "noise_type": "semantic",
+      "noise_position": "interleave",
+      "method": "confidence",
+      "prediction": "[文档0] 第04版:要闻·台港澳",
+      "gold": [
+        "1月3日"
+      ],
+      "em": 0.0,
+      "contains": 0.0,
+      "token_f1": 0.0,
+      "rouge_l": 0.0,
+      "judge_score": null,
+      "isr": 1.0,
+      "nar": 0.0,
+      "bucket": "noisy"
+    }
+  ],
+  "llm_usage": {
+    "calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  }
+}

@@ -1,41 +1,58 @@
 <template>
-  <section>
-    <h2>Stage D · 模型回答与评测</h2>
-    <template v-if="exp.runResult.value">
-      <div class="answer-block">
-        <strong>模型预测</strong>
-        <blockquote>{{ exp.runResult.value.prediction }}</blockquote>
-      </div>
-      <table class="metrics-table">
-        <thead>
-          <tr><th>指标</th><th>值</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>EM</td><td>{{ exp.fmt(exp.runResult.value.metrics.em) }}</td></tr>
-          <tr><td>Contains</td><td>{{ exp.fmt(exp.runResult.value.metrics.contains) }}</td></tr>
-          <tr><td>Token-F1</td><td>{{ exp.fmt(exp.runResult.value.metrics.token_f1) }}</td></tr>
-          <tr><td>ROUGE-L</td><td>{{ exp.fmt(exp.runResult.value.metrics.rouge_l) }}</td></tr>
-          <tr><td>ISR</td><td>{{ exp.fmt(exp.runResult.value.metrics.isr) }}</td></tr>
-          <tr><td>NAR</td><td>{{ exp.fmt(exp.runResult.value.metrics.nar) }}</td></tr>
-          <tr>
-            <td>判定</td>
-            <td>
-              <span class="verdict" :class="exp.runResult.value.metrics.verdict">
-                {{ exp.verdictLabel(exp.runResult.value.metrics.verdict) }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="stage-summary">
-        method={{ exp.runResult.value.meta?.method }} ·
-        prompt_tokens={{ exp.runResult.value.meta?.prompt_tokens }} ·
-        completion_tokens={{ exp.runResult.value.meta?.completion_tokens }} ·
-        latency={{ exp.runResult.value.meta?.latency }}s ·
-        cached={{ exp.runResult.value.meta?.cached }}
-      </p>
-    </template>
-    <p v-else class="stage-summary">运行完整流水线后显示</p>
+  <section class="stage">
+    <div class="stage-head">
+      <span class="stage-num">4</span>
+      <span class="stage-title">答案与评测</span>
+    </div>
+    <div class="stage-body">
+      <template v-if="exp.runResult.value">
+        <div class="answer-block">
+          <strong>模型预测</strong>
+          <blockquote>{{ exp.runResult.value.prediction }}</blockquote>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card highlight">
+            <div class="label">F1</div>
+            <div class="value">{{ exp.fmt(exp.runResult.value.metrics.token_f1) }}</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">EM</div>
+            <div class="value">{{ exp.fmt(exp.runResult.value.metrics.em) }}</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Contains</div>
+            <div class="value">{{ exp.fmt(exp.runResult.value.metrics.contains) }}</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">ROUGE-L</div>
+            <div class="value">{{ exp.fmt(exp.runResult.value.metrics.rouge_l) }}</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="label">ISR</div>
+            <div class="value">{{ exp.fmt(exp.runResult.value.metrics.isr) }}</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="label">NAR</div>
+            <div class="value">{{ exp.fmt(exp.runResult.value.metrics.nar) }}</div>
+          </div>
+        </div>
+
+        <div style="text-align:center">
+          <span class="verdict-badge" :class="exp.runResult.value.metrics.verdict">
+            {{ exp.verdictLabel(exp.runResult.value.metrics.verdict) }}
+          </span>
+        </div>
+
+        <div class="meta-line" v-if="exp.runResult.value.meta">
+          {{ exp.runResult.value.meta.method }} ·
+          {{ exp.runResult.value.meta.prompt_tokens }}+{{ exp.runResult.value.meta.completion_tokens }} tokens ·
+          {{ exp.runResult.value.meta.latency }}s
+          <template v-if="exp.runResult.value.meta.cached"> · cached</template>
+        </div>
+      </template>
+      <p v-else class="stage-empty">运行后显示结果</p>
+    </div>
   </section>
 </template>
 

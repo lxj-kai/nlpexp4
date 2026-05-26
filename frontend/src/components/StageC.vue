@@ -1,10 +1,15 @@
 <template>
-  <section>
-    <h2>Stage C · 送入 LLM 的 Prompt</h2>
-    <div v-if="exp.promptMarkdown.value" class="prompt-block">
-      <pre>{{ exp.promptMarkdown.value }}</pre>
+  <section class="stage">
+    <div class="stage-head">
+      <span class="stage-num">3</span>
+      <span class="stage-title">Prompt</span>
     </div>
-    <p v-else class="stage-summary">注入后显示 System / User 提示词</p>
+    <div class="stage-body">
+      <div v-if="exp.promptMarkdown.value" class="prompt-block">
+        <pre>{{ exp.promptMarkdown.value }}</pre>
+      </div>
+      <p v-else class="stage-empty">注入后显示 Prompt</p>
+    </div>
   </section>
 </template>
 

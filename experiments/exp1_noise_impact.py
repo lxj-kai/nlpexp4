@@ -42,14 +42,14 @@ def build_main_conditions() -> list[RunCondition]:
     return out
 
 
-def build_position_conditions(ratio: float = 0.5, ntype: str = "semantic") -> list[RunCondition]:
+def build_position_conditions() -> list[RunCondition]:
     return [
         RunCondition(
             method="naive",
-            noise_ratio=ratio,
-            noise_type=ntype,
+            noise_ratio=0.5,
+            noise_type="semantic",
             noise_position=pos,
-            label=f"naive|r={ratio}|{ntype}|pos={pos}",
+            label=f"naive|pos={pos}",
         )
         for pos in CONFIG.noise_positions
     ]
@@ -67,28 +67,17 @@ def main() -> None:
         action="store_true",
         help="仅跑位置子实验（4 conditions），跳过主矩阵以节省 token",
     )
-    p.add_argument(
-        "--position-ratio", type=float, default=0.75,
-        help="位置子实验的噪音比例（默认 0.75）",
-    )
-    p.add_argument(
-        "--position-noise-type", default="counterfactual",
-        choices=("semantic", "counterfactual", "mixed"),
-        help="位置子实验的噪音类型（默认 counterfactual）",
-    )
     p.add_argument("--subset", default="main", choices=("main", "refine", "fact", "int"))
     args = p.parse_args()
 
-    pos_args = dict(ratio=args.position_ratio, ntype=args.position_noise_type)
-
     records = load_corpus(language=args.language, subset=args.subset, limit=args.n)
     if args.position_only:
-        conditions = build_position_conditions(**pos_args)
-        tag_suffix = f"_position_{args.position_noise_type}_r{args.position_ratio}"
+        conditions = build_position_conditions()
+        tag_suffix = "_position"
     else:
         conditions = build_main_conditions()
         if args.position:
-            conditions += build_position_conditions(**pos_args)
+            conditions += build_position_conditions()
         tag_suffix = ""
 
     logger.info(f"exp1: {len(records)} samples × {len(conditions)} conditions")

@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>数据构建引擎流程图</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #fff;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      color: #1e293b;
+    }
+    .canvas {
+      width: 1100px;
+      padding: 32px 36px 28px;
+    }
+
+    .pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding-top: 14px;
+    }
+
+    .step-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .step {
+      width: 175px;
+      border-radius: 10px;
+      padding: 16px 14px 14px;
+      text-align: center;
+      position: relative;
+      border: 1.5px solid;
+    }
+
+    .step-num {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 6px 0 6px;
+    }
+
+    .step-desc {
+      font-size: 11px;
+      line-height: 1.6;
+      opacity: 0.8;
+    }
+
+    .s1 { background: #eff6ff; border-color: #93c5fd; }
+    .s1 .step-num { background: #3b82f6; }
+    .s1 .step-title { color: #1d4ed8; }
+
+    .s2 { background: #ecfdf5; border-color: #86efac; }
+    .s2 .step-num { background: #22c55e; }
+    .s2 .step-title { color: #15803d; }
+
+    .s3 { background: #fefce8; border-color: #fde047; }
+    .s3 .step-num { background: #eab308; }
+    .s3 .step-title { color: #a16207; }
+
+    .s4 { background: #fdf2f8; border-color: #f9a8d4; }
+    .s4 .step-num { background: #ec4899; }
+    .s4 .step-title { color: #be185d; }
+
+    .s5 { background: #f5f3ff; border-color: #c4b5fd; }
+    .s5 .step-num { background: #8b5cf6; }
+    .s5 .step-title { color: #6d28d9; }
+
+    .arrow {
+      width: 36px;
+      height: 2px;
+      background: linear-gradient(90deg, #94a3b8, #64748b);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .arrow::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: -4px;
+      border: 5px solid transparent;
+      border-left: 7px solid #64748b;
+    }
+
+    .down-arrow {
+      width: 2px;
+      height: 28px;
+      background: linear-gradient(180deg, #94a3b8, #64748b);
+      margin: 0 auto;
+      position: relative;
+    }
+    .down-arrow::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: -4px;
+      border: 5px solid transparent;
+      border-top: 7px solid #64748b;
+    }
+
+    .output-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    .output-box {
+      border: 2px solid #005bac;
+      border-radius: 10px;
+      padding: 12px 36px;
+      text-align: center;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    }
+    .output-box .box-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #005bac;
+      margin-bottom: 3px;
+    }
+    .output-box .box-desc {
+      font-size: 11px;
+      color: #475569;
+    }
+
+    .footer {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      font-size: 11px;
+      color: #64748b;
+    }
+    .footer b { color: #334155; }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+
+    <div class="pipeline">
+      <div class="step-wrap">
+        <div class="step s1">
+          <div class="step-num">1</div>
+          <div class="step-title">关键词输入</div>
+          <div class="step-desc">用户输入主题关键词<br>如"量子力学""基因编辑"</div>
+        </div>
+      </div>
+
+      <div class="arrow"></div>
+
+      <div class="step-wrap">
+        <div class="step s2">
+          <div class="step-num">2</div>
+          <div class="step-title">文档爬取</div>
+          <div class="step-desc">中文维基百科 API<br>多策略搜索 · 20+ 篇文档</div>
+        </div>
+      </div>
+
+      <div class="arrow"></div>
+
+      <div class="step-wrap">
+        <div class="step s3">
+          <div class="step-num">3</div>
+          <div class="step-title">LLM 生成</div>
+          <div class="step-desc">DeepSeek 生成问答对<br>支撑文档 · 反事实文档</div>
+        </div>
+      </div>
+
+      <div class="arrow"></div>
+
+      <div class="step-wrap">
+        <div class="step s4">
+          <div class="step-num">4</div>
+          <div class="step-title">RGB 格式组装</div>
+          <div class="step-desc">positive / negative /<br>positive_wrong 标准字段</div>
+        </div>
+      </div>
+
+      <div class="arrow"></div>
+
+      <div class="step-wrap">
+        <div class="step s5">
+          <div class="step-num">5</div>
+          <div class="step-title">质量检查</div>
+          <div class="step-desc">字段完整性验证<br>格式合规性检查</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin-top: 6px;">
+      <div class="down-arrow"></div>
+    </div>
+
+    <div class="output-row">
+      <div class="output-box">
+        <div class="box-title">高质量 RAG 鲁棒性测试数据</div>
+        <div class="box-desc">与 RGB 数据集格式兼容，可直接用于实验流水线</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span><b>数据来源</b>　中文维基百科 API</span>
+      <span><b>生成模型</b>　DeepSeek-chat</span>
+      <span><b>输出格式</b>　RGB 标准 JSON</span>
+      <span><b>交互方式</b>　FastAPI SSE 实时推送</span>
+    </div>
+
+  </div>
+</body>
+</html>

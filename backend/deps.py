@@ -4,6 +4,7 @@ from __future__ import annotations
 from fastapi import HTTPException
 
 from src.data_loader import RGBRecord, load_dataset
+from src.noiser_loader import load_noiser_dataset, list_noiser_subsets
 from src.evaluator import Evaluator
 from src.llm_client import LLMClient
 
@@ -11,11 +12,16 @@ llm = LLMClient()
 evaluator = Evaluator(use_llm_judge=False)
 _records_cache: dict[tuple[str, str], list] = {}
 
+NOISER_SUBSETS = {"nq", "rgb_nb", "hotpotqa", "2wikimqa", "bamboogle", "strategyqa", "tempqa", "priorqa"}
+
 
 def get_records(language: str, subset: str) -> list:
     key = (language, subset)
     if key not in _records_cache:
-        _records_cache[key] = load_dataset(language=language, subset=subset)
+        if subset in NOISER_SUBSETS:
+            _records_cache[key] = load_noiser_dataset(subset=subset)
+        else:
+            _records_cache[key] = load_dataset(language=language, subset=subset)
     return _records_cache[key]
 
 

@@ -17,7 +17,7 @@ class SamplesResponse(BaseModel):
 
 class InjectRequest(BaseModel):
     language: Literal["zh", "en"] = "zh"
-    subset: Literal["main", "refine", "fact", "int"] = "main"
+    subset: str = "main"
     sample_id: int
     noise_ratio: float = Field(0.5, ge=0.0, le=1.0)
     noise_type: Literal["semantic", "counterfactual", "mixed"] = "semantic"

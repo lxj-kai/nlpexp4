@@ -77,6 +77,7 @@ _FILE_MAP: dict[tuple[Language, Subset], str] = {
     ("zh", "refine"): "zh_refine.json",
     ("zh", "fact"): "zh_fact.json",
     ("zh", "int"): "zh_int.json",
+    ("zh", "custom"): "zh_custom.json",
     ("en", "main"): "en.json",
     ("en", "refine"): "en_refine.json",
     ("en", "fact"): "en_fact.json",

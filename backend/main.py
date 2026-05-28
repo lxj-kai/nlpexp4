@@ -15,6 +15,7 @@ if str(ROOT) not in sys.path:
 from backend.routes.experiment import router as experiment_router
 from backend.routes.health import router as health_router
 from backend.routes.samples import router as samples_router
+from backend.routes.benchmark import router as benchmark_router
 
 
 def _allowed_origins() -> list[str]:
@@ -41,3 +42,4 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(samples_router)
 app.include_router(experiment_router)
+app.include_router(benchmark_router)

@@ -1,0 +1,8 @@
+{
+  "source": "C-MTEB/CmedqaRetrieval",
+  "qrels": "C-MTEB/CmedqaRetrieval-qrels",
+  "main_size": 3999,
+  "fact_size": 500,
+  "n_neg": 8,
+  "seed": 42
+}

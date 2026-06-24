@@ -15,6 +15,27 @@ load_dotenv()
 
 PROJECT_ROOT: Path = Path(__file__).resolve().parents[1]
 
+_DATASET_DIRS: dict[str, Path] = {
+    "rgb": PROJECT_ROOT / "data" / "rgb",
+    "miriad": PROJECT_ROOT / "data" / "miriad",
+    "cmedqa": PROJECT_ROOT / "data" / "cmedqa",
+    "2wiki": PROJECT_ROOT / "data" / "2wiki",
+}
+
+
+def resolve_data_dir(dataset: str | None = None) -> Path:
+    """Resolve dataset directory from explicit name or env override."""
+    if dataset:
+        key = dataset.strip().lower()
+        if key not in _DATASET_DIRS:
+            raise ValueError(f"unknown dataset: {dataset!r}; choose from {sorted(_DATASET_DIRS)}")
+        return _DATASET_DIRS[key]
+    env_dir = os.getenv("NLP4_DATA_DIR")
+    if env_dir:
+        return PROJECT_ROOT / env_dir if not Path(env_dir).is_absolute() else Path(env_dir)
+    env_dataset = os.getenv("NLP4_DATASET", "rgb").strip().lower()
+    return _DATASET_DIRS.get(env_dataset, _DATASET_DIRS["rgb"])
+
 
 @dataclass(frozen=True)
 class Config:
@@ -32,7 +53,8 @@ class Config:
 
     # ── 路径 ──
     project_root: Path = PROJECT_ROOT
-    data_dir: Path = PROJECT_ROOT / os.getenv("NLP4_DATA_DIR", "data/rgb")
+    dataset: str = os.getenv("NLP4_DATASET", "rgb")
+    data_dir: Path = field(default_factory=lambda: resolve_data_dir())
     results_dir: Path = PROJECT_ROOT / os.getenv("NLP4_RESULTS_DIR", "experiments/results")
     cache_dir: Path = PROJECT_ROOT / os.getenv("NLP4_CACHE_DIR", ".cache")
     figures_dir: Path = PROJECT_ROOT / "figures"

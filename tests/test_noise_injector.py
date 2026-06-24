@@ -75,9 +75,9 @@ class TestInject:
             ctx = inject(_rec(), 0.5, noise_position=pos, seed=42)
             assert ctx.noise_position == pos
 
-    def test_counterfactual_fallback(self):
-        ctx = inject(_rec(n_pw=0), 0.5, noise_type="counterfactual", seed=42)
-        assert all(l in ("positive", "negative") for l in ctx.labels)
+    def test_counterfactual_requires_positive_wrong(self):
+        with pytest.raises(ValueError, match="positive_wrong"):
+            inject(_rec(n_pw=0), 0.5, noise_type="counterfactual", seed=42)
 
     def test_deterministic_with_seed(self):
         a = inject(_rec(), 0.5, seed=42)
@@ -109,11 +109,10 @@ class TestBatchInject:
         ctxs = batch_inject(records, noise_ratio=0.5)
         assert len(ctxs) == 5
 
-    def test_skips_bad_records(self):
+    def test_bad_records_raise(self):
         records = [_rec(id=0, n_pos=0), _rec(id=1)]
-        ctxs = batch_inject(records, noise_ratio=0.5)
-        assert len(ctxs) == 1
-        assert ctxs[0].sample_id == 1
+        with pytest.raises(ValueError, match="positive"):
+            batch_inject(records, noise_ratio=0.5)
 
 
 # ── _arrange ──

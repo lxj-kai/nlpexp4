@@ -13,6 +13,9 @@ from ..noise_injector import NoisyContext
 from ..rag_pipeline import RAGResult
 
 
+from ..utils import get_logger, parallel_map
+
+
 class BaseCorrector(ABC):
     """矫正方法的统一接口。
 
@@ -36,19 +39,25 @@ class BaseCorrector(ABC):
         *,
         language: str = "zh",
         show_progress: bool = True,
+        workers: int = 1,
     ) -> list[RAGResult]:
-        from tqdm import tqdm
+        log = get_logger(__name__)
 
-        results: list[RAGResult] = []
-        it = tqdm(contexts, desc=f"correct/{self.name}", disable=not show_progress)
-        for ctx in it:
+        def _one(ctx: NoisyContext) -> RAGResult | None:
             try:
-                results.append(self.correct(ctx, language=language))
+                return self.correct(ctx, language=language)
             except Exception as e:
-                from ..utils import get_logger
+                log.exception(f"sample {ctx.sample_id} {self.name} failed: {e}")
+                return None
 
-                get_logger(__name__).exception(f"sample {ctx.sample_id} {self.name} failed: {e}")
-        return results
+        out = parallel_map(
+            contexts,
+            _one,
+            workers=workers,
+            show_progress=show_progress,
+            desc=f"correct/{self.name}",
+        )
+        return [r for r in out if r is not None]
 
 
 _REGISTRY: dict[str, type[BaseCorrector]] = {}

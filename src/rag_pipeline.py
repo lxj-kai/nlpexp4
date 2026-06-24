@@ -7,13 +7,11 @@ from __future__ import annotations
 from dataclasses import dataclass, asdict
 from typing import Any
 
-from tqdm import tqdm
-
 from .config import CONFIG
 from .llm_client import LLMClient, get_client
 from .noise_injector import NoisyContext
 from .prompts import build_naive_prompt
-from .utils import get_logger
+from .utils import get_logger, parallel_map
 
 logger = get_logger(__name__)
 
@@ -79,14 +77,20 @@ class RAGPipeline:
         *,
         language: str = "zh",
         show_progress: bool = True,
+        workers: int = 1,
     ) -> list[RAGResult]:
-        iterator = tqdm(
-            contexts, desc=f"RAG/{self.method_name}", disable=not show_progress
-        )
-        results: list[RAGResult] = []
-        for ctx in iterator:
+        def _one(ctx: NoisyContext) -> RAGResult | None:
             try:
-                results.append(self.answer(ctx, language=language))
+                return self.answer(ctx, language=language)
             except Exception as e:
                 logger.exception(f"sample {ctx.sample_id} failed: {e}")
-        return results
+                return None
+
+        out = parallel_map(
+            contexts,
+            _one,
+            workers=workers,
+            show_progress=show_progress,
+            desc=f"RAG/{self.method_name}",
+        )
+        return [r for r in out if r is not None]

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import time
 from pathlib import Path
 from typing import Iterable
@@ -28,11 +29,13 @@ class LLMUsage:
         self.prompt_tokens: int = 0
         self.completion_tokens: int = 0
         self.calls: int = 0
+        self._lock = threading.Lock()
 
     def add(self, prompt: int, completion: int) -> None:
-        self.prompt_tokens += prompt
-        self.completion_tokens += completion
-        self.calls += 1
+        with self._lock:
+            self.prompt_tokens += prompt
+            self.completion_tokens += completion
+            self.calls += 1
 
     def to_dict(self) -> dict:
         return {
@@ -73,6 +76,7 @@ class LLMClient:
         self.usage = LLMUsage()
         self.use_cache = use_cache
         self.cache_dir = CONFIG.cache_dir / "llm"
+        self._cache_lock = threading.Lock()
         if use_cache:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -83,20 +87,22 @@ class LLMClient:
         if not self.use_cache:
             return None
         p = self._cache_path(key)
-        if not p.exists():
-            return None
-        try:
-            return json.loads(p.read_text(encoding="utf-8"))
-        except Exception:
-            return None
+        with self._cache_lock:
+            if not p.exists():
+                return None
+            try:
+                return json.loads(p.read_text(encoding="utf-8"))
+            except Exception:
+                return None
 
     def _save_cache(self, key: str, payload: dict) -> None:
         if not self.use_cache:
             return
         try:
-            self._cache_path(key).write_text(
-                json.dumps(payload, ensure_ascii=False), encoding="utf-8"
-            )
+            with self._cache_lock:
+                self._cache_path(key).write_text(
+                    json.dumps(payload, ensure_ascii=False), encoding="utf-8"
+                )
         except Exception as e:
             logger.debug(f"cache save failed: {e}")
 

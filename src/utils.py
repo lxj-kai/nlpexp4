@@ -8,9 +8,13 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, Callable, TypeVar
 
 import numpy as np
+
+T = TypeVar("T")
+R = TypeVar("R")
 
 _LOGGERS: dict[str, logging.Logger] = {}
 
@@ -51,6 +55,38 @@ def write_json(obj: Any, path: Path | str, *, indent: int = 2) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     with open(p, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, indent=indent, default=str)
+
+
+def parallel_map(
+    items: list[T],
+    fn: Callable[[T], R],
+    *,
+    workers: int = 1,
+    show_progress: bool = True,
+    desc: str = "",
+) -> list[R]:
+    """Parallel map preserving input order. workers=1 runs sequentially."""
+    if not items:
+        return []
+    if workers <= 1:
+        if show_progress:
+            from tqdm import tqdm
+
+            return [fn(x) for x in tqdm(items, desc=desc, disable=not show_progress)]
+        return [fn(x) for x in items]
+
+    results: list[R | None] = [None] * len(items)
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        future_to_idx = {pool.submit(fn, item): i for i, item in enumerate(items)}
+        iterator = as_completed(future_to_idx)
+        if show_progress:
+            from tqdm import tqdm
+
+            iterator = tqdm(iterator, total=len(items), desc=desc, disable=not show_progress)
+        for future in iterator:
+            idx = future_to_idx[future]
+            results[idx] = future.result()
+    return [r for r in results if r is not None]
 
 
 class Timer:

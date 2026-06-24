@@ -68,9 +68,15 @@ def main() -> None:
         help="仅跑位置子实验（4 conditions），跳过主矩阵以节省 token",
     )
     p.add_argument("--subset", default="main", choices=("main", "refine", "fact", "int"))
+    p.add_argument("--dataset", choices=("rgb", "miriad", "cmedqa"), default=None, help="默认读 NLP4_DATASET")
     args = p.parse_args()
 
-    records = load_corpus(language=args.language, subset=args.subset, limit=args.n)
+    records = load_corpus(
+        language=args.language,
+        subset=args.subset,
+        dataset=args.dataset,
+        limit=args.n,
+    )
     if args.position_only:
         conditions = build_position_conditions()
         tag_suffix = "_position"

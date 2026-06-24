@@ -1,0 +1,8 @@
+{
+  "source": "miriad/miriad-5.8M",
+  "parquet_shards": 1,
+  "main_size": 2000,
+  "fact_size": 300,
+  "n_neg": 8,
+  "seed": 42
+}

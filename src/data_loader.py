@@ -9,6 +9,16 @@
      positive:list[str], negative:list[str]}
 - zh_int.json / en_int.json (信息整合)
     {id, query, answer:list, asnwer1/answer2:list, positive, negative}
+
+MIRIAD 全量数据位于 data/miriad/raw/（64 个 parquet，约 7.5GB），由
+scripts/prepare_miriad.py 完整下载；运行时由 src/miriad_store.py 直接读取。
+
+CmedqaRetrieval 子集（data/cmedqa/）提供 zh.json / zh_fact.json，由
+scripts/prepare_cmedqa.py 从 HuggingFace 转换而来。
+
+2WikiMultihopQA（data/2wiki/）提供 en.json / en_fact.json，由
+scripts/prepare_2wiki.py 从 xanhho/2WikiMultihopQA 转换而来；负例为
+同 context 内的 distractor 段落（hard negative）。
 """
 from __future__ import annotations
 
@@ -17,13 +27,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterator, Literal
 
-from .config import CONFIG
+from .config import CONFIG, resolve_data_dir
 from .utils import get_logger
 
 logger = get_logger(__name__)
 
 Language = Literal["zh", "en"]
 Subset = Literal["main", "refine", "fact", "int"]
+DatasetName = Literal["rgb", "miriad", "cmedqa", "2wiki"]
 
 
 @dataclass
@@ -39,6 +50,7 @@ class RGBRecord:
     fakeanswer: str = ""
     language: Language = "zh"
     subset: Subset = "main"
+    dataset: DatasetName = "rgb"
 
     @property
     def has_counterfactual(self) -> bool:
@@ -58,7 +70,7 @@ def _coerce_answer(raw: object) -> list[str]:
     return [str(raw)]
 
 
-def parse_record(raw: dict, *, language: Language, subset: Subset) -> RGBRecord:
+def parse_record(raw: dict, *, language: Language, subset: Subset, dataset: DatasetName = "rgb") -> RGBRecord:
     return RGBRecord(
         id=int(raw["id"]),
         query=str(raw["query"]),
@@ -69,6 +81,7 @@ def parse_record(raw: dict, *, language: Language, subset: Subset) -> RGBRecord:
         fakeanswer=str(raw.get("fakeanswer", "")),
         language=language,
         subset=subset,
+        dataset=dataset,
     )
 
 
@@ -83,48 +96,146 @@ _FILE_MAP: dict[tuple[Language, Subset], str] = {
     ("en", "int"): "en_int.json",
 }
 
+_MIRIAD_SUPPORTED: set[tuple[Language, Subset]] = {
+    ("en", "main"),
+    ("en", "fact"),
+}
+
+
+_CMEDQA_SUPPORTED: set[tuple[Language, Subset]] = {
+    ("zh", "main"),
+    ("zh", "fact"),
+}
+
+_2WIKI_SUPPORTED: set[tuple[Language, Subset]] = {
+    ("en", "main"),
+    ("en", "fact"),
+}
+
+
+def _resolve_dataset(dataset: DatasetName | None) -> DatasetName:
+    name = (dataset or CONFIG.dataset or "rgb").strip().lower()
+    if name not in ("rgb", "miriad", "cmedqa", "2wiki"):
+        raise ValueError(f"unknown dataset: {name!r}")
+    return name  # type: ignore[return-value]
+
+
+def _data_dir_for(dataset: DatasetName) -> Path:
+    return resolve_data_dir(dataset)
+
 
 def iter_records(
-    language: Language = "zh", subset: Subset = "main"
+    language: Language = "zh",
+    subset: Subset = "main",
+    *,
+    dataset: DatasetName | None = None,
+    limit: int | None = None,
 ) -> Iterator[RGBRecord]:
+    ds = _resolve_dataset(dataset)
+    if ds == "miriad":
+        if (language, subset) not in _MIRIAD_SUPPORTED:
+            raise ValueError(
+                f"MIRIAD only supports en/main and en/fact, got {language}/{subset}"
+            )
+        if limit is None:
+            raise ValueError("MIRIAD requires explicit limit=... (full 5.8M load is forbidden)")
+        from .miriad_store import iter_miriad_records
+
+        subset_name = "main" if subset == "main" else "fact"
+        yield from iter_miriad_records(
+            subset=subset_name,  # type: ignore[arg-type]
+            shuffle=False,
+            seed=CONFIG.seed,
+            limit=limit,
+        )
+        return
+    if ds == "cmedqa":
+        if (language, subset) not in _CMEDQA_SUPPORTED:
+            raise ValueError(
+                f"CmedqaRetrieval only supports zh/main and zh/fact, got {language}/{subset}"
+            )
+    if ds == "2wiki":
+        if (language, subset) not in _2WIKI_SUPPORTED:
+            raise ValueError(
+                f"2WikiMultihopQA only supports en/main and en/fact, got {language}/{subset}"
+            )
     fname = _FILE_MAP[(language, subset)]
-    path = CONFIG.data_dir / fname
+    path = _data_dir_for(ds) / fname
     if not path.exists():
-        raise FileNotFoundError(f"RGB data not found: {path}")
+        if ds == "cmedqa":
+            raise FileNotFoundError(
+                f"dataset file not found: {path}. Run `python scripts/prepare_cmedqa.py` first."
+            )
+        if ds == "2wiki":
+            raise FileNotFoundError(
+                f"dataset file not found: {path}. Run `python scripts/prepare_2wiki.py` first."
+            )
+        raise FileNotFoundError(f"dataset file not found: {path}")
     with open(path, "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
             line = line.strip()
             if not line:
                 continue
-            try:
-                raw = json.loads(line)
-            except json.JSONDecodeError as e:
-                logger.warning(f"skip malformed line {idx} in {fname}: {e}")
-                continue
-            yield parse_record(raw, language=language, subset=subset)
+            raw = json.loads(line)
+            yield parse_record(raw, language=language, subset=subset, dataset=ds)
 
 
 def load_dataset(
     language: Language = "zh",
     subset: Subset = "main",
     *,
+    dataset: DatasetName | None = None,
     limit: int | None = None,
     shuffle: bool = True,
 ) -> list[RGBRecord]:
-    records: list[RGBRecord] = list(iter_records(language=language, subset=subset))
+    ds = _resolve_dataset(dataset)
+    if ds == "miriad":
+        if (language, subset) not in _MIRIAD_SUPPORTED:
+            raise ValueError(
+                f"MIRIAD only supports en/main and en/fact, got {language}/{subset}"
+            )
+        if limit is None:
+            raise ValueError("MIRIAD requires explicit limit=... (full 5.8M load is forbidden)")
+        from .miriad_store import load_miriad_records
+
+        subset_name = "main" if subset == "main" else "fact"
+        records = load_miriad_records(
+            subset=subset_name,  # type: ignore[arg-type]
+            limit=limit,
+            shuffle=shuffle,
+            seed=CONFIG.seed,
+        )
+        logger.info(
+            f"loaded {len(records)} records from {ds}/{language}/{subset} (shuffle={shuffle})"
+        )
+        return records
+
+    records: list[RGBRecord] = list(
+        iter_records(language=language, subset=subset, dataset=ds, limit=limit)
+    )
     if shuffle:
         import random as _rng
         _rng.Random(CONFIG.seed).shuffle(records)
     if limit is not None:
         records = records[:limit]
-    logger.info(f"loaded {len(records)} records from {language}/{subset} (shuffle={shuffle})")
+    logger.info(
+        f"loaded {len(records)} records from {ds}/{language}/{subset} (shuffle={shuffle})"
+    )
     return records
 
 
-def load_all_subsets(language: Language = "zh") -> dict[Subset, list[RGBRecord]]:
+def load_all_subsets(
+    language: Language = "zh", *, dataset: DatasetName | None = None
+) -> dict[Subset, list[RGBRecord]]:
+    ds = _resolve_dataset(dataset)
+    if ds in ("miriad", "cmedqa", "2wiki"):
+        raise ValueError(
+            f"{ds} only supports main/fact via explicit load_dataset(..., subset=...); "
+            "load_all_subsets is not supported"
+        )
     return {
-        "main": load_dataset(language, "main"),
-        "refine": load_dataset(language, "refine"),
-        "fact": load_dataset(language, "fact"),
-        "int": load_dataset(language, "int"),
+        "main": load_dataset(language, "main", dataset=ds),
+        "refine": load_dataset(language, "refine", dataset=ds),
+        "fact": load_dataset(language, "fact", dataset=ds),
+        "int": load_dataset(language, "int", dataset=ds),
     }

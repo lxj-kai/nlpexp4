@@ -74,12 +74,17 @@ def _run_method(
     llm: LLMClient,
     language: str,
     show_progress: bool,
+    workers: int = 1,
 ) -> list[RAGResult]:
     if method == "naive":
         pipe = RAGPipeline(llm=llm)
-        return pipe.batch_answer(contexts, language=language, show_progress=show_progress)
+        return pipe.batch_answer(
+            contexts, language=language, show_progress=show_progress, workers=workers
+        )
     corr = get_corrector(method, llm=llm)
-    return corr.batch_correct(contexts, language=language, show_progress=show_progress)
+    return corr.batch_correct(
+        contexts, language=language, show_progress=show_progress, workers=workers
+    )
 
 
 def run_conditions(
@@ -90,6 +95,7 @@ def run_conditions(
     evaluator: Evaluator | None = None,
     language: str = "zh",
     show_progress: bool = True,
+    workers: int = 1,
 ) -> list[RunResult]:
     """主循环：对每个 condition 跑全部 records。"""
     llm = llm or LLMClient()
@@ -104,7 +110,12 @@ def run_conditions(
                 noise_position=cond.noise_position,
             )
             results = _run_method(
-                cond.method, ctxs, llm=llm, language=language, show_progress=show_progress
+                cond.method,
+                ctxs,
+                llm=llm,
+                language=language,
+                show_progress=show_progress,
+                workers=workers,
             )
             rows = evaluator.evaluate_batch(results)
             for r in rows:
@@ -281,7 +292,13 @@ def load_corpus(
     language: Language = "zh",
     subset: Subset = "main",
     *,
+    dataset: str | None = None,
     limit: int | None = None,
 ) -> list[RGBRecord]:
     set_seed(CONFIG.seed)
-    return load_dataset(language=language, subset=subset, limit=limit)
+    return load_dataset(
+        language=language,
+        subset=subset,
+        dataset=dataset or CONFIG.dataset,  # type: ignore[arg-type]
+        limit=limit,
+    )

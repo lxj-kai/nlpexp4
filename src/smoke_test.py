@@ -54,12 +54,23 @@ class _DryLLM:
         return self.chat([{"role": "user", "content": user}])["content"]
 
 
-def run(n: int = 5, *, dry: bool = False, methods: tuple[str, ...] = ("naive", "prompt")) -> dict:
+def run(
+    n: int = 5,
+    *,
+    dry: bool = False,
+    language: str = "zh",
+    subset: str = "main",
+    dataset: str | None = None,
+    methods: tuple[str, ...] = ("naive", "prompt"),
+) -> dict:
     set_seed(CONFIG.seed)
     CONFIG.ensure_dirs()
 
-    records = load_dataset("zh", "main", limit=n)
-    logger.info(f"loaded {len(records)} samples from zh/main")
+    ds = dataset or CONFIG.dataset
+    records = load_dataset(
+        language, subset, dataset=ds, limit=n  # type: ignore[arg-type]
+    )
+    logger.info(f"loaded {len(records)} samples from {ds}/{language}/{subset}")
 
     contexts_clean = batch_inject(records, noise_ratio=0.0)
     contexts_noisy = batch_inject(records, noise_ratio=0.5, noise_type="semantic")
@@ -103,6 +114,9 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--n", type=int, default=5, help="样本数")
     p.add_argument("--dry", action="store_true", help="不真实调用 LLM")
+    p.add_argument("--language", choices=("zh", "en"), default="zh")
+    p.add_argument("--subset", default="main", choices=("main", "refine", "fact", "int"))
+    p.add_argument("--dataset", choices=("rgb", "miriad", "cmedqa"), default=None, help="默认读 NLP4_DATASET")
     p.add_argument(
         "--methods",
         type=str,
@@ -111,7 +125,14 @@ def main() -> None:
     )
     args = p.parse_args()
     methods = tuple(m.strip() for m in args.methods.split(",") if m.strip())
-    result = run(n=args.n, dry=args.dry, methods=methods)
+    result = run(
+        n=args.n,
+        dry=args.dry,
+        language=args.language,
+        subset=args.subset,
+        dataset=args.dataset,
+        methods=methods,
+    )
     print(json.dumps(result["summaries"], ensure_ascii=False, indent=2))
 
 

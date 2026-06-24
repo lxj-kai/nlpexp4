@@ -42,5 +42,17 @@ frontend/.vite/
 # 源目录（已合并到项目）
 nlpexp4-new/
 
+# MIRIAD 全量 parquet（本地完整下载，不入 git）
+data/miriad/raw/
+
+# CmedqaRetrieval 转换 JSON（本地生成，不入库）
+data/cmedqa/zh.json
+data/cmedqa/zh_fact.json
+
+# 2WikiMultihopQA parquet + 转换 JSON（本地生成，不入库）
+data/2wiki/raw/
+data/2wiki/en.json
+data/2wiki/en_fact.json
+
 # Claude
 .claude/

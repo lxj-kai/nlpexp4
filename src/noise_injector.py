@@ -55,14 +55,16 @@ def _select_noise_docs(
     if noise_type == "semantic":
         pool = [(d, "negative") for d in record.negative]
     elif noise_type == "counterfactual":
-        if record.positive_wrong:
-            pool = [(d, "positive_wrong") for d in record.positive_wrong]
-        else:
-            logger.debug(
-                f"record {record.id} 无 positive_wrong, 回退到 semantic 噪音"
+        if not record.positive_wrong:
+            raise ValueError(
+                f"record {record.id} has no positive_wrong docs for counterfactual noise"
             )
-            pool = [(d, "negative") for d in record.negative]
+        pool = [(d, "positive_wrong") for d in record.positive_wrong]
     elif noise_type == "mixed":
+        if not record.positive_wrong:
+            raise ValueError(
+                f"record {record.id} has no positive_wrong docs for mixed noise"
+            )
         pool = [(d, "negative") for d in record.negative] + [
             (d, "positive_wrong") for d in record.positive_wrong
         ]
@@ -70,7 +72,9 @@ def _select_noise_docs(
         raise ValueError(f"未知 noise_type: {noise_type}")
 
     if not pool:
-        return [], []
+        raise ValueError(
+            f"record {record.id} has empty noise pool for noise_type={noise_type!r}"
+        )
 
     if n_noise >= len(pool):
         chosen = list(pool)
@@ -185,11 +189,5 @@ def inject(
 
 
 def batch_inject(records: list[RGBRecord], **kwargs) -> list[NoisyContext]:
-    """批量注入；遇到无法构造的样本会跳过并 warn。"""
-    out: list[NoisyContext] = []
-    for r in records:
-        try:
-            out.append(inject(r, **kwargs))
-        except ValueError as e:
-            logger.warning(f"skip record {r.id}: {e}")
-    return out
+    """批量注入；任何无法构造的样本直接抛错。"""
+    return [inject(r, **kwargs) for r in records]

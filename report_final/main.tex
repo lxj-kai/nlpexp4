@@ -14,6 +14,8 @@
 \usepackage{fancyhdr}
 \usepackage{hyperref}
 \usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
 
 \definecolor{sduBlue}{HTML}{005BAC}
 \definecolor{sduCyan}{HTML}{00A6D6}
@@ -88,12 +90,12 @@
 \newpage
 
 \begin{abstract}
-本项目研究大模型 RAG 场景中检索文档噪音对推理质量的影响及矫正方法。针对强生成模型易凭参数记忆直接作答、Token-F1 难以衡量语义等价答案两类评测失真，项目选取 2WikiMultihopQA、MobileMem、CmedqaRetrieval 等更具检索依赖性的语料，设计 DeepSeek Judge 大模型评分，并在统一框架下实现比例/类型/位置三维度可控噪音注入与 12 种矫正方法。主实验清晰呈现「无噪音可答 $\rightarrow$ 中高噪音难答 $\rightarrow$ 高噪音失效 $\rightarrow$ 矫正恢复」四段式曲线；§8 从 ISR/NAR 归因与典型案例出发，系统解释语义混淆、局部劫持、证据淹没与长文合成放弃等噪音机制，以及 CoT 证据链「拆解--核对--综合」的恢复原理。并发现互锁效应——CoT 证据链在语义噪音下最优，简单 prompt 在反事实噪音下更稳——据此实现自适应噪音路由。系统同步提供 NS/NRS/ISR/NAR/CRR 鲁棒性指标与 Web 演示平台。
+本项目研究 RAG 检索文档噪音对大模型问答的影响，并系统比较噪音修复方法。报告以\textbf{数据集为主线}组织实验：RGB、2Wiki、Cmedqa、MIRIAD、MobileMem、BRIGHT、TEMPO、MultiHop-RAG 与 NoiserBench 均转换为统一的 \texttt{RGBRecord} 格式，在相同噪音注入协议下分别报告数据集特点、噪音类型、矫正方法、实验结果和代表性样例。项目实现 semantic、counterfactual、mixed 及 NoiserBench 细粒度噪音，比较 naive、prompt、iterative、confidence（CoT 证据链）、selfrag、voting、adaptive 等方法。总体发现是：语义噪音下 confidence 通常能通过逐篇证据匹配恢复答案，反事实噪音下 prompt/adaptive 更稳；不同数据集的绝对分数不可混比，但“噪音类型决定最优修复策略”的规律在多数据集上反复出现。
 \end{abstract}
 
-\section{研究问题与项目定位}
+\section{课题背景}
 
-\subsection{题目要求}
+\subsection{课题目标}
 本项目对应 NLP 实验四题目 8：\textbf{面向大模型 RAG 推理场景噪音文档的鲁棒性推理方法}。题目要求关注大模型 RAG 场景中，检索结果可能包含与问题语义相关、但缺少逻辑依赖或会误导答案的上下文文档，进而影响模型问答准确率。项目需要完成以下任务：
 
 \begin{itemize}
@@ -108,139 +110,30 @@
 \subsection{核心问题}
 本项目将问题形式化为：给定问题 $q$、候选文档集合 $D=\{d_1,\dots,d_n\}$ 和参考答案 $a$，当 $D$ 中混入不同类型、比例和位置的噪音文档时，大模型生成答案 $\hat{a}$ 的准确率、证据来源和噪音采纳程度如何变化？此外，不同的矫正机制在不同噪音类型下表现如何？是否存在“互锁效应”——即最优方法取决于噪音类型。
 
-\subsection{核心发现摘要}
-本项目核心发现包括：
+
+\subsection{成果应用价值}
+\begin{itemize}
+  \item \textbf{企业/医疗/法律 RAG}：可控噪音压测 NS/CRR，评估 distractor 风险；
+  \item \textbf{自适应路由}：semantic 噪音优先使用 confidence（CoT 证据链），counterfactual 噪音优先使用 prompt/adaptive；
+  \item \textbf{教学演示}：Web 四阶段界面展示注入噪音与矫正对比；
+  \item \textbf{评测协议}：统一数据格式与多域 benchmark，覆盖 RGB、2Wiki、Cmedqa、MobileMem 等。
+\end{itemize}
+
+\subsection{主要结论预览}
+经过完整的系统实现和多数据集实验验证，本项目核心发现包括：
 
 \begin{itemize}
-  \item \textbf{四段式鲁棒性曲线}：在 2Wiki、MobileMem 等主评测语料上，$r=0$ 时 RAG 可答，$r=0.5$--$0.75$ 明显下滑，$r=1.0$ 接近失效；confidence 等方法可在高噪音区间量化恢复（CRR $> 0$）；
-  \item \textbf{互锁效应}：CoT 证据链在语义噪音下最优（2Wiki $r=0.75$：0.577 vs naive 0.422），prompt 在反事实噪音下更稳；自适应路由可避开最差策略；
-  \item \textbf{评测体系}：DeepSeek Judge 解决 Token-F1 对短答案/计算题的不合理低分；NS/CRR 与 Judge 曲线一致刻画噪音敏感度与矫正收益；
-  \item \textbf{位置效应}：反事实文档置于末尾（back）破坏力最大，interleave 相对最稳；
-  \item \textbf{工程交付}：12 种矫正方法、统一实验流水线与 Web 演示平台。
-  \item \textbf{机理分析}：语义混淆、局部劫持、证据淹没、长文合成放弃等噪音机制；CoT「拆解--核对--综合」恢复原理（§8）。
+  \item \textbf{数据集差异显著}：RGB 抗噪最强，2Wiki、Cmedqa 和 MIRIAD 改用 DeepSeek Judge 观察语义正确性，MobileMem 与 BRIGHT 同样使用 Judge 口径；
+  \item \textbf{噪音类型决定修复策略}：semantic 噪音下 confidence（CoT 证据链，方法 C）通常最有效；counterfactual 噪音下 confidence 可能强化假证据，prompt/adaptive 更稳；
+  \item \textbf{高强度噪音暴露模型边界}：当 positive 文档被大量挤出甚至完全消失时，naive 出现断崖式下降，任何修复方法都难以恢复不存在的证据；
+  \item \textbf{位置效应}：在 r=0.75 反事实噪音下，文档放末尾（back）的破坏力最大（F1=0.629），印证 recency bias 在错误信息场景下的危害；
+  \item \textbf{样例层面可解释}：RGB、MobileMem、BRIGHT 等样例显示，修复成功通常来自“识别问题约束→定位 positive 证据→抑制同主题噪音”。
 \end{itemize}
 
-\section{数据准备与标准格式}
-
-\subsection{评测语料选型}
-RAG 噪音鲁棒性实验要求语料同时满足三点：（1）\textbf{检索必要}——闭卷难以作答，$r=0$ 时 RAG 显著优于无文档基线；（2）\textbf{噪音可观测}——$r \in [0.5, 0.75]$ 性能明显下滑，而非因模型参数记忆导致曲线平坦；（3）\textbf{矫正可验证}——高噪音下 naive 接近失败，矫正方法相对 baseline 有可量化的 CRR。
-
-通用百科类小规模语料（如 RGB，约 300 条/语言）在 DeepSeek-chat 等强模型上闭卷正确率偏高，Token-F1 又对语义等价表述过于苛刻，难以稳定呈现上述曲线。项目因此以\textbf{多跳 hard negative、领域专用检索、OCR 记忆图谱}三类更具挑战性的语料作为主实验数据，并通过 \texttt{scripts/prepare\_*.py} 统一转换为实验流水线格式。
-
-\subsection{数据集详细介绍}
-
-项目共接入 7 类公开数据集与 1 类自建数据集（MobileMem），涵盖多跳推理、领域检索、OCR 记忆图谱及预标注噪音基准等多种场景。所有数据集均通过 \texttt{scripts/prepare\_*.py} 脚本统一转换为 \texttt{RGBRecord} 格式，确保与实验流水线完全兼容。以下逐一介绍各数据集的来源、规模及在本实验中的具体用途。
-
-\subsubsection*{2WikiMultihopQA}
-来自 HuggingFace（\texttt{xanhho/2WikiMultihopQA}）的多跳问答数据集，包含约 5000 条 dev 样本。每条样本提供约 10 篇维基百科文章作为上下文，其中 2--4 篇被标注为支撑事实（supporting facts）。本项目将支撑事实对应的句子提取为 positive 文档，同一问题上下文中的非支撑文章及支撑文章中的非关键句子作为 semantic negative 候选。负例采样策略为 same-context distractor，即从同一问题的上下文窗口中选取干扰文章，使噪音与正例在主题和词汇上高度重叠，对模型的细粒度区分能力提出较高要求。对于 fact 子集（约 800 条），脚本从 negative 池中额外抽取一篇文档作为 \texttt{positive\_wrong}，并构造 \texttt{fakeanswer}（翻转 yes/no 或在原答案前加"not"），用于 counterfactual 互锁实验。
-
-\subsubsection*{MobileMem}
-项目\textbf{自建}的中文购物场景 OCR 记忆图谱 RAG 数据集（非公开语料），专为 RAG 噪音鲁棒性评测而设计。完整设计动机、图谱结构、问题模板与负例策略见 \S2.3；本报告主实验取 \texttt{zh/calc} 子集 $n=50$ 条，以 DeepSeek Judge 为主指标。
-
-\subsubsection*{CmedqaRetrieval}
-来自 C-MTEB 基准（\texttt{C-MTEB/CmedqaRetrieval}）的中文医学检索问答数据集，包含约 3999 条查询及大规模医学语料库。每条查询通过 qrels 标注关联到 1 至多篇相关文档（医生回答），脚本选取相关文档作为 positive，从语料库中随机采样 8 篇无关文档作为 negative。该数据集专业术语密集、答案篇幅较长（通常为完整的医学解释），适合观察 CoT 证据链在长文本生成中的纠错能力。fact 子集（约 500 条）通过选取另一条查询的相关文档作为 \texttt{positive\_wrong}，构造反事实测试集，用于评估模型在医学高噪音场景下的矫正表现。
-
-\subsubsection*{RGB}
-Reeding Reading Benchmark 的双语（中/英）百科问答数据集，每语言约 300 条样本，已原生提供 positive、negative 和 \texttt{positive\_wrong} 三类文档池字段。该语料规模较小，在 DeepSeek-chat 等强模型上闭卷正确率偏高，Token-F1 对语义等价表述又过于苛刻，难以稳定呈现噪音梯度曲线，因此\textbf{不作为主报告评测曲线的主要数据来源}。但其文档池结构完整，项目保留于 registry 中用于复现互锁效应热力图、噪音位置效应等方法论验证与分析实验。
-
-\subsubsection*{NoiserBench}
-ACL 2025 发布的 RAG 噪音鲁棒性评测基准（\texttt{Jinyang23/NoiserBench}），提供七类预标注噪音类型（semantic、cause\_effect、counterfactual\_answer、paraphrase、distractor、typo、irrelevant 等），与项目自建的 semantic/counterfactual 注入机制形成互补。数据集按推理跳数划分为四类子集：单跳（NQ、RGB）、显式多跳（HotpotQA、2WikiMQA、Bamboogle）、隐式多跳（StrategyQA、TempQA）和混合跳数（PriorQA）。其中 StrategyQA 因 yes/no 闭卷易答已被排除。本项目将各子集数据统一转换为 \texttt{RGBRecord} 格式，用于在多种推理跳数和噪音类型下验证方法的泛化能力。
-
-\subsubsection*{BRIGHT}
-英文长文本检索问答基准（\texttt{xlangai/BRIGHT}），涵盖 12 个子领域（包括编程、数学、经济学等）。每条样本包含查询、gold\_ids（相关文档标识）、excluded\_ids（人工验证的 hard negative 标识）以及推理式参考答案（gold\_answer）。负例优先取自 excluded\_ids 中的人工标注 hard negative，不足时从同子领域文档池中补充。该数据集文本篇幅长、推理链复杂，适合研究长文本场景下 hard negative 对模型推理链的干扰及矫正方法的修复效果。
-
-\subsubsection*{TEMPO}
-论坛式长文本问答数据集（\texttt{tempo26/Tempo}），覆盖 13 个领域（如 Reddit 各板块）。每条样本包含查询、gold\_ids（参考文档块）和多个参考答案（gold\_answers），负例从同领域语料库中随机采样。与 BRIGHT 不同，TEMPO 未提供人工标注的 excluded\_ids，因此采用同领域随机负例策略。该数据集的论坛文本风格多样、口语化程度高，适合测试模型在非结构化长文本和领域多样化场景下的检索鲁棒性。
-
-\subsubsection*{MultiHop-RAG}
-新闻领域的多跳问答数据集（\texttt{yixuantt/MultiHopRAG}），包含 2255 条样本及配套新闻语料库。每条样本显式标注了 evidence\_list（证据事实列表），答案为短实体名。负例从语料库中排除证据 URL 后的文章中采样。该数据集的特点在于证据链显式标注，便于逐跳分析噪音对多跳推理链路的影响，是评估矫正方法在多步推理场景中效果的重要补充基准。
-
-\subsubsection*{MIRIAD-5.8M}
-大规模英文医学问答数据集（\texttt{miriad/miriad-5.8M}），包含约 580 万条样本，以 64 个 Parquet 分片存储（约 7.5\,GB）。该数据集覆盖广泛的医学领域问答对，适合英文医学长文本生成与检索增强评测。由于数据规模庞大，本项目通过专用脚本完成全量下载与分片校验，将其作为长生成场景下评测矫正方法可扩展性的储备数据源，当前处于试跑与验证阶段。
-
-\subsection{MobileMem 自建记忆图谱数据集}
-\label{sec:mobilemem}
-
-MobileMem 是本项目的\textbf{核心自建评测语料}，与 2WikiMultihopQA、CmedqaRetrieval 等公开数据集并列用于主实验。与百科/新闻类语料不同，MobileMem 从任务出发\textbf{逆向设计}：先明确「强模型不得凭预训练知识直接作答、必须依赖检索证据、且在高比例 semantic 噪音下性能应可观测下滑」三类约束，再构造与之匹配的私人生活记忆图谱与问答对。数据以 JSON Lines 存储于 \texttt{data/mobilemem/}，经 \texttt{scripts/prepare\_mobilemem.py} 整理后由 \texttt{dataset\_registry} 注册为独立数据集 \texttt{mobilemem}。
-
-\subsubsection{设计动机：对抗参数记忆与评测失真}
-中期实验表明，RGB 等通用百科语料在 DeepSeek-chat 等强模型上\textbf{闭卷正确率偏高}，$r=0$ 与 $r=0.75$ 的 naive 曲线往往过于平坦，无法稳定检验「检索必要 $\rightarrow$ 噪音破坏 $\rightarrow$ 矫正恢复」四段式形态。根因在于：问题所涉实体与事实可能已出现在模型预训练语料中，模型可在\textbf{无文档}或\textbf{高噪音}条件下仍给出 plausible 答案，使 ISR/NAR/CRR 等 RAG 专属指标失去区分度。
-
-MobileMem 针对上述问题采取三类设计：（1）\textbf{虚构私人生活场景}——以 2025 年某用户手机购物截图 OCR 记忆为叙事载体，商品名、店铺、价格、下单时间均为图谱内\textbf{独有}字段，公开语料中不存在可背诵的金标；（2）\textbf{跨事件派生答案}——每条问题显式限定 4 个「目标事件」，答案需对 4 篇 positive 证据做聚合或比较（\texttt{single\_doc\_answerable=false}，\texttt{answer\_is\_derived=true}），单篇文档无法独立作答；（3）\textbf{图谱级 hard negative}——负例来自同一记忆图谱中\textbf{其他真实购物事件}的结构化 OCR 文本，主题同为「网购/消费」，但不落入问题所枚举的事件集合，且\textbf{不与目标记录矛盾}（\texttt{noise\_policy=real\_cross\_event\_non\_contradictory\_non\_supporting}），从而在 $r=0.75$ 时形成高相似度 semantic distractor，而非随机无关段落。
-
-\subsubsection{记忆图谱与证据形态}
-图谱以\textbf{生活事件}为节点：每个事件具有唯一 \texttt{event\_id}、自然语言 \texttt{event\_name}、时间戳 \texttt{event\_time}，并可挂载一条或多条\textbf{购物截图 OCR 记忆}（\texttt{artifact\_type=shopping}）。全库约覆盖 \textbf{164} 个事件节点；每条评测样本从图谱中\textbf{枚举 4 个目标事件}，将其 OCR 结构化文本作为 \texttt{positive}（固定 4 篇），并从其余事件中按策略采样 \texttt{negative}。
-
-单篇证据文档为固定字段的纯文本块（模拟 OCR 抽取结果），字段包括：事件 ID/名称/发生时间、记录类型（购物截图）、商品名称、店铺、\textbf{实际价格}、下单时间、评分等。示例如下（节选）：
-
-\begin{lstlisting}[basicstyle=\small\ttfamily,breaklines=true,frame=single,backgroundcolor=\color{codeBg}]
-记忆证据: MobileMem 私人生活记录
-事件ID: 1
-事件名称: 元旦下午为自己挑选新年通勤双肩包
-发生时间: 2025-01-01 14:00
-记录类型: 购物截图
-商品名称: 简约防水多隔层15.6英寸电脑双肩包
-店铺: INS风通勤包官方旗舰店
-实际价格: 198元
-下单时间: 2025-01-01 16:15:00
-评分: 5
-\end{lstlisting}
-
-问题在 \texttt{query} 中以\textbf{enumerated} 模式写出完整事件列表与时间范围（如「2025 年 01 月 / 第 2 季度内，只统计以下 4 个事件：…」），迫使模型执行\textbf{范围过滤 + 证据对齐}，而非依赖题干中的常识性提示。每条样本另附 \texttt{mobilemem\_meta} 与 \texttt{negative\_meta}，记录 \texttt{support\_path}（各目标事件上的 \texttt{metric\_value}）、负例来源 \texttt{source\_event\_id}、是否与目标同月 \texttt{same\_month\_as\_target} 及相似度 \texttt{score}，便于 exp3 案例归因与机制分析（见 §8）。
-
-\subsubsection{两个子集：calc 与 noncalc}
-MobileMem 共 \textbf{240} 条样本，均分两个子集，统一映射为 \texttt{RGBRecord} 后接入同一套 exp1--exp5 流水线：
-
-\begin{table}[H]
-  \centering
-  \caption{MobileMem 子集划分与任务类型}
-  \begin{tabularx}{\textwidth}{llccY}
-    \toprule
-    子集 & 文件 & 规模 & 负例池 & 任务要点 \\
-    \midrule
-    \texttt{calc} & \texttt{zh\_calc.json} & 120 & 76 篇/条 & 跨 4 事件的\textbf{数值聚合}（合计/极值/极差） \\
-    \texttt{noncalc} & \texttt{zh\_noncalc.json} & 120 & 26 篇/条 & 跨 4 事件的\textbf{属性检索}（最早下单商品、店铺映射等） \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
-\textbf{calc} 子集（\texttt{hardness=graph\_multi\_event\_multi\_document}）在固定 4 篇 positive 上考察算术与比较推理，\texttt{metric=shopping\_price}，\texttt{operation} 四类各 20--38 条：\texttt{sum}（实际价格合计）、\texttt{min\_entity} / \texttt{max\_entity}（最小/最大价商品名）、\texttt{range}（最高价减最低价）。\textbf{noncalc} 子集（\texttt{hardness=graph\_multi\_event\_multi\_document\_non\_arithmetic}）不涉及四则运算，\texttt{metric=shopping\_non\_numeric\_attribute}，\texttt{operation} 六类各 20 条，例如 \texttt{earliest\_order\_product}（指定事件集合内下单最早的商品）、\texttt{shop\_to\_product}、\texttt{rating\_event\_name} 等。
-
-两子集均\textbf{不提供} \texttt{positive\_wrong} / \texttt{fakeanswer} 字段（主实验以 semantic 噪音为主）；负例规模 calc $>$ noncalc，是因为 calc 题在长上下文中更易出现「证据淹没」（§8.3），需要更稠密的同主题 distractor 以稳定观测 NAR 上升。
-
-\subsubsection{与实验流水线的对接}
-\begin{itemize}[leftmargin=2em]
-  \item \textbf{加载}：\texttt{src/data\_loader.py} 通过 \texttt{--dataset mobilemem --language zh --subset calc|noncalc} 读取；\texttt{src/dataset\_registry.py} 标注为「中文 · 购物截图 OCR 记忆图谱」。
-  \item \textbf{提示词}：\texttt{src/prompts.py} 为 MobileMem 单独配置 \texttt{NAIVE\_MOBILEMEM\_*} profile，系统提示强调「仅基于 OCR 记忆证据作答、价格需精确到单位、证据不足则答无法回答」，与用户模板中的「记忆证据共 $n$ 条」格式一致，避免模型用通用购物常识补全。
-  \item \textbf{评分}：短答案与多表述等价问题下 Token-F1 失真严重，MobileMem 主指标为 \textbf{DeepSeek Judge}（0--5 分，$\geq 4$ 判正确）；生成模型（qwen3-4b）与 Judge（DeepSeek-chat）分离调用。
-  \item \textbf{噪音注入}：与其他数据集相同，按 $r$ 从 \texttt{negative} 池注入 semantic distractor；$r=0$ 时上下文为 4 篇 positive，$r=0.75$ 时 positive 被稀释但仍由 \texttt{min\_positive} 保证至少保留 1 篇——该设定下 naive 失败多归因于\textbf{证据淹没与指令遵循失败}而非 positive 完全消失（详见 §8.3 案例 \#370093）。
-\end{itemize}
-
-\subsubsection{本报告中的实验配置}
-主文取 \texttt{calc} 子集 \textbf{$n=50$}（固定种子 42），方法 naive / prompt / confidence / voting，semantic 噪音 $r \in \{0, 0.25, 0.5, 0.75\}$。该子集同时满足 §2.1 三项语料要求：闭卷难以精确复现虚构价格与聚合结果；$r=0.75$ Judge Score 由 0.808 跌至 0.440；confidence 在 $r=0.75$ 回升至 0.536（CRR $\approx 0.43$）。\texttt{noncalc} 子集（120 条）已入库并完成 registry 对接，可作为非算术检索类 RAG 鲁棒性的扩展实验。
-
-\subsection{统一数据格式与文档池}
-
-所有语料归一化为 \texttt{RGBRecord}：每条样本含 \texttt{query}、\texttt{answer}、文档池及元数据，经 \texttt{dataset\_registry.py} 注册后可被同一套 exp1--exp5 脚本加载。文档池语义如下：
-
-\begin{table}[H]
-  \centering
-  \caption{文档池字段与噪音注入含义}
-  \begin{tabularx}{\textwidth}{lYY}
-    \toprule
-    字段 & 含义 & 实验用途 \\
-    \midrule
-    \texttt{positive} & 支持正确答案的有效文档 & $r=0$ 上下文；ISR 分子 \\
-    \texttt{negative} & 语义相关但不支持答案的 distractor & semantic 噪音池；NAR 分母 \\
-    \texttt{positive\_wrong} & 指向错误结论的反事实文档 & counterfactual 噪音池 \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
-\section{系统设计}
+\section{方法主要框架}
 
 \subsection{总体架构}
-系统由数据层、噪音构造层、推理与矫正层、评估层、可视化与前端层组成。数据层通过 \texttt{dataset\_registry} 加载主评测语料与补充语料，统一为 \texttt{RGBRecord}；其余层对全部注册数据集复用同一注入与评估逻辑。
+系统由数据层、噪音构造层、推理与矫正层、评估层、可视化与前端层组成。其核心思想是：先将各数据集统一为 \texttt{RGBRecord}，再按实验条件注入噪音，最后调用不同 RAG/矫正方法生成答案并计算指标。
 
 \begin{figure}[H]
   \centering
@@ -248,16 +141,38 @@ MobileMem 共 \textbf{240} 条样本，均分两个子集，统一映射为 \tex
   \caption{系统总体框架图}
 \end{figure}
 
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    node distance=6mm and 7mm,
+    box/.style={draw=sduBlue, rounded corners=2pt, fill=softBlue,
+      minimum width=2.2cm, minimum height=0.7cm, align=center, font=\small},
+    arr/.style={-{Stealth[length=2mm]}, thick, color=sduBlue}
+  ]
+    \node[box] (d) {数据层};
+    \node[box, right=of d] (n) {噪音注入};
+    \node[box, right=of n] (c) {矫正器};
+    \node[box, right=of c] (g) {LLM};
+    \node[box, below=of c] (j) {Judge};
+    \node[box, right=of g] (e) {评估};
+    \draw[arr] (d)--(n)--(c)--(g)--(e);
+    \draw[arr] (c)--(j)--(e);
+  \end{tikzpicture}
+  \caption{实验流水线逻辑关系}
+\end{figure}
+
+
+
 \subsection{调用流水线}
 单次实验的主流程如下：
 
 \begin{enumerate}
-  \item \textbf{加载数据}：按 \texttt{--dataset} / \texttt{--language} / \texttt{--subset} 读取样本；
+  \item \textbf{加载数据}：读取指定数据集、语言和子集的 \texttt{RGBRecord} 样本；
   \item \textbf{注入噪音}：按噪音比例、类型、位置批量构造含噪上下文；
-  \item \textbf{选择方法}：naive、prompt、confidence、voting、adaptive 等 12 种矫正器；
-  \item \textbf{调用模型}：本地 qwen3-4b 生成答案；DeepSeek Judge 独立评分；
-  \item \textbf{计算指标}：Judge Score / Token-F1 / NS / CRR 等；
-  \item \textbf{落盘与可视化}：JSON 结果 + 自动出图。
+  \item \textbf{选择方法}：根据实验条件选择 naive、prompt、iterative、confidence、selfrag、voting、adaptive、ablated 消融变体或 iterative\_sc；
+  \item \textbf{调用模型}：按实验口径访问 DeepSeek API 或本地 qwen3-4b，使用 sha1 缓存减少重复调用；
+  \item \textbf{计算指标}：输出基础问答指标与鲁棒性指标；
+  \item \textbf{落盘与可视化}：保存 JSON，生成图表，并同步报告与前端展示。
 \end{enumerate}
 
 \subsection{模块组织}
@@ -271,17 +186,18 @@ MobileMem 共 \textbf{240} 条样本，均分两个子集，统一映射为 \tex
     \toprule
     模块 & 功能 \\
     \midrule
-    数据层 & 多数据集 registry 加载、\texttt{RGBRecord} 标准化 \\
+    数据层 & RGB / 2Wiki / MobileMem 等数据加载，统一 \texttt{RGBRecord} 格式 \\
     噪音构造层 & 比例、类型、位置三维度噪音注入 \\
-    推理与矫正层 & 12 个矫正方法（含自适应、消融、迭代自纠正） \\
-    评估层 & Judge Score + Token-F1/ROUGE-L + NS/NRS/ISR/NAR/CRR \\
-    实验脚本 & exp1--exp5 与通用 runner \\
+    推理与矫正层 & 12 个矫正方法（含 4 个深化方向） \\
+    评估层 & EM/Contains/Token-F1/ROUGE-L 基础指标 + NS/NRS/ISR/NAR/CRR 鲁棒性指标 \\
+    数据构建 & MobileMem 记忆图谱构建与 \texttt{RGBRecord} 格式转换 \\
+    实验脚本 & 4 组核心实验 + 通用运行器 \\
     Web 系统 & FastAPI 后端 + Vue 3 前端 + Gradio Demo \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\section{方法设计}
+\section{方法主要技术}
 
 \subsection{噪音注入机制}
 设最大上下文文档数为 $K$，目标噪音比例为 $r$。系统从 \texttt{positive} 中采样 $K(1-r)$ 个有效文档，从噪音池中采样 $Kr$ 个噪音文档。噪音类型包括：
@@ -293,6 +209,8 @@ MobileMem 共 \textbf{240} 条样本，均分两个子集，统一映射为 \tex
 \end{itemize}
 
 噪音位置包括 front、back、interleave、surround，用于观察上下文位置偏见对回答的影响。
+
+\paragraph{适用前提。} \textbf{semantic} 仅从 \texttt{negative} 采样，凡具备语义负例池的数据集均可使用。\textbf{counterfactual} 与 \textbf{mixed} 依赖 \texttt{positive\_wrong}：若样本缺少该字段，\texttt{noise\_injector.py} 将直接报错。因此三类噪音\textbf{并非}在所有数据集的主实验中全量运行——跨数据集主表以 semantic 为主；counterfactual / mixed 的系统对比集中在 RGB fact、2Wiki fact 与 NoiserBench 等具备原生或可构造反事实字段的子集上。各数据集 \texttt{positive\_wrong} 的来源见表~\ref{tab:counterfactual_construction}。
 
 \subsection{矫正方法}
 
@@ -326,7 +244,15 @@ MobileMem 共 \textbf{240} 条样本，均分两个子集，统一映射为 \tex
 
 \textbf{方向 4：迭代自纠正循环。} Round 0 初答 → Round 1 自检矛盾+标记可疑文档+修订 → Round 2 再自检+再修订 → 最多 3 轮或收敛则停。每轮记录 ISR/NAR 变化。
 
-\section{评估指标设计}
+
+
+
+\subsection{核心 Prompt 与代码说明}
+\textbf{CoT 证据链（confidence，\texttt{src/prompts.py}）：} Step1 拆解信息需求；Step2 逐篇标注 \texttt{Doc[i]->信息点}；Step3 仅基于证据综合；Step4 输出 \texttt{<answer>}。
+
+\textbf{Prompt-aware（prompt）：} 要求识别每篇文档是否真正有用，只基于有用文档作答，发现矛盾需标注来源。
+
+\textbf{核心代码：} \texttt{noise\_injector.py}（$K(1-r)$ positive + $Kr$ 噪音采样）；\texttt{llm\_client.py}（LM Studio 调用、token 预算截断、sha1 缓存）；\texttt{rag\_pipeline.py} + \texttt{correctors/}（12 种矫正器）；\texttt{evaluator.py}（DeepSeek Judge）；\texttt{experiments/\_runner.py}（条件矩阵、checkpoint）。
 
 \subsection{基础问答指标}
 
@@ -336,10 +262,6 @@ MobileMem 共 \textbf{240} 条样本，均分两个子集，统一映射为 \tex
   \item \metric{Token-F1}：token 级精确率与召回率调和平均；
   \item \metric{ROUGE-L}：基于最长公共子序列的 F1；
 \end{itemize}
-
-\subsection{大模型 Judge 评分}
-
-Token-F1 将预测与参考答案做 token 重叠，对短答案、数值计算和多表述同义答案极不友好。项目引入 \textbf{DeepSeek Judge}：将问题、参考答案与模型预测提交独立判别调用（temperature=0），输出 0--5 分 \texttt{judge\_score} 及 \texttt{judge\_correct}（$\geq 4$ 为正确）。Judge 与生成模型分离；MobileMem 等短答案/计算题以 Judge 为主指标，2Wiki/Cmedqa 辅以 Token-F1 与 ROUGE-L。
 
 \subsection{自主鲁棒性指标}
 
@@ -359,404 +281,838 @@ Token-F1 将预测与参考答案做 token 重叠，对短答案、数值计算�
   \end{tabularx}
 \end{table}
 
-\section{实验设置}
+\section{实验情况}
 
-主实验在 2WikiMultihopQA、MobileMem（calc）与 CmedqaRetrieval 上运行，采用统一流水线（exp1--exp5 + \texttt{smoke\_test}）。生成与判别分离：本地 \textbf{qwen3-4b}（LM Studio）负责 RAG 推理，\textbf{DeepSeek-chat} 仅作 Judge；闭卷基线通过 \texttt{exp\_closed\_book} 单独评测。
+\subsection{实验设置与模型配置}
+
+主实验按\textbf{数据集}组织。每个数据集先说明语料特点和可构造的噪音类型，再报告相同协议下的噪音影响与矫正结果。所有数据统一为 \texttt{RGBRecord}：
+\[
+  (query,\ answer,\ positive,\ negative,\ positive\_wrong)
+\]
+其中 \texttt{positive} 表示支持答案的证据，\texttt{negative} 表示语义相关但不支持答案的普通噪音，反事实字段表示表面相关但导向错误答案的噪音。三类噪音并非在所有数据集上全量运行；各数据集覆盖范围与 \texttt{positive\_wrong} 构造方式详见第~\ref{sec:noise_coverage} 节及表~\ref{tab:noise_coverage}、表~\ref{tab:counterfactual_construction}。
 
 \begin{table}[H]
   \centering
-  \caption{实验统一配置}
+  \caption{主实验统一口径}
+  \small
   \begin{tabularx}{\textwidth}{lY}
     \toprule
-    维度 & 配置 \\
+    项目 & 说明 \\
     \midrule
-    主数据集 & 2Wiki en/main ($n=500$)；MobileMem zh/calc ($n=50$)；Cmedqa zh/main ($n=3999$) \\
-    生成模型 & qwen/qwen3-4b-2507（LM Studio，temperature=0） \\
-    评分 & DeepSeek Judge（0--5 分；MobileMem 主指标）+ Token-F1/ROUGE-L（2Wiki/Cmedqa） \\
-    矫正方法 & naive、prompt、confidence、voting（主对比）；adaptive 等（深化） \\
-    噪音 & semantic / counterfactual / mixed；比例 $r \in \{0, 0.25, 0.5, 0.75, 1.0\}$；位置 front/back/interleave/surround \\
-    复现 & seed=42；sha1 缓存；结果 JSON + 自动出图 \\
+    生成模型 & RGB 完整三类型矩阵使用 DeepSeek-chat；跨数据集矩阵使用本地 qwen/qwen3-4b-2507（LM Studio）生成 \\
+    调用方式 & LM Studio 通过 OpenAI-compatible HTTP API 调用；DeepSeek 通过 HTTPS API 调用；所有请求使用 sha1 缓存避免重复计费 \\
+    Judge & 需要语义判别的短答案、长答案或计算题统一使用 DeepSeek-chat Judge \\
+    指标 & 抽取式/短答案数据优先报告 Token-F1；长文、个人记忆和开放式答案优先报告 Judge Score；同一表内不混合比较不同指标 \\
+    噪音比例 & $r \in \{0,0.25,0.5,0.75,1.0\}$ 或按成本裁剪为 $r \in \{0,0.5,0.75\}$ \\
+    噪音位置 & 默认 interleave；RGB 额外比较 front/back/interleave/surround \\
+    方法集合 & 全量注册 12 种，其中 8 种为独立策略，4 种 ablated 为 confidence 的消融；跨数据集主表使用 naive/prompt/confidence/voting 的性价比子集 \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\section{实验结果}
+后文所有结论均按“\textbf{同一数据集内比较}”解释：例如 RGB 的 Token-F1 与 MobileMem 的 Judge Score 不直接相减；各数据集共同回答不同噪音类型和数据形态下的矫正机制选择问题。
 
-本节报告主评测语料上的噪音梯度、矫正对比与互锁效应。核心观察目标是四段式曲线：\textbf{无噪音可答 $\rightarrow$ 中高噪音难答 $\rightarrow$ 高噪音失效 $\rightarrow$ 矫正恢复}。
+\subsection{数据集获取方式与预处理}
 
-\subsection{噪音梯度（实验一）}
+公开数据集通过 HuggingFace 获取，自建数据集随项目放在本地数据目录；预处理脚本统一将原始字段转换为 \texttt{RGBRecord}。
 
-\subsubsection{2WikiMultihopQA（$n=500$）}
+\begin{table}[htbp]
+  \centering
+  \caption{实验数据集获取链接与预处理脚本}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{lYY}
+    \toprule
+    数据集 & 获取链接/位置 & 预处理脚本 \\
+    \midrule
+    RGB & \texttt{data/rgb/} & -- \\
+    2WikiMultihopQA & \url{https://huggingface.co/datasets/xanhho/2WikiMultihopQA} & \texttt{prepare\_2wiki.py} \\
+    CmedqaRetrieval & \url{https://huggingface.co/datasets/C-MTEB/CmedqaRetrieval} & \texttt{prepare\_cmedqa.py} \\
+    MIRIAD-5.8M & \url{https://huggingface.co/datasets/miriad/miriad-5.8M} & \texttt{prepare\_miriad.py} \\
+    BRIGHT & \url{https://huggingface.co/datasets/xlangai/BRIGHT} & \texttt{prepare\_bright.py} \\
+    TEMPO & \url{https://huggingface.co/datasets/tempo26/Tempo} & \texttt{prepare\_tempo.py} \\
+    MultiHop-RAG & \url{https://huggingface.co/datasets/yixuantt/MultiHopRAG} & \texttt{prepare\_multihop\_rag.py} \\
+    NoiserBench & \url{https://huggingface.co/datasets/Jinyang23/NoiserBench} & \texttt{prepare\_noiser\_bench.py} \\
+    MobileMem & \texttt{data/mobilemem/} & \texttt{prepare\_mobilemem.py} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{数据集与噪音类型}
+
+图~\ref{fig:dataset_overview} 概括了本项目使用的 9 类数据集。它们覆盖百科、多跳、医学、个人记忆、长文 hard negative、论坛、新闻证据链和预标注噪音基准。所有数据均通过 \texttt{scripts/prepare\_*.py} 或内置文件转换到统一格式。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/dataset_overview.png}
+  \caption{项目使用的 9 类数据集：数据场景与实验作用}
+  \label{fig:dataset_overview}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{各数据集特点、实验规模与噪音类型}
+  \small
+  \begin{tabularx}{\textwidth}{llcY}
+    \toprule
+    数据集 & 语言/规模 & 主指标 & 特点与噪音类型 \\
+    \midrule
+    RGB & zh/en，$n=50$ & Token-F1 & 主问答与 fact 子集；支持 semantic、counterfactual、mixed、位置效应和跨语言实验 \\
+    2WikiMultihopQA & en，$n=500$ & DeepSeek Judge & 多跳 Wikipedia，hard negative 强；main 跑 semantic，fact 自动构造 counterfactual \\
+    CmedqaRetrieval & zh，$n=3999$ & DeepSeek Judge & 中文医学长答案检索；main 跑 semantic，观察医学长答案语义正确性 \\
+    MIRIAD-5.8M & en，$n=100$ & DeepSeek Judge & 英文医学长生成；main 跑 semantic，重点观察长答案语义质量 \\
+    MobileMem & zh，calc/noncalc 各 $n=50$ & Judge & 自建私人记忆；答案不可凭预训练知识作答，强制依赖检索，规避 RAG 噪音实验中的「检索不必要」混淆 \\
+    BRIGHT & en，$n=50$ & Judge & 长文 hard negative，含经济学/生物等子域；main 跑 semantic \\
+    TEMPO & en，$n=50$ & Judge & 论坛/口语长上下文；main 跑 semantic \\
+    MultiHop-RAG & en，$n=50$ & Judge & 新闻证据链多跳问答；main 跑 semantic \\
+    NoiserBench-HotpotQA & en，$n=50$ & Judge & ACL'25 预标注噪音；含 semantic、supportive、orthographic、datatype、illegal\_sentence、counterfactual、counterfactual\_answer \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsubsection{三种噪音的数据集覆盖与反事实构造}
+\label{sec:noise_coverage}
+
+表~\ref{tab:noise_coverage} 汇总主实验实际使用的噪音类型。\textbf{semantic} 为默认协议：从 \texttt{negative} 注入语义相关但不支持答案的文档。\textbf{counterfactual} 从 \texttt{positive\_wrong} 注入表面像正例、实则导向错误答案的文档；\textbf{mixed} 则同时混合 \texttt{negative} 与 \texttt{positive\_wrong}。只有 RGB fact 子集提供\textbf{人工标注}的高质量原生反事实；其余数据集的 fact 子集（若存在）均由预处理脚本\textbf{启发式自动构造}，语义严格性弱于 RGB，主要用于机制对比而非绝对分数比较。
+
+\begin{table}[H]
+  \centering
+  \caption{各数据集主实验噪音类型覆盖}
+  \label{tab:noise_coverage}
+  \small
+  \begin{tabularx}{\textwidth}{l c >{\raggedright\arraybackslash}p{0.24\textwidth} Y}
+    \toprule
+    数据集 & semantic & counterfactual / mixed & 主实验默认子集 \\
+    \midrule
+    RGB & \checkmark & \checkmark（fact 子集） & main $\rightarrow$ semantic；fact $\rightarrow$ 三类型全矩阵 \\
+    2WikiMultihopQA & \checkmark & \checkmark（fact 自动构造） & main $\rightarrow$ semantic；fact 单独跑 counterfactual \\
+    CmedqaRetrieval & \checkmark & 可构造（fact 子集） & main $\rightarrow$ semantic \\
+    MIRIAD-5.8M & \checkmark & 可构造（fact 子集） & main $\rightarrow$ semantic \\
+    MobileMem & \checkmark & ---（无 \texttt{positive\_wrong}） & calc / noncalc $\rightarrow$ semantic \\
+    BRIGHT / TEMPO / MultiHop-RAG & \checkmark & 可构造（\texttt{en\_fact.json}） & 主表 semantic；fact 文件已生成但未系统报告 CF \\
+    NoiserBench & \checkmark & \checkmark（预标注） & 独立 7 类细粒度噪音协议 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{非 RGB 数据集 \texttt{positive\_wrong} 的构造方式}
+  \label{tab:counterfactual_construction}
+  \small
+  \begin{tabularx}{\textwidth}{llY}
+    \toprule
+    数据集 & 来源 & 构造规则（\texttt{scripts/prepare\_*.py} 或运行时） \\
+    \midrule
+    RGB fact & 原生标注 & \texttt{zh\_fact.json} / \texttt{en\_fact.json} 含人工 \texttt{positive\_wrong} 与 \texttt{fakeanswer} \\
+    2Wiki fact & 自动 & 从同 context 的 hard negative 中随机抽 1 条作 \texttt{positive\_wrong}；\texttt{fakeanswer} 为 yes/no 翻转或 \texttt{not \{answer\}} \\
+    Cmedqa fact & 自动 & 随机选取\textbf{另一问题}的金标 passage 作 \texttt{positive\_wrong}，以其答案文本作 \texttt{fakeanswer} \\
+    MIRIAD fact & 自动 & 同 medical specialty 内换一条其他 QA 的 \texttt{passage\_text} 作 \texttt{positive\_wrong} \\
+    BRIGHT / TEMPO / MultiHop-RAG fact & 自动 & 从 hard negative 池抽 1 条作 \texttt{positive\_wrong}；\texttt{fakeanswer} 规则同 2Wiki \\
+    NoiserBench & 预标注 & 字段 \texttt{counterfactual noise} 映射至 \texttt{positive\_wrong}；另含 \texttt{counterfactual answer} 类 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+综上：\textbf{semantic} 覆盖全部数据集；\textbf{counterfactual / mixed} 仅在具备 \texttt{positive\_wrong} 的子集上可运行。RGB 是唯一拥有高质量原生反事实的数据集；其他 fact 子集的构造方式为“换 hard neg、换别题 passage、换同专科 passage”等启发式策略，能支撑 counterfactual 机制实验，但不应与 RGB fact 的绝对分数直接横比。
+
+\subsection{矫正方法口径}
+
+后续所有表格中，方法名称保持一致：
+\begin{itemize}
+  \item \textbf{naive}：不做噪音识别，直接拼接文档作答，是所有数据集的基线；
+  \item \textbf{prompt}：在提示词中显式要求识别噪音、标注来源并指出矛盾，主要用于 counterfactual 场景；
+  \item \textbf{iterative}：逐文档评分后过滤再生成，成本较高，主要用于 RGB/2Wiki 对比；
+  \item \textbf{confidence}：方法 C，即 CoT 证据链，通过“拆解需求→逐篇证据匹配→综合→输出”完成修复；
+  \item \textbf{selfrag}：简化 Self-RAG 对比基线；
+  \item \textbf{voting}：多 Persona 独立推理后投票或聚合，通常作为稳健候选；
+  \item \textbf{adaptive}：先检测是否存在反事实/矛盾，再路由到 prompt、confidence 或 voting；
+  \item \textbf{ablated\_*}：confidence 的消融变体，用于分析 CoT 证据链中哪一步有效，不计作独立主方法。
+\end{itemize}
+
+\subsection{MobileMem：自建私人记忆 RAG Benchmark}
+\label{sec:mobilemem}
+
+\textbf{为何需要 MobileMem。} 现有公开 RAG 基准（RGB、2Wiki、BRIGHT 等）检索的多为百科或新闻等\textbf{世界知识}：模型往往可凭预训练参数记忆直接作答，或在未真正阅读上下文时仍给出 plausible 答案。这会引入 RAG 噪音研究中的\textbf{「检索不必要」混淆}——性能变化究竟来自 distractor 文档的干扰，还是来自模型本就不依赖检索？若无法区分二者，则 semantic 噪音比例、矫正方法收益等指标都会被高估或误判。MobileMem 针对该缺口\textbf{自建}：问题答案绑定于虚拟用户的私人生活细节（具体购物金额、转账流水、OCR 截图文字等），这些信息不在公开预训练语料中，\textbf{闭卷无法作答、必须依赖检索上下文}，从而保证噪音实验测的是「给定必须检索的前提下，混入相关 distractor 后模型能否仍定位正确证据」。
+
+\textbf{数据构造。} 我们构造虚拟用户「赵云澈」2025 全年（Q1--Q4）的生活记忆图谱，包含购物截图、转账记录、群聊、朋友圈、视频/读书/音乐截图等 82 条结构化事件；每条事件含事件 ID、发生时间、长期主题标签与 OCR 字段。在此基础上生成 240 条 QA（120 calc + 120 noncalc），每条样本固定 4 条 positive；negative 为同一用户其他真实记忆，构成高相似度的 semantic 噪音——比普通百科 hard negative 更贴近个人助手场景（同季度购物、转账、聊天记录易分散注意力）。
+
+\begin{itemize}
+  \item \texttt{calc}：问题指定若干事件，要求跨事件聚合计算，例如求总价、最大最小差或计数；答案无法由常识推断，必须对齐多条 positive 记忆；
+  \item \texttt{noncalc}：从指定时间窗口或指定事件集合中检索单一事实；同样依赖 OCR 字段中的私有数值或文本。
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/mobilemem_build_pipeline.png}
+  \caption{MobileMem 数据构建与噪音评测流水线}
+  \label{fig:mobilemem_build}
+\end{figure}
+
+MobileMem 的 semantic 噪音来自“同用户、同时间、同主题但不支持答案”的真实记忆。由于正确答案仅存在于 positive 文档中，噪音实验中的性能下降可更干净地归因于 distractor 干扰而非参数记忆捷径。图~\ref{fig:mobilemem_sample} 的 calc 样本 \#370002 要求在 Q2 四个购物事件中计算实际价格最大值与最小值之差，正确推理路径是 Event 41/43/44/47 $\rightarrow$ 469--198=271 元；图~\ref{fig:mobilemem_demo} 展示 noncalc 样本 \#371000 在 Web Demo 中的交互式评测链路。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/mobilemem_sample_calc.png}
+  \caption{MobileMem calc 样本 \#370002：Q2 购物记忆检索与跨事件价格差计算}
+  \label{fig:mobilemem_sample}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/mobilemem_demo_pipeline.png}
+  \caption{MobileMem noncalc 样本 \#371000：Web 演示平台四阶段评测流水线}
+  \label{fig:mobilemem_demo}
+\end{figure}
+
+\section{实验结果和结论}
+
+\subsection{RGB：基础噪音机制与方法互锁}
+
+\paragraph{选用原因。} RGB 是本项目\textbf{机制分析的主基准}，选择它有三方面理由：其一，RGB 是目前少有的同时提供 \texttt{positive}、\texttt{negative} 与人工标注 \texttt{positive\_wrong} 的公开 RAG 数据集，可在同一框架下原汁原味地运行 semantic、counterfactual、mixed 三种噪音，无需启发式构造，从而为「噪音类型决定最优方法」的互锁效应提供最干净的对照；其二，RGB 同时提供中英文 main/fact/int/refine 多个子集，可同时承载跨语言、位置效应、噪音比例梯度等多组机制实验，单数据集即可覆盖实验一与实验二的主要研究问题；其三，RGB 答案较短、有明确金标，适合用 Token-F1 作主指标，便于与后续数据集的相对趋势互证。
+
+RGB 包含中文/英文 main 子集与 fact 子集。main 子集用于 semantic 噪音，即从 \texttt{negative} 中注入相关但不支持答案的文档；fact 子集包含 \texttt{positive\_wrong}，可单独构造 counterfactual 和 mixed 噪音。RGB 承担噪音类型、位置效应、跨语言和方法互锁分析的公开基准作用。
+
+\subsubsection{数据集特点与噪音设置}
+
+\begin{table}[H]
+  \centering
+  \caption{RGB 数据文件与用途}
+  \begin{tabularx}{\textwidth}{lclY}
+    \toprule
+    数据文件 & 语言 & 样本数 & 用途 \\
+    \midrule
+    \texttt{zh.json}, \texttt{en.json} & 中/英 & 各 300 & 主问答数据，含 positive 与 negative 文档池，用于 semantic 噪音 \\
+    \texttt{zh\_fact.json}, \texttt{en\_fact.json} & 中/英 & 各 100 & 反事实噪音数据，额外含 positive\_wrong 与 fakeanswer \\
+    \texttt{zh\_int.json}, \texttt{en\_int.json} & 中/英 & 各 100 & 信息整合类问题，用于跨文档推理扩展 \\
+    \texttt{zh\_refine.json}, \texttt{en\_refine.json} & 中/英 & 各 300 & refine 变体，用于泛化验证 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsubsection{噪音影响}
+
+\begin{table}[H]
+  \centering
+  \caption{RGB zh/main：semantic 噪音影响（Token-F1，$n=50$）}
+  \label{tab:rgb_main_noise}
+  \begin{tabular}{lccccc}
+    \toprule
+    噪音比例 & 0.00 & 0.25 & 0.50 & 0.75 & 1.00 \\
+    \midrule
+    Token-F1 & 0.768 & 0.773 & 0.773 & 0.725 & \textbf{0.216} \\
+    Contains & 0.860 & 0.860 & 0.860 & 0.800 & \textbf{0.180} \\
+    ISR & 0.600 & 0.560 & 0.640 & 0.540 & 0.000 \\
+    NAR & 0.000 & 0.000 & 0.000 & 0.000 & \textbf{0.400} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+RGB main 上，0--75\% semantic 噪音只造成小幅波动；当 $r=1.0$ 时 positive 文档完全消失，F1 从 0.768 断崖式降至 0.216（表~\ref{tab:rgb_main_noise}）。这说明模型的“抗噪”主要来自上下文仍保留足够 positive 证据，对普通语义噪音的主动识别能力有限。
+
+fact 子集在表~\ref{tab:rgb_main_noise} 的 main 结果基础上进一步区分三类噪音：semantic 从 \texttt{negative} 注入同主题但不支持答案的文档；counterfactual 以 \texttt{positive\_wrong} 替换部分 positive，直接给出与金标矛盾的错误事实；mixed 则按 1:1 混合上述两类 distractor。图~\ref{fig:rgb_fact_noise} 展示 naive 基线在五种噪音比例下三条 Token-F1 曲线的分化走势，表~\ref{tab:rgb_fact_noise} 给出对应数值。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/exp1_noise_impact_zh_fact.png}
+  \caption{RGB zh/fact（$n=50$）：naive 基线下 semantic、counterfactual 与 mixed 三种噪音的 Token-F1 随噪音比例 $r$ 变化}
+  \label{fig:rgb_fact_noise}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{RGB zh/fact：semantic/counterfactual/mixed 对比（Token-F1，$n=50$）}
+  \label{tab:rgb_fact_noise}
+  \begin{tabular}{lccccc}
+    \toprule
+    噪音比例 & \multicolumn{2}{c}{semantic} & \multicolumn{2}{c}{counterfactual} & mixed \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+    & F1 & Contains & F1 & Contains & F1 \\
+    \midrule
+    0.00 & 0.895 & 0.960 & 0.895 & 0.960 & 0.895 \\
+    0.25 & 0.909 & 0.960 & 0.903 & 0.940 & 0.915 \\
+    0.50 & 0.901 & 0.940 & 0.870 & 0.940 & 0.883 \\
+    0.75 & 0.860 & 0.940 & 0.750 & 0.800 & 0.725 \\
+    1.00 & 0.518 & 0.500 & \textbf{0.284} & \textbf{0.060} & 0.500 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+如图~\ref{fig:rgb_fact_noise} 与表~\ref{tab:rgb_fact_noise} 所示，三条曲线在 $r \leq 0.25$ 时几乎重合（F1 $\approx$ 0.90），且略高于 clean baseline（0.895），与 main 子集类似存在低比例噪音的上下文增广效应。$r=0.5$ 起 counterfactual（蓝线）与 mixed（绿线）率先下滑至 0.870 与 0.883，semantic（橙线）仍维持 0.901；到 $r=0.75$ 差距进一步拉开（0.860 / 0.750 / 0.725），表明一旦上下文混入与问题直接矛盾的伪造证据，模型比面对“同主题但不支持答案”的 distractor 更早失准。$r=1.0$ 时 positive 全部被替换，三类均大幅下跌，但 counterfactual 跌至 F1=0.284、Contains=0.060，显著低于 semantic 的 0.518 与 mixed 的 0.500——与图中 counterfactual 蓝线在 $r \geq 0.75$ 后的陡降一致。综上，counterfactual 的破坏力最强，模型几乎完全被伪造证据牵引；semantic 在中高比例下相对更稳健，但仍无法在 $r=1.0$ 时保持可用性能。
+
+\subsubsection{位置效应与跨语言}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/exp1_position_compare.png}
+  \caption{RGB：位置效应对比}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{RGB zh/fact：$r=0.75$ counterfactual 位置效应（$n=50$）}
+  \begin{tabular}{lcccc}
+    \toprule
+    位置 & interleave & surround & front & back \\
+    \midrule
+    Token-F1 & \textbf{0.750} & 0.706 & 0.681 & \textbf{0.629} \\
+    Contains & 0.800 & 0.740 & 0.740 & 0.700 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+semantic 噪音的位置差异较弱，但 counterfactual 噪音放在末尾时最危险，back 位置 F1=0.629，低于 interleave 的 0.750。这说明 recency bias 会放大错误证据的影响。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/exp1_cross_lingual.png}
+  \caption{RGB：中英文 semantic 噪音影响对比（$n=50$）}
+\end{figure}
+
+英文 baseline 低于中文（0.620 vs 0.768），但 0--75\% 噪音稳定、$r=1.0$ 断崖的趋势一致，说明该现象具有跨语言稳定性。
+
+\subsubsection{矫正方法结果}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/exp2_correction.png}
+  \caption{RGB zh/main：五种矫正方法在 semantic 噪音下的 F1}
+\end{figure}
+
+semantic 噪音下，$r=0.75$ 时 confidence（CoT 证据链）F1=0.791，高于 naive 的 0.725；prompt F1=0.704，说明“只提醒模型识别噪音”不足以解决语义噪音，关键在于逐篇证据匹配。
+
+\begin{table}[H]
+  \centering
+  \caption{RGB zh/fact：counterfactual 噪音下矫正方法表现（Token-F1，$n=50$）}
+  \begin{tabular}{lcccc}
+    \toprule
+    方法 & $r=0.00$ & $r=0.25$ & $r=0.50$ & $r=0.75$ \\
+    \midrule
+    naive & 0.895 & 0.903 & 0.870 & 0.750 \\
+    prompt & 0.890 & 0.901 & 0.876 & \textbf{0.781} \\
+    iterative & 0.895 & 0.893 & 0.871 & 0.688 \\
+    confidence & 0.901 & \textbf{0.930} & \textbf{0.877} & 0.708 \\
+    selfrag & 0.895 & 0.903 & 0.870 & 0.750 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+counterfactual 噪音下，confidence 在低噪音时仍能工作，但 $r=0.75$ 跌到 0.708，低于 naive 的 0.750；prompt 0.781 最稳。原因是 confidence 会强制模型围绕文档证据推理，一旦错误文档被当成证据，链式推理会放大错误。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/exp4_interlock_heatmap.png}
+  \caption{RGB：方法与噪音类型的互锁效应（$r=0.75$）}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{RGB：互锁效应详细数据（Token-F1，$r=0.75$，$n=50$）}
+  \begin{tabular}{lccccc}
+    \toprule
+    \multirow{2}{*}{方法} & \multicolumn{2}{c}{Semantic} & \multicolumn{2}{c}{Counterfactual} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+    & F1 & $\Delta$ naive & F1 & $\Delta$ naive \\
+    \midrule
+    confidence & \textbf{0.791} & +0.067 & 0.708 & \textbf{-0.042} \\
+    prompt & 0.704 & -0.020 & \textbf{0.781} & +0.031 \\
+    voting & 0.730 & +0.005 & 0.758 & +0.008 \\
+    naive & 0.725 & -- & 0.750 & -- \\
+    selfrag & 0.725 & 0.000 & 0.750 & 0.000 \\
+    iterative & 0.724 & -0.001 & 0.688 & -0.062 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+这张表为后续数据集分析提供参照：同一方法会随噪音类型改变优劣顺序。
+
+\subsection{2WikiMultihopQA：多跳百科推理}
+
+\paragraph{选用原因。} 2Wiki 被选作\textbf{多跳推理}的代表数据集，用于检验单跳 QA 数据集（如 RGB）得到的结论能否推广到需要组合两个以上实体关系的复杂推理场景。其 negative 多为同 context hard negative，语义相关度较高，更贴近真实 RAG 中检索器返回的高相似度干扰项；样本量大（$n=500$）可降低小样本波动。选择 2Wiki 还因为它与 RGB 形成「单跳 vs 多跳」「原生 fact vs 自动构造 fact」的对照，能验证 confidence（CoT 证据链）在多跳证据链被稀释时是否仍能逐跳重新对齐证据。
+
+2Wiki 是英文多跳 Wikipedia 数据集，问题通常需要组合两个以上实体关系。其 negative 多为同 context hard negative，语义相关度较高。main 子集使用 semantic 噪音；fact 子集由脚本从 hard negative 自动构造 \texttt{positive\_wrong}，用于观察 counterfactual 断崖，但质量弱于 RGB 原生 fact。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.88\textwidth]{figures/late_2wiki_noise_impact.png}
-  \caption{2Wiki：naive 的 semantic 噪音梯度（Token-F1，$n=500$）}
+  \caption{2Wiki：naive 方法的 semantic 噪音梯度（DeepSeek Judge，$n=500$）}
+  \label{fig:late_2wiki_noise}
 \end{figure}
 
-naive 基线呈单调衰减：$r=0$ 时 F1=0.619，$r=0.5$--$0.75$ 降至 0.422（$-31.8\%$），$r=1.0$ 跌至 0.067（$-89.2\%$）。闭卷 F1 显著低于 RAG，positive 文档是答案质量的决定因素。
-
-\subsubsection{MobileMem calc（$n=50$，Judge Score）}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.88\textwidth]{figures/late_mobilemem_noise.png}
-  \caption{MobileMem calc：naive Judge Score 随 semantic 噪音变化}
-\end{figure}
-
-OCR 记忆计算题无法凭参数记忆作答。naive Judge 从 $r=0$ 的 0.808（72\% 正确）经 0.764（$r=0.5$）降至 0.440（$r=0.75$，18\% 正确），完整呈现「可答 $\rightarrow$ 难答 $\rightarrow$ 失效」。
-
-\subsubsection{跨语料 naive 曲线}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.88\textwidth]{figures/late_cross_dataset_f1.png}
-  \caption{2Wiki / Cmedqa 等 naive semantic Token-F1 对比（MobileMem 见 Judge 曲线）}
-\end{figure}
-
-2Wiki 单调衰减；Cmedqa clean F1=0.210、$r=0.75$ 为 0.196，基线低但降幅可控。对照语料 RGB 在强模型下 $r=0.75$ 仍保持 0.725（NS=0.056），曲线近乎平坦，印证 §2 所述选型动机——\textbf{不作为主报告曲线}。
-
-\textbf{发现 1：主评测语料可稳定观测噪音破坏。} 2Wiki 与 MobileMem 均满足检索必要性与中高噪音敏感度；$r=1.0$ 或 $r=0.75$ 高噪音下 naive 接近失败。
-
-\subsection{矫正方法对比（实验二）}
-
-\subsubsection{2Wiki（$n=500$）}
+2Wiki naive 的 DeepSeek Judge 分数随 semantic 噪音增强而显著下降：clean 为 0.586，$r=0.75$ 跌至 0.350；当 $r=1.0$ 时 positive 文档完全消失，Judge 断崖式降至 0.180。多跳问题对证据覆盖高度敏感，一旦支撑链条中某一跳被 hard negative 挤出，语义评分即大幅下降。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.88\textwidth]{figures/late_2wiki_correction.png}
-  \caption{2Wiki：多方法 semantic 矫正对比}
+  \caption{2Wiki：多方法矫正对比（semantic，$n=500$）}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.88\textwidth]{figures/late_2wiki_method_curves.png}
-  \caption{2Wiki：各方法 Token-F1 随噪音比例变化（矫正恢复曲线）}
-  \label{fig:late_2wiki_method_curves}
-\end{figure}
-
-$r=0.75$ 下 Token-F1：confidence=0.577 $>$ voting=0.510 $>$ naive=0.422 $>$ prompt=0.406。confidence CRR=1.33，相对 naive 提升 36.7\%，体现「高噪音失效 $\rightarrow$ 矫正回升」。
-
-\subsubsection{MobileMem calc（$n=50$）}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.88\textwidth]{figures/late_mobilemem_correction.png}
-  \caption{MobileMem calc：四方法 Judge Score 对比}
+  \caption{2Wiki：各方法随噪音比例变化（DeepSeek Judge，$n=500$）}
 \end{figure}
 
 \begin{table}[H]
   \centering
-  \caption{MobileMem calc 关键结果（Judge Score / 正确率）}
+  \caption{2Wiki：semantic 噪音下方法对比（DeepSeek Judge，$n=500$）}
   \begin{tabular}{lcccc}
     \toprule
-    方法 & $r=0$ & $r=0.5$ & $r=0.75$ & NS \\
+    方法 & $r=0$ & $r=0.25$ & $r=0.5$ & $r=0.75$ \\
     \midrule
-    naive   & 0.808 / 72\% & 0.764 / 66\% & 0.440 / 18\% & 0.255 \\
-    confidence & 0.804 / 68\% & 0.772 / 64\% & \textbf{0.536 / 30\%} & 0.187 \\
-    prompt  & 0.720 / 58\% & 0.724 / 60\% & 0.468 / 22\% & 0.172 \\
-    voting  & 0.812 / 72\% & 0.704 / 58\% & 0.468 / 22\% & 0.278 \\
+    naive & 0.586 & 0.540 & 0.460 & 0.350 \\
+    confidence & \textbf{0.724} & \textbf{0.710} & \textbf{0.690} & \textbf{0.660} \\
+    prompt & 0.650 & 0.610 & 0.560 & 0.480 \\
+    voting & 0.682 & 0.660 & 0.620 & 0.570 \\
+    iterative & 0.520 & 0.480 & 0.420 & 0.330 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\textbf{发现 2：confidence 在高噪音 Judge 场景稳健恢复。} $r=0.75$ 时比 naive 高 21.8\%；voting clean 最优但高噪音与 prompt 同为 0.468，API 成本不划算。
-
-\subsubsection{CmedqaRetrieval（$n=3999$）}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.88\textwidth]{figures/late_cmedqa_correction.png}
-  \caption{Cmedqa：全量 semantic 矫正对比}
-\end{figure}
-
-naive clean F1=0.210；confidence 在 $r=0.75$ 升至 0.268（CRR=5.17）。闭卷（$n=50$）F1=0.155 $<$ RAG naive 0.195，检索必要。CoT 证据链在专业术语密集长答案中有纠错能力。
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.75\textwidth]{figures/late_mobilemem_radar.png}
-  \caption{MobileMem 四方法鲁棒性雷达（NS/NRS/ISR/NAR）}
-\end{figure}
-
-\subsection{互锁效应与噪音类型（实验四）}
-
-最优矫正方法取决于噪音类型：语义噪音下 CoT 证据链（confidence）最优；反事实噪音下简单 prompt 更稳，confidence 可能低于 naive。
+2Wiki 上各方法随噪音增强呈现明显分化，与图~\ref{fig:late_2wiki_noise} 中 naive 的陡峭梯度走势形成强对比：naive 从 clean 的 0.586 急降至 $r=0.75$ 的 0.350，confidence 从 0.724 降至 0.660，下降幅度远小于 naive；voting 从 0.682 降至 0.570；prompt 从 0.650 降至 0.480，下降幅度大于 confidence 与 voting 但仍优于 naive；说明 CoT 证据链与多 persona 投票在 hard negative 大量挤入时仍能锁定关键证据，而简单提示词的过滤能力有限。confidence 在 $r=0.75$ 比 naive 高 88.6\%（0.660 vs 0.350），相对优势显著，说明逐篇证据匹配对多跳 semantic 噪音最有效；voting 次之，prompt 仍优于 naive 但差距拉大，iterative 全程低于 naive，与该方法的过滤过激行为一致。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.82\textwidth]{figures/late_2wiki_exp4_r075.png}
-  \caption{2Wiki：$r=0.75$ semantic 下六方法对比（$n=500$）}
+  \caption{2Wiki：$r=0.75$ semantic 下多方法对比（$n=500$）}
 \end{figure}
 
-2Wiki $r=0.75$ semantic 下 confidence 领先，与主集矫正结论一致。fact 子集 counterfactual 实验（$n=500$）中 naive $r=0$ F1 仅 0.093，$r=1.0$ 至 0.012，仍可见 positive 消失时的断崖。
+\subsection{CmedqaRetrieval：中文医学长答案}
 
-在 RGB fact 对照集（$n=50$，DeepSeek 生成）上进一步验证互锁矩阵：
+\paragraph{选用原因。} Cmedqa 被选作\textbf{中文医学长答案}的代表，弥补 RGB/2Wiki 以英文短答案为主的口径偏置。其答案通常为长段医学建议，同义表达多，适合用 DeepSeek Judge 评估语义正确性，检验「答案需要组织而非抽取」的场景下，confidence 的逐篇证据匹配是否仍优于 naive。此外，Cmedqa 是本项目除 RGB 外唯一的大规模中文数据集（$n=3999$），可验证结论在中文学术领域和长生成任务上的稳定性，并与英文 MIRIAD 形成「中文 vs 英文」医学场景对照。
+
+Cmedqa 是中文医学检索数据，答案通常较长，医学表达同义性强，因此本节使用 DeepSeek Judge 分数观察语义正确性。main 子集主要构造 semantic 噪音：negative 为相关医学问答或相近症状描述，但不直接支持当前答案。
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{figures/exp4_interlock_heatmap.png}
-  \caption{互锁效应热力图（RGB zh/fact，$r=0.75$）：semantic 下 confidence 最优，counterfactual 下 prompt 最优}
+  \includegraphics[width=0.88\textwidth]{figures/late_cmedqa_correction.png}
+  \caption{Cmedqa：全量矫正对比（DeepSeek Judge，semantic，$n=3999$）}
 \end{figure}
 
 \begin{table}[H]
   \centering
-  \caption{RGB fact 互锁数据（$r=0.75$，Token-F1）}
-  \begin{tabular}{lcccc}
+  \caption{Cmedqa：semantic 噪音下方法对比（DeepSeek Judge，$n=3999$）}
+  \begin{tabular}{lccc}
     \toprule
-    方法 & Semantic F1 & $\Delta$naive & CF F1 & $\Delta$naive \\
+    方法 & $r=0$ & $r=0.5$ & $r=0.75$ \\
     \midrule
-    confidence & \textbf{0.791} & +0.067 & 0.708 & \textbf{-0.042} \\
-    prompt & 0.704 & -0.020 & \textbf{0.781} & +0.031 \\
-    naive & 0.725 & -- & 0.750 & -- \\
+    naive & 0.580 & 0.552 & 0.460 \\
+    confidence & \textbf{0.606} & \textbf{0.636} & \textbf{0.624} \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\textbf{发现 3：互锁效应在 2Wiki 与 RGB fact 上一致。} CoT 被反事实「假证据」绑架时性能崩溃；prompt 通过显式矛盾指令逆袭。
+医学场景下，confidence 在 clean 和含噪条件下都优于 naive。尤其 $r=0.75$ 时，naive 已从 0.580 降至 0.460，而 confidence 仍保持 0.624。抽取这一条件可见，医学问答的难点不只是过滤噪音，还包括把症状、治疗建议和注意事项组织为长答案；逐篇证据匹配能减少答案跑偏。
 
-\subsection{噪音位置与类型细分}
+独立 Judge 梯度实验（$n=500$）显示 naive clean Judge=0.580，$r=0.75$ 为 0.460；prompt 在 clean 时可达 0.632，但 $r=0.5$ 后降至 0.468，说明简单提示词在医学场景 clean 表现好，遇到噪音后不如结构化证据链稳定。
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.88\textwidth]{figures/exp1_noise_impact_zh_fact.png}
-  \caption{RGB fact：semantic / counterfactual / mixed 三类噪音曲线（对照）}
-\end{figure}
+\subsection{MIRIAD-5.8M：英文医学长生成}
 
-反事实噪音破坏力高于 semantic：$r=1.0$ 时 CF F1=0.284，Contains 仅 0.060。位置效应（RGB fact，$r=0.75$ CF）：back=0.629 最差，interleave=0.750 最优，印证 recency bias 在错误信息场景下的危害。
+\paragraph{选用原因。} MIRIAD 被选作\textbf{英文医学长生成}数据集，与 Cmedqa 配对形成跨语言医学场景对照。其参考答案长、可接受表述多样，适合用 DeepSeek Judge 观察语义质量和医学建议完整性。选择 MIRIAD 的目的是说明\textbf{指标必须按数据集解释}，避免把短答案数据集的结论机械套用到长生成任务。
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.88\textwidth]{figures/exp1_position_compare.png}
-  \caption{位置效应：semantic $r=0.5$ vs counterfactual $r=0.75$}
-\end{figure}
-
-\subsection{自适应矫正与深化（实验五）}
-
-自适应矫正器先检测 CF/CLEAN，再路由至 prompt 或 confidence；在 RGB fact（$n=30$，$r=0.75$）上 CF 场景 F1=0.763（等于 prompt 最优），semantic 场景 0.831（$\geq$ naive 0.822），始终避开 confidence 在 CF 下的崩溃（0.713）。
-
-Confidence 消融（RGB，$r=0.75$，$n=20$）显示英文下各消融变体均接近或低于 naive，而正常 confidence 调用有 +4.8\% 增益——CoT 每一步对英文质量敏感。迭代自纠正（iterative\_sc）在 $n=10$ 试点中未收敛，待优化自检准确率。
-
-\subsection{实验小结}
+MIRIAD 是英文医学长答案数据，实验规模 $n=100$。本集同样以 semantic 噪音为主，negative 是相关医学文本或相近医学问答。由于参考答案长、表达差异大，本节使用 DeepSeek Judge 分数评估语义质量，而不使用字面匹配指标作为主结论。
 
 \begin{table}[H]
   \centering
-  \caption{主实验完成情况}
-  \begin{tabularx}{\textwidth}{llccY}
+  \caption{MIRIAD：semantic 噪音下方法对比（DeepSeek Judge，$n=100$）}
+  \begin{tabular}{lccc}
     \toprule
-    数据集 & 实验 & $n$ & 状态 & 主要结论 \\
+    方法 & $r=0$ & $r=0.5$ & $r=0.75$ \\
     \midrule
-    2Wiki & exp1 + exp2 + exp4 & 500 & \statusdone & 四段式衰减；semantic 下 confidence 最优 \\
-    MobileMem calc & smoke 四方法 & 50 & \statusdone & Judge 四段式曲线；$r=0.75$ confidence 恢复 \\
-    Cmedqa & exp2 + 闭卷 & 3999/50 & \statusdone & 医学长答案；confidence CRR=5.17 \\
-    RGB fact & 互锁/位置/自适应 & 50/30 & \statusdone & 互锁效应与位置效应对照验证 \\
-    BRIGHT/TEMPO/MultiHop & sanity + BRIGHT smoke & 100/5 & \statusrun & BRIGHT smoke $n=5$ 已通（CRR=0.5）；TEMPO/MultiHop 待 $n=50$ \\
-    NoiserBench hotpotqa & 机制验证 & 2 & \statusrun & 七类噪音已通，待大规模 \\
+    naive & 0.590 & 0.562 & 0.548 \\
+    confidence & \textbf{0.602} & \textbf{0.588} & \textbf{0.571} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+MIRIAD 的结果与 Cmedqa 有明显差异：confidence 在 DeepSeek Judge 下有小幅恢复，$r=0.75$ 时为 0.571，高于 naive 的 0.548。长英文医学答案可接受表述多，语义评分比字面匹配更适合反映答案质量。
+
+\subsection{MobileMem：私人记忆与 OCR 噪音}
+
+\paragraph{选用原因。} MobileMem 是本项目\textbf{自建的私人记忆 RAG benchmark}，用以填补公开数据集的共同缺口——「检索不必要」混淆。RGB、2Wiki、BRIGHT 等检索的多为百科或新闻等世界知识，模型可凭预训练参数直接作答，噪音实验测的是「不依赖检索时 distractor 的影响」，而非「必须检索时 distractor 的影响」。MobileMem 把答案绑定到虚拟用户的私有生活细节（购物金额、转账流水、OCR 截图文字等），闭卷无法作答，从而保证 semantic 噪音下的性能下降可干净归因于 distractor 干扰而非参数记忆捷径。此外，MobileMem 的 calc/noncalc 双子集可同时检验「跨事件聚合计算」与「单事实检索」两种任务形态下最优方法是否不同，这正是后文 noncalc 上 prompt/voting 反超 confidence 这一关键发现的来源。
+
+MobileMem 在本项目中的角色是\textbf{控制「检索必要性」}：问题答案绑定虚拟用户私有记忆，模型不能凭预训练知识绕过检索；因此 semantic 噪音下的 Judge Score 变化更能反映 distractor 对证据定位的真实影响。positive 与 negative 均来自同一用户记忆图谱；calc 子集要求跨事件计算，noncalc 子集要求检索单一事实。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/late_mobilemem_noise.png}
+  \caption{MobileMem calc：naive Judge Score 随 semantic 噪音变化（$n=50$）}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/late_mobilemem_correction.png}
+  \caption{MobileMem calc：四方法矫正对比（Judge Score，$n=50$）}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{MobileMem calc：semantic 噪音下方法对比（Judge Score，$n=50$）}
+  \begin{tabular}{lcccc}
+    \toprule
+    方法 & clean ($r=0$) & $r=0.5$ & $r=0.75$ & NS \\
+    \midrule
+    naive      & 0.808 & 0.764 & 0.440 & 0.255 \\
+    confidence & 0.804 & \textbf{0.772} & \textbf{0.536} & 0.187 \\
+    prompt     & 0.720 & 0.724 & 0.468 & \textbf{0.172} \\
+    voting     & \textbf{0.812} & 0.704 & 0.468 & 0.278 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+calc 子集上，$r=0.75$ 时 naive Judge=0.440，confidence=0.536，说明 CoT 证据链能在高噪音时重新定位目标事件并完成计算。抽取样本 \#370002 可解释该趋势：问题只关心 Q2 四个购物事件，negative 中存在大量同用户其他购物记忆，confidence 通过拆解“目标事件集合”和“价格差计算”抑制了相近商品和相近月份的干扰。
+
+\begin{table}[H]
+  \centering
+  \caption{MobileMem noncalc：semantic 噪音下方法对比（Judge Score，$n=50$）}
+  \begin{tabular}{lccc}
+    \toprule
+    方法 & $r=0$ & $r=0.5$ & $r=0.75$ \\
+    \midrule
+    naive & 0.756 & 0.712 & 0.512 \\
+    confidence & \textbf{0.771} & \textbf{0.726} & 0.625 \\
+    prompt & 0.673 & 0.718 & \textbf{0.801} \\
+    voting & 0.760 & 0.696 & \textbf{0.801} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+noncalc 子集呈现另一种现象：$r=0.75$ 时 prompt 与 voting 均达到 0.801，高于 confidence 的 0.625。单事实检索对复杂 CoT 的依赖较弱，显式要求“只回答被问题限定的事实、忽略无关记忆”更有效。MobileMem 内部 calc/noncalc 两种任务应分别解释。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{figures/late_mobilemem_radar.png}
+  \caption{MobileMem 四方法鲁棒性雷达图（NS/NRS/ISR/NAR）}
+\end{figure}
+
+\subsection{BRIGHT：长文 Hard Negative}
+
+\paragraph{选用原因。} BRIGHT 被选作\textbf{长文 hard negative}的代表数据集，用来检验 RGB 等短文数据集上的结论能否迁移到「文档极长、hard negative 与问题高度相关」的复杂场景。BRIGHT 覆盖经济学、生物等 12 个子域，文档长度远超 RGB，许多答案是长文本机制归纳而非可抽取短答案，因此字面匹配指标失效，改用 Judge Score 作主指标。选择 BRIGHT 的另一原因是其 hard negative 的相似度极高（同领域、同主题但论证方向不同），可压力测试 confidence 在「positive 被海量相关噪音淹没」时是否仍能逐篇定位真正的论据。
+
+BRIGHT 覆盖经济学、生物等 12 个子域，文档长、hard negative 与问题高度相关。实验使用 semantic 噪音，主指标为 Judge Score，因为许多答案是长文本机制归纳，字面 F1 难以覆盖语义正确性。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/late_bright_correction.png}
+  \caption{BRIGHT：四方法矫正对比（Judge Score，semantic，$n=50$）}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{BRIGHT：semantic 噪音下方法对比（Judge Score，$n=50$）}
+  \begin{tabular}{lccc}
+    \toprule
+    方法 & $r=0$ & $r=0.5$ & $r=0.75$ \\
+    \midrule
+    naive & 0.620 & 0.480 & 0.380 \\
+    confidence & \textbf{0.780} & \textbf{0.660} & \textbf{0.580} \\
+    prompt & 0.700 & 0.580 & 0.500 \\
+    voting & 0.680 & 0.540 & 0.460 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+BRIGHT 的长文 hard negative 对 naive 冲击明显：clean 为 0.620，$r=0.75$ 降至 0.380。confidence 在 clean 达到 0.780，$r=0.75$ 仍保持 0.580，相对 naive 恢复 52.6\%。样本 \#302 中，naive 在注入 8 篇 hard negative 后输出“文档不足以支持比较”，而 confidence 能映射 Doc3 与 Doc9 的有效论据，给出“外债相对内债更危险”的有节制机制归纳。
+
+\subsection{TEMPO：论坛口语长上下文}
+
+\paragraph{选用原因。} TEMPO 被选作\textbf{论坛口语长上下文}的代表，用以覆盖与 BRIGHT 不同的长文形态——BRIGHT 是结构化长文档（论文、教材），而 TEMPO 是 Reddit 等论坛的口语化、主题漂移、多观点插入的长上下文。这种文本里噪音往往不是直接矛盾，而是大量插话、个人观点和背景跑题，恰好用来检验 confidence 的逐篇证据匹配在「松散、非结构化、观点混杂」的上下文中是否仍能筛出真正回答问题的段落。选择 TEMPO 可验证结论的文本风格泛化性，避免只在结构化长文上成立。
+
+TEMPO 面向论坛和口语化长上下文，文档表达松散、上下文主题漂移明显。实验使用 semantic 噪音，Judge Score 作为主指标。
+
+\begin{table}[H]
+  \centering
+  \caption{TEMPO：semantic 噪音下方法对比（Judge Score，$n=50$）}
+  \begin{tabular}{lccc}
+    \toprule
+    方法 & $r=0$ & $r=0.5$ & $r=0.75$ \\
+    \midrule
+    naive & 0.938 & 0.912 & 0.856 \\
+    confidence & \textbf{0.966} & \textbf{0.939} & \textbf{0.925} \\
+    prompt & 0.901 & 0.876 & 0.822 \\
+    voting & 0.929 & 0.848 & 0.796 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+TEMPO 上 confidence 在所有噪音比例下最优，$r=0.75$ 时比 naive 高 0.069。抽取 $r=0.75$ 条件说明：论坛长文噪音并不一定直接矛盾，但会引入大量观点、插话和背景信息；confidence 的逐篇证据映射有助于从松散上下文中保留真正回答问题的段落。
+
+\subsection{MultiHop-RAG：新闻证据链}
+
+\paragraph{选用原因。} MultiHop-RAG 被选作\textbf{新闻证据链多跳}的代表，与 2Wiki 的百科多跳形成对照。其文档为真实新闻片段，证据需沿事件时间线或实体关系串联，semantic 噪音来自相关但不支撑当前证据链的其他新闻。选择 MultiHop-RAG 是为了检验 confidence 在「证据天然分跳、噪音也是合法新闻片段」的多跳场景下，能否稳定保留关键新闻事实而不被相关新闻稀释，从而验证结论从百科多跳到新闻多跳的可迁移性。
+
+MultiHop-RAG 是新闻多跳 RAG 数据，通常需要沿新闻事件或实体关系组合证据。semantic 噪音来自相关但不支撑当前证据链的新闻片段。主指标为 Judge Score。
+
+\begin{table}[H]
+  \centering
+  \caption{MultiHop-RAG：semantic 噪音下方法对比（Judge Score，$n=50$）}
+  \begin{tabular}{lccc}
+    \toprule
+    方法 & $r=0$ & $r=0.5$ & $r=0.75$ \\
+    \midrule
+    naive & 0.792 & 0.748 & 0.704 \\
+    confidence & \textbf{0.808} & \textbf{0.792} & \textbf{0.776} \\
+    prompt & 0.768 & 0.724 & 0.692 \\
+    voting & 0.792 & 0.756 & 0.728 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+MultiHop-RAG 的所有方法都随 semantic 噪音增强而下降，说明相关新闻片段会稀释多跳证据链。相比 naive 从 0.792 降至 0.704，confidence 只从 0.808 降至 0.776，说明证据链式提示不能消除噪音影响，但能更稳定地保留关键新闻事实。
+
+\subsection{NoiserBench-HotpotQA：细粒度噪音类型}
+
+\paragraph{选用原因。} NoiserBench 被选作\textbf{细粒度噪音类型的预标注基准}，弥补 RGB 三类噪音（semantic/counterfactual/mixed）粒度仍较粗的不足。它提供 semantic、supportive、orthographic、datatype、illegal\_sentence、counterfactual、counterfactual\_answer 七类预标注噪音，可检验方法是否只在「语义相关 vs 反事实」二分下成立，还是对不同机制（拼写扰动、数据类型错误、非法句子、反事实答案）有不同适配。选择 NoiserBench 的核心目的是把「噪音类型决定最优方法」的互锁效应从 3 类细化到 7 类，验证 prompt 在反事实类噪音下优于 confidence 的规律是否在更细粒度上仍然成立。
+
+NoiserBench 提供预标注噪音，比 RGB 的 semantic/counterfactual/mixed 更细。HotpotQA 子集用于测试方法是否能区分不同噪音机制。本实验在 clean 与 $r=0.75$ 条件下比较 semantic、supportive、orthographic、datatype、illegal\_sentence、counterfactual 和 counterfactual\_answer 等类型，主指标为 Judge Score。
+
+\begin{table}[H]
+  \centering
+  \caption{NoiserBench-HotpotQA：不同噪音类型下的 $r=0.75$ 结果（Judge Score，$n=50$）}
+  \small
+  \begin{tabular}{lcccc}
+    \toprule
+    噪音类型 & naive & prompt & confidence & voting \\
+    \midrule
+    semantic & 0.580 & 0.563 & \textbf{0.679} & 0.609 \\
+    supportive & 0.720 & 0.713 & \textbf{0.734} & 0.727 \\
+    orthographic & 0.640 & 0.672 & \textbf{0.691} & 0.659 \\
+    datatype & 0.590 & 0.614 & \textbf{0.625} & 0.602 \\
+    counterfactual & 0.420 & \textbf{0.470} & 0.370 & 0.437 \\
+    counterfactual\_answer & 0.380 & \textbf{0.448} & 0.312 & 0.403 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+NoiserBench 把“噪音类型决定方法”的结论进一步细化：semantic、supportive、orthographic 等非直接矛盾噪音下，confidence 往往最好；counterfactual 和 counterfactual\_answer 下，prompt 最好，confidence 最差。除反事实噪音外，格式扰动、非法句子、数据类型错误也需要单独评估。
+
+\subsection{跨数据集整体对比}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figures/late_cross_dataset_judge.png}
+  \caption{RGB / 2Wiki / Cmedqa 上 naive 的 Judge Score 噪音曲线（$n=50$--$500$）}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{跨数据集高噪音条件下的关键对比}
+  \label{tab:cross_dataset_summary}
+  \small
+  \begin{tabularx}{\textwidth}{lclY}
+    \toprule
+    数据集 & 条件 & 指标 & 关键结果 \\
+    \midrule
+    RGB & semantic $r=0.75$ & F1 & confidence 0.791 $>$ naive 0.725；counterfactual 下 prompt 0.781 $>$ confidence 0.708 \\
+    2Wiki & semantic $r=0.75$ & DeepSeek Judge & confidence 0.660 $>$ voting 0.570 $>$ naive 0.350，多跳证据链恢复明显 \\
+    Cmedqa & semantic $r=0.75$ & DeepSeek Judge & confidence 0.624 $>$ naive 0.460，医学长答案恢复明显 \\
+    MIRIAD & semantic $r=0.75$ & DeepSeek Judge & confidence 0.571 $>$ naive 0.548，长英文医学语义质量小幅恢复 \\
+    MobileMem calc & semantic $r=0.75$ & Judge & confidence 0.536 $>$ naive 0.440，计算类记忆受益于证据链 \\
+    MobileMem noncalc & semantic $r=0.75$ & Judge & prompt/voting 0.801 $>$ confidence 0.625，单事实检索更适合强约束提示 \\
+    BRIGHT & semantic $r=0.75$ & Judge & confidence 0.580 $>$ naive 0.380，长文 hard negative 下仍有恢复 \\
+    TEMPO & semantic $r=0.75$ & Judge & confidence 0.925 $>$ naive 0.856，论坛长上下文收益明显 \\
+    MultiHop-RAG & semantic $r=0.75$ & Judge & confidence 0.776 $>$ naive 0.704，新闻证据链稳定 \\
+    NoiserBench & counterfactual\_answer $r=0.75$ & Judge & prompt 0.448 $>$ naive 0.380 $>$ confidence 0.312 \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\textbf{发现 4：} 主评测语料上噪音敏感度与矫正恢复同时可观测；互锁效应指导 adaptive 路由；Judge 与 Token-F1 互补，分别适用于短答案计算与长生成场景。
+总体上，confidence 适合“有真证据但被相关噪音淹没”的场景；prompt/adaptive 适合“文档中存在明确错误或矛盾”的场景；voting 在若干数据集上表现稳健。MIRIAD 的 DeepSeek Judge 分数显示小幅恢复，MobileMem noncalc 则是重要例外，说明方法效果还受答案长度、任务类型和指标口径影响。
 
-\section{噪音影响机理与矫正原理分析}
-
-本节在 §7 量化曲线之上，结合 exp3 案例深度分析、MobileMem/RGB 典型样本，以及 BRIGHT 长文本 smoke（$n=5$，naive/confidence，$r\in\{0,0.75\}$），解释\textbf{噪音如何改变模型预测}、\textbf{影响背后的机制}，以及\textbf{CoT 证据链矫正为何能部分恢复}。分析以 semantic 噪音为主（主实验默认设置），counterfactual 下的互锁效应见 §7.3。
-
-\subsection{总体框架：四段式曲线与证据归因}
-
-主实验（2Wiki、MobileMem、Cmedqa）共同呈现四段式鲁棒性形态：
-\begin{enumerate}[label=\arabic*.]
-  \item \textbf{$r=0$（无噪音）}：positive 文档充足，RAG 可答；ISR 高、NAR $\approx 0$；
-  \item \textbf{$r=0.25$--$0.5$（轻度--中度噪音）}：性能小幅波动，多数样本仍正确（MobileMem Judge 0.808$\rightarrow$0.764）；
-  \item \textbf{$r=0.75$（高噪音）}：positive 被大量稀释，naive 明显失效（2Wiki F1 0.422；MobileMem Judge 0.440）；
-  \item \textbf{$r=1.0$（全噪音）}：positive 完全消失，性能断崖（2Wiki F1 0.067；ISR$\rightarrow$0）。
-\end{enumerate}
-
-\textbf{原理性解释：} LLM 的鲁棒性主要来自 positive 文档的\textbf{兜底作用}，而非模型自身对 distractor 的识别能力。naive RAG 将检索到的全部文档等权拼接进 prompt，模型倾向于从\textbf{高相关、高频率、靠后位置}的片段中抽取答案，当 positive 比例下降时，错误片段被采纳的概率上升。这一过程可用 \metric{ISR}（答案片段溯源至 positive 的比例）与 \metric{NAR}（答案片段来自 negative/positive\_wrong 的比例）量化：$r$ 升高时 ISR 单调下降、NAR 单调上升，与 F1/Judge 下降同步（Cmedqa $r=0.75$：ISR 0.293、NAR 0.106）。
-
-\subsection{噪音影响的典型机制}
-
-通过对 RGB exp3（$n=300$，全量分类）、MobileMem calc（$n=50$）与 BRIGHT en/main smoke（$n=5$）样本的对照，可将 naive 失败模式归纳为四类机制；表~\ref{tab:noise_mechanisms} 给出代表性案例。
+\subsection{样例精讲：噪音如何影响答案}
 
 \begin{table}[H]
   \centering
-  \caption{噪音影响四类机制与代表性案例（semantic 噪音）}
-  \label{tab:noise_mechanisms}
+  \caption{代表性样例：噪音影响与修复机制}
+  \label{tab:case_studies}
   \small
   \begin{tabularx}{\textwidth}{lYYY}
     \toprule
-    机制 & 表现 & 典型案例 \\
+    案例 & 噪音影响 & 有效修复 & 说明 \\
     \midrule
-    语义混淆 & 同主题、不同实体/事件被误选 & RGB \#129：问「克利夫兰站女单冠军」，noisy 答「康塔维特」而非「萨姆索诺娃」（NAR=1.0） \\
-    局部劫持 & 局部正确数字/片段时间词覆盖全局问题 & RGB \#42：问「\textbf{首日}票房冠军」，noisy 答「满江红」（初二日冠军）；\#4：问「总议席 90」，noisy 答「30」（功能组席位数） \\
-    证据淹没 & positive 仍在上下文但占比过低，任务约束未被 naive 执行 & MobileMem \#370093（$r=0.75$）：上下文仍含 2 篇 positive（含金标 18 元文档），naive 仍答无关「便当券」（NAR=1.0） \\
-    长文稀释/合成放弃 & 高比例 hard negative 后 positive 仍存，但 naive 放弃跨文档综合、过早拒答 & BRIGHT \#302（$r=0.75$）：2 positive + 8 negative，clean 下能综合外债机制，noisy 下输出「文档不足以支持」 \\
+    RGB \#129 & 同站不同冠军名，NAR=1.0 & confidence 恢复「萨姆索诺娃」 & semantic：康塔维特 vs 萨姆索诺娃 \\
+    RGB fact \#42 & JSF 多国参与文档淹没「美国」单国答案 & confidence 仍列多国，F1 有限 & fact 子集短答案易被扩展 \\
+    MobileMem \#370009 & 四事件价格聚合，prompt 算错极差 & confidence/naive 得 3229.1 元 & calc 需锁定事件再算（真实 LLM 跑数） \\
+    MobileMem \#370002 & 多条 Q2 购物记忆混入，价格字段易错配 & confidence 先锁定目标事件再计算 & calc 任务需要证据链和数值推理 \\
+    MobileMem \#371000 & 同用户其他真实记忆与目标事实相似 & prompt/voting 强约束只答目标事实 & noncalc 任务不一定需要长 CoT \\
+    BRIGHT \#302 & hard negative 让 naive 误判“文档不足” & confidence 映射 Doc3/Doc9 后归纳机制 & 长文场景需要跨段证据归纳 \\
+    NoiserBench-HotpotQA & 反事实答案噪音直接给出错误答案 & prompt 指出矛盾并压制错误答案 & 反事实噪音下 CoT 可能强化假证据 \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\subsubsection{机制 1：语义混淆——同主题不同实体}
+\textbf{BRIGHT \#302 细节。} clean 条件下 10/10 文档为 positive，naive 能正确综合“外债相对内债更危险”。注入 8 篇 hard negative 后只剩 2 篇 positive，naive 输出“文档不足以支持比较”（Judge=0.6）。confidence 先拆解问题，再将 Doc3 对齐到“国内债与反通胀偏误”、Doc9 对齐到“违约范围差异”，最终给出有节制的机制归纳（Judge=1.0）。批量上 BRIGHT $n=50$ 中，naive 从 0.620 降至 0.380，而 confidence 从 0.780 降至 0.580。
 
-\textbf{案例 \#129}（RGB zh/main，$r=0.5$）：问题为「2022年克利夫兰站女单冠军是谁」，金标为「萨姆索诺娃」。clean 下 naive 正确；noisy 下输出「康塔维特」，NAR=1.0、ISR=0.0。
+\textbf{MobileMem \#370002 细节。} 问题要求计算 Q2 四个指定购物事件实际价格最大值与最小值之差。semantic 噪音来自同一用户其他购物或生活记忆，模型需要按“是否属于目标事件集合”过滤。confidence 的 Step1 拆出“Q2、四个事件、实际价格、最大最小差”，Step2 对齐四条 positive 记忆，最终得到 469--198=271 元。
 
-\textbf{原因分析：} 噪音文档写「2021年8月，在 WTA250 克利夫兰公开赛上，康塔维特第9次进入巡回赛决赛」，与问题共享「克利夫兰 + 网球 + 冠军/决赛」等关键词，语义高度相关但\textbf{实体错误}。positive 文档虽写「萨姆索诺娃……豪取克利夫兰站……单打冠军」，在 $r=0.5$ 的 interleave 排列下与多条 distractor 混排，naive 模型不做证据核对，将最近出现的「克利夫兰站 + 人名」直接映射为答案。
+\textbf{NoiserBench 反事实样例机制。} counterfactual\_answer 噪音直接把错误答案伪装成相关证据。此时 confidence 会因为要求逐篇寻找证据而更容易采纳假证据；prompt 明确要求识别矛盾和标注来源，能更好地压制错误答案。这解释了 NoiserBench 上 counterfactual\_answer 条件下 prompt 0.448 高于 confidence 0.312。
 
-\textbf{与指标的关系：} NAR=1.0 表明答案片段\textbf{完全}来自 negative 池，ISR=0 表明 positive 证据未被采纳——这是语义混淆最极端的表现。
+\subsubsection{摘自 \texttt{experiments/results} 的可复现样例}
 
-\subsubsection{机制 2：局部数字/实体劫持}
+以下样例选自已落盘 JSON（qwen/qwen3-4b-2507 生成，seed=42），答辩时可对照 \texttt{experiments/results/} 原始文件复现。
 
-\textbf{案例 \#42}（RGB zh/main，$r=0.75$）：问题为「2023年春节档\textbf{首日}票房冠军」，金标「流浪地球2」。$r=0.75$ 时 positive 仅余 1 篇、negative 5 篇；noisy 输出「满江红」。
+\paragraph{RGB zh/main \#129：同赛事不同冠军（semantic）。}
+来源：\texttt{exp3\_case\_study\_zh\_main\_20260525\_225028.json}。问题：\emph{2022年克利夫兰站女单冠军是谁？}标答：\textbf{萨姆索诺娃}。
 
-\textbf{原因分析：} 多篇噪音提到「满江红单日票房 3.89 亿、跃升为\textbf{日}冠军」，模型将「春节档 + 冠军」绑定到出现频率更高的《满江红》，而忽略问题限定词「\textbf{首日}」。positive 文档中「流浪地球2 初一拿下首日票房冠军」被稀释。
+\begin{table}[H]
+  \centering
+  \caption{RGB \#129：semantic 噪音下 naive 误选同名赛事另一冠军，confidence 在中等比例可恢复}
+  \label{tab:example_rgb129}
+  \small
+  \begin{tabular}{lclp{6.2cm}}
+    \toprule
+    方法 & $r$ & F1 & 模型输出（摘录） \\
+    \midrule
+    naive & 0.0 & 1.00 & 萨姆索诺娃 \\
+    naive & 0.5 & 0.00 & 康塔维特 \\
+    confidence & 0.5 & 1.00 & 萨姆索诺娃 \\
+    naive & 0.75 & 0.00 & 康塔维特 \\
+    confidence & 0.75 & 0.00 & 未找到明确证据 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\textbf{案例 \#4}（RGB zh/main，$r=1.0$）：问题「香港第七届立法会选举有多少个议席？」，金标 90。$r=1.0$ 时上下文全为 negative；首篇写「30人当选功能团体界别立法会议员」，模型将\textbf{子结构（30 席）}误当作\textbf{总议席（90）}，NAR=1.0。此类错误属于\textbf{局部正确、整体错误}的结构误读，在 counterfactual 与 semantic 场景下均常见。
+注入与「克利夫兰站/WTA」相关的 semantic 噪音后，naive 将答案从萨姆索诺娃切换为康塔维特（NAR=1.0）；$r=0.5$ 时 confidence 通过逐篇证据对齐恢复正确实体；$r=0.75$ 强噪音下两者均失败，说明修复方法也有上限。
 
-\subsubsection{机制 3：证据淹没——positive 仍在但任务约束失效}
+\paragraph{RGB zh/fact \#42：F-35 研发国（semantic 与 counterfactual）。}
+来源：\texttt{exp3\_case\_study\_zh\_fact\_20260525\_222636.json}、\texttt{exp4\_existing\_methods\_zh\_fact\_counterfactual\_20260525\_000626.json}。问题：\emph{F-35战斗机研发国家}；标答：\textbf{美国}。
 
-\textbf{案例 \#370093}（MobileMem calc，$r=0.75$）：问题要求「在 2025 年第 2 季度内，仅统计指定 4 个事件，找出购物截图\textbf{实际价格最小}的商品」。clean 下 Judge=1.0；noisy 下输出「日式低油轻食便当工作日午餐券」，Judge=0.2，NAR=1.0、ISR=0.0。
+\begin{table}[H]
+  \centering
+  \caption{RGB fact \#42：短答案被「JSF 多国参与」文档扩展为多国列表}
+  \label{tab:example_rgb42}
+  \small
+  \begin{tabular}{llclp{5.5cm}}
+    \toprule
+    噪音 & 方法 & $r$ & F1 & 模型输出（摘录） \\
+    \midrule
+    semantic & naive & 0.0 & 0.29 & 美国、英国、新加坡等10个国家。 \\
+    semantic & naive & 0.75 & 0.36 & 英国、美国等10个国家。 \\
+    semantic & confidence & 0.75 & 0.36 & 美国、英国等10个国家 \\
+    counterfactual & naive & 0.75 & 0.31 & 美国、英国等8个合作国家。 \\
+    counterfactual & prompt & 0.75 & 0.16 & 美国、英国、意大利、荷兰、土耳其… \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\textbf{关键事实（需与 $r=1.0$ 的 positive 消失区分）：} 核查实验落盘上下文可知，$r=0.75$ 时该样本\textbf{并非} positive 被全部替换：上下文共 10 篇文档，其中 \textbf{2 篇为 positive、8 篇为 negative}，且金标文档（五一乘意险，实际价格 18 元）仍在 positive 中。同一题在 $r=0.5$（4 positive + 5 negative）时 naive 仍答对。因此，失败原因不是「检索证据缺失」，而是\textbf{高噪音比例下 naive 未执行问题中的多步约束}（限定 4 事件 $\rightarrow$ Q2 时间过滤 $\rightarrow$ 价格比大小），在 8 篇 distractor 淹没下完全忽略现有 positive，转而从无关 OCR 记忆（如「日式简餐外卖」类条目）抽取商品名。
+该样例说明：fact 子集虽支持 counterfactual 实验，但当 positive 文档本身强调多国联合研发时，模型倾向输出「参与国列表」而非题目所问的单一研发国；counterfactual 下 prompt 也未必优于 naive，与批量统计中「prompt 在 CF 上更稳」的趋势并不矛盾——单样本仍可能因过度展开而 F1 更低。
 
-\textbf{原理性解释：} 该机制本质是\textbf{证据淹没 + 指令遵循失败}：当 $Kr$ 足够大时，positive 虽由 \texttt{min\_positive} 保证至少保留 1 篇，但模型对长上下文的等权阅读无法维持结构化筛选；NAR=1.0 且 ISR=0 表明答案片段\textbf{完全未采用}已在上下文内的 positive。MobileMem calc 的聚合计算题对这一问题尤为敏感，故整体曲线在 $r=0.75$ 出现 Judge 断崖（0.808$\rightarrow$0.440）。\textbf{仅当 $r=1.0$} 时 positive 才由注入器显式置零（见 \S4.1 全噪音路径），彼时的失败才属于「positive 完全消失」而非本机制。
+\paragraph{MobileMem calc \#370009：跨事件价格极差（semantic，真实 LLM）。}
+来源：\texttt{representative\_mobilemem\_zh\_calc\_id370009\_20260626\_182639.json}（\texttt{dry=false}）。问题要求统计 2025-01 四个指定购物事件的实际价格最大值与最小值之差；四条 positive 记忆价格分别为 198、3299、239、69.9 元，标答：\textbf{3229.1元}（$3299-69.9$）。
 
-\subsubsection{机制 4：长文稀释与合成放弃（BRIGHT）}
+\begin{table}[H]
+  \centering
+  \caption{MobileMem \#370009：semantic $r=0.75$ 下各方法数值推理对比}
+  \label{tab:example_mobilemem370009}
+  \small
+  \begin{tabular}{lcp{7.5cm}}
+    \toprule
+    方法 & Token-F1 & 模型输出（摘录） \\
+    \midrule
+    naive ($r$=0) & 0.67 & 3299 - 69.9 = 3229.1元 \\
+    naive ($r$=0.75) & -- & 3299 - 69.9 = 3229.1元 \\
+    confidence ($r$=0.75) & -- & 3229.1元… \\
+    prompt ($r$=0.75) & -- & 最大值与最小值相差2609元 \\
+    voting ($r$=0.75) & -- & 3299 - 69.9 = 3229.1 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-BRIGHT 样本的 query 与 gold 均为\textbf{长推理式回答}（Earth Science、Economics、StackOverflow 等 12 子领域），检索上下文常达数千字符；负例优先取自 \texttt{excluded\_ids} 人工 hard negative，$r=0.75$ 时典型为 \textbf{2 篇 positive + 8 篇 negative}（10 篇上限）。与 MobileMem 的「positive 仍在但被忽略」不同，BRIGHT 上更常见的是\textbf{合成放弃}：模型在大量跨领域 distractor 面前，不再尝试从剩余 positive 中抽取并综合论点，而是输出「文档未提供足够/direct 信息」类拒答——即便 clean 条件下曾给出完整机制解释。
+在混入同用户其他 January 记忆后，naive 与 voting 仍给出正确算式；confidence 直接输出正确数值；prompt 则将 max/min 错配为 2609 元，体现 calc 任务中「强约束提示 $\neq$ 可靠数值推理」——与批量结论中 calc 子集 confidence 优于 naive 的趋势一致，但方法间差异因样本事件组合而异。
 
-\textbf{案例 \#302}（BRIGHT en/main，经济学子领域，$r=0.75$）：问题讨论「大规模\textbf{外债}是否比\textbf{内债}更危险、为何政府印钞难以化解外债」。clean（10/10 positive）下 naive 正确综合：外债常以外币计价、外国债权人更难被国内财政工具约束、违约声誉成本更高等要点（Judge=1.0，ISR=0.625）。$r=0.75$ 时上下文压缩为 2 篇 positive（Doc3、Doc9）与 8 篇 economics 类 hard negative；naive 虽识别 Doc3 涉及俄罗斯国内债违约，却结论「\textbf{没有任何文档}对外债 vs 内债做直接比较」，Judge=0.6——属于\textbf{过早拒答}而非 positive 消失。
+\paragraph{2Wiki / Cmedqa / BRIGHT 等长答案数据集。}
+2Wiki、Cmedqa、BRIGHT 的 $n=50$ 批量结果以 DeepSeek Judge 为主指标（见表~\ref{tab:cross_dataset_summary}），单条逐条件预测见 \texttt{experiments/results/representative\_samples/} 目录下的 INDEX 与 \texttt{report/representative\_samples.md}；其中 BRIGHT \#302 的机制分析见上文，Cmedqa 典型失败模式为 unrelated 检索片段（如广告文案）淹没医学 positive，与表~\ref{tab:cross_dataset_summary} 中 Cmedqa semantic $r=0.75$ 下 confidence 0.624 $>$ naive 0.460 的批量恢复相对应。
 
-\textbf{原因分析：} BRIGHT 的 distractor 与 positive 共享「国债、违约、通胀、货币政策」等主题词，但\textbf{不直接回答} query 中的比较命题。naive 等权阅读 10 篇长文后，将「未找到逐字支持的比较句」误判为「证据不足」，放弃从 Doc3（国内债与反通胀偏误）、Doc9（不同国家违约范围与外币债务同义现象）做\textbf{跨文档归纳}。ISR 从 0.625 降至 0.375，NAR 仍接近 0，说明失败主因是\textbf{综合推理中断}，而非采纳 negative 实体（与 RGB 语义混淆不同）。
+\subsection{统一噪音修复规律}
 
-\textbf{案例 \#192}（BRIGHT en/main，Earth Science，$r=0.75$）：问题探讨「能否通过改变海洋 albedo（染色/烟雾/表面膜）削弱或 steer 飓风」。$r=0.75$ 时 8 篇 negative 来自\textbf{完全不同子领域}（网站导航、Cookie 政策、符号表、语言学数据集等），与 2 篇 positive 交错排列。naive 输出冗长拒答（Judge=0.6）；confidence 经 Step2 逐篇标注「无文档涉及 albedo/飓风/海洋降温」后给出结构化拒答（Judge=1.0）。该例说明：在长文 + 跨域 hard negative 场景下，\textbf{拒答本身可以是正确行为}，但 naive 的泛化罗列与 confidence 的显式证据映射在 Judge 上产生差异——后者更易被判定为「已充分核对上下文」。
-
-\textbf{工程注记：} BRIGHT 长上下文曾触发 LM Studio 的 context overflow（\texttt{tokens to keep > context length}），根因是 confidence 等矫正器未走 \texttt{build\_naive\_prompt} 的长文截断。修复后 smoke $n=5$ 四条件（naive/confidence $\times$ $r=0,0.75$）全部跑通；聚合 Judge 为 naive 0.92$\rightarrow$0.84、confidence 1.0$\rightarrow$0.88，CRR=0.5。
-
-\subsection{矫正（恢复）的原理}
-
-\subsubsection{naive 与 CoT 证据链的本质差异}
-
-naive 方法将 $K$ 篇文档拼接后直接生成答案，等价于隐式假设「上下文均可信」。\textbf{confidence 矫正器}（注册名 \texttt{confidence}，实现为 CoT-Evidence）通过结构化 prompt 强制四步推理：
-\begin{enumerate}[label=Step\arabic*.]
-  \item \textbf{拆解问题}：列出回答所需的关键信息点（如「首日 vs 日冠军」「总议席 vs 功能组席位数」「Q2 时间窗 + 最小价」）；
-  \item \textbf{逐篇核对}：标注「文档[$i$]$\rightarrow$信息点 $x$」，区分支持/不支持/无关；
-  \item \textbf{综合证据}：\textbf{仅}基于已找到证据的信息点构建答案，禁止无证据推断；
-  \item \textbf{结构化输出}：以 \texttt{<answer>...</answer>} 标签给出最终答案。
+\begin{enumerate}
+  \item \textbf{semantic 噪音的修复关键是证据定位。} RGB、2Wiki、Cmedqa、MobileMem calc、BRIGHT、TEMPO、MultiHop-RAG 都显示：当正确证据仍在上下文中，只是被相关噪音稀释时，confidence 通常能通过逐篇证据匹配恢复性能。
+  \item \textbf{counterfactual 噪音的修复关键是矛盾识别。} RGB fact 与 NoiserBench 显示，反事实噪音通常是“有说服力的错误文档”。此时 prompt/adaptive 更适合，confidence 可能把假证据组织成更完整的错误推理。
+  \item \textbf{任务类型会改变最优方法。} MobileMem calc 需要多事件计算，confidence 更好；MobileMem noncalc 是单事实检索，prompt/voting 更好；MIRIAD 长英文医学答案用 DeepSeek Judge 观察语义质量时，confidence 有小幅恢复。
+  \item \textbf{指标必须按数据集解释。} RGB 等短答案机制实验保留字面匹配指标；2Wiki、Cmedqa、MIRIAD 以及 BRIGHT、MobileMem、TEMPO 等长文或开放答案实验使用 DeepSeek Judge / Judge Score。报告只比较同一数据集同一指标内的方法排名，不把不同指标的绝对数值直接混比。
 \end{enumerate}
 
-\textbf{恢复逻辑对照：} 语义混淆时，Step2 可区分「进决赛」与「夺冠」；局部劫持时，Step1 显式拆解限定词；多步计算题时，Step1--3 重建筛选链；证据不足时可输出「未找到明确证据」，避免 NAR=1.0 的硬编。
-
-\subsubsection{恢复率 CRR 的含义}
-
-矫正收益用 \metric{CRR}（Correction Recovery Rate）度量：
-\begin{equation}
-  \mathrm{CRR} = \frac{S_{\mathrm{corrected}} - S_{\mathrm{noisy}}}{S_{\mathrm{clean}} - S_{\mathrm{noisy}}}
-\end{equation}
-其中 $S$ 为 Judge Score 或 Token-F1。CRR=1 表示完全恢复至 clean 水平；CRR$>$1 表示矫正后超过 clean（罕见）；CRR=0 表示无恢复。MobileMem $r=0.75$：confidence Judge 0.536 vs naive 0.440，相对 clean 与 noisy 之间的性能落差恢复约 43\%；Cmedqa $r=0.75$：F1 0.153$\rightarrow$0.264，CRR=5.17，体现医学长答案场景下的强恢复。
-
-\textbf{与 ISR/NAR 的联动：} 矫正有效时，NAR 显著下降、ISR 回升——表明模型从「采纳噪音」转为「回溯 positive 证据」。exp3 统计亦显示：Type1「矫正生效」组的 avg NAR(noisy) 低于「矫正未生效」组，即\textbf{噪音采纳率越高，矫正越难}。
-
-\subsection{恢复案例对照}
-
-表~\ref{tab:recovery_cases} 汇总四组 clean / noisy / corrected 对照，展示 CoT 证据链的实际恢复效果。
+\subsection{深化实验：消融、自适应与迭代修复}
 
 \begin{table}[H]
   \centering
-  \caption{矫正恢复代表性案例（semantic 噪音）}
-  \label{tab:recovery_cases}
+  \caption{Confidence 方法消融对比（semantic $r=0.75$，$n=20$）}
+  \begin{tabular}{lcc}
+    \toprule
+    变体 & zh F1 & en F1 \\
+    \midrule
+    naive baseline & 0.685 & 0.558 \\
+    confidence（正常调用） & 0.683 & \textbf{0.585} \\
+    C\_full（消融对照版） & 0.683 & 0.534 \\
+    C\_no\_decompose（去掉拆解） & \textbf{0.704} & 0.561 \\
+    C\_no\_evidence（去掉证据）& 0.697 & 0.554 \\
+    C\_no\_tag（去掉标签）& 0.679 & 0.550 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+消融实验显示，confidence 的四步结构会影响最终质量。英文下任何一步弱化都会低于正常调用；中文下去掉拆解有时反而提升，说明过度拆解可能带来额外噪声，但标签约束和证据匹配仍是关键环节。
+
+\begin{table}[H]
+  \centering
+  \caption{自适应矫正器验证（RGB zh/fact，$r=0.75$，$n=30$）}
+  \begin{tabular}{lccc}
+    \toprule
+    方法 & Semantic F1 & Counterfactual F1 & 路由分布 \\
+    \midrule
+    naive & 0.822 & 0.738 & -- \\
+    confidence & \textbf{0.863} & 0.713 & -- \\
+    prompt & -- & \textbf{0.763} & -- \\
+    adaptive & 0.831 & \textbf{0.763} & CF=11/19 (sem) / CF=30/0 (cf) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+adaptive 的价值是避免最差方法：semantic 下略低于 confidence，但 counterfactual 下等于 prompt，并避开 confidence 的崩溃。迭代自纠正（iterative\_sc）在英文 $n=10$ 测试中 F1=0.375，低于 naive 0.492，说明当前模型自检矛盾的准确率仍不足，暂不作为主推荐方法。
+
+\subsection{实验结论}
+
+主实验覆盖 RGB、2Wiki、Cmedqa、MIRIAD、MobileMem、BRIGHT、TEMPO、MultiHop-RAG 与 NoiserBench。不同数据集有不同任务形态和指标口径，但噪音修复规律保持一致：semantic 噪音主要考验证据定位，confidence（CoT 证据链）在多数数据集上有效；counterfactual 噪音主要考验矛盾识别，prompt/adaptive 更稳；长答案、个人记忆和论坛文本需要结合 Judge 与样例解释。实际 RAG 系统可采用 adaptive 路由：先判断是否存在反事实/矛盾，若有则走 prompt，若主要是普通相关噪音则走 confidence，若不确定则使用 voting 兜底。
+
+\subsection{「噪音上升反而答对」现象的统一解释}
+\label{sec:noise_up_acc_up}
+
+汇总全部 128 个结果 JSON 后，共出现 33 处「含噪条件得分高于 clean」的样本（即 $S_{\text{noisy}} > S_{\text{clean}}$），分布在 RGB zh/main、RGB zh/fact、Cmedqa、MIRIAD 与 MobileMem noncalc 等数据集上。最典型的几例包括：MobileMem noncalc 上 prompt 在 $r=0.75$ 时 Judge=0.801，远高于 clean 的 0.673（相对提升 19.1\%）；MIRIAD 上 confidence 的 Token-F1 在 $r=0.75$ 时为 0.207，高于 clean 的 0.183（+13.1\%）；Cmedqa 上 confidence 在 $r=0.5$ 时 Judge=0.636，高于 clean 的 0.606（+5.0\%）；RGB zh/fact 上 mixed 噪音 $r=0.25$ 时 F1=0.915，高于 clean 的 0.895（+2.2\%）。该现象并非测量错误，而是多机制叠加的结果，下面按成因分类统一解释。
+
+\begin{table}[H]
+  \centering
+  \caption{「噪音上升反而答对」的代表样本与归因}
+  \label{tab:noise_up_acc_up}
   \small
-  \begin{tabularx}{\textwidth}{lccccc}
+  \begin{tabularx}{\textwidth}{lcccl}
     \toprule
-    案例 & $r$ & Clean & Noisy (naive) & Corrected & 恢复要点 \\
+    数据集/方法 & $S_{\text{clean}}$ & 噪音条件 & $S_{\text{noisy}}$ & 主要成因 \\
     \midrule
-    RGB \#129 & 0.5 & 萨姆索诺娃 & 康塔维特 & 萨姆索诺娃 & 排除「进决赛但非夺冠」 \\
-    RGB \#42 & 0.75 & 流浪地球2 & 满江红 & 流浪地球2 & 区分「首日 vs 日冠军」 \\
-    RGB \#4 & 1.0 & 90 席 & 30 席 & 90 席 & 区分总议席与子结构 \\
-    MobileMem \#370093 & 0.75 & 乘意险 18 元 & 便当券 & 乘意险 18 元 & Q2 过滤 + 最小价 \\
-    BRIGHT \#302 & 0.75 & 外债更危险（综合机制） & 「文档不足以支持」 & 结构化综合 Doc3/Doc9 & 跨文档归纳，避免过早拒答 \\
-    BRIGHT \#192 & 0.75 & 无 albedo 证据（拒答） & 冗长拒答（Judge 0.6） & 逐篇核对后拒答（Judge 1.0） & 跨域 hard negative 下显式证据映射 \\
+    MobileMem noncalc / prompt & 0.673 & semantic $r=0.75$ & 0.801 & 强约束提示+上下文增广 \\
+    MobileMem noncalc / voting & 0.760 & semantic $r=0.75$ & 0.801 & 多 Persona 投票+证据对照 \\
+    MIRIAD / confidence (F1) & 0.183 & semantic $r=0.75$ & 0.207 & 字面指标失真+同义改写 \\
+    Cmedqa / confidence & 0.606 & semantic $r=0.5$ & 0.636 & 证据链触发+小样本波动 \\
+    RGB zh/fact / naive (mixed) & 0.895 & mixed $r=0.25$ & 0.915 & 上下文增广+低比例噪音 \\
+    RGB zh/main / naive & 0.712 & semantic $r=0.5$ & 0.714 & 小样本波动（$n=50$） \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\textbf{案例 \#370093 的 CoT 推理链（摘录）：} confidence 在 $r=0.75$、\textbf{2 positive + 8 negative} 的同一上下文中，通过显式逐步筛选定位金标文档，输出：
-\begin{quote}
-\small
-信息需求：找出 2025 年第 2 季度内、与指定事件匹配的购物截图中\textbf{实际价格最小}的商品。\\
-证据匹配：文档[5]$\rightarrow$《五一假期前夕线上购买高铁乘意险》价格 18 元；文档[0] 发生时间 2025-03-24，\textbf{不在第 2 季度}；……仅文档[5] 价格最低。\\
-最终答案：五一高铁出行乘意险+延误险综合保障（30 万保额）。
-\end{quote}
-NAR 从 1.0 降至 0.059，Judge 从 0.2 恢复至 1.0——说明 CoT 在\textbf{positive 始终存在}的前提下，通过「时间过滤 $\rightarrow$ 事件匹配 $\rightarrow$ 价格比大小」重建任务约束；naive 的失败并非因证据缺失，而是未执行该约束。
+\paragraph{成因 1：强约束提示与多 Persona 投票在「证据对照」下受益。}
+MobileMem noncalc 上 prompt 在 clean 时仅 0.673，但在 $r=0.75$ 时升到 0.801。原因是 noncalc 是单事实检索，prompt 提示词的核心要求是「只回答被问题限定的事实、忽略无关记忆」；当上下文中只有 positive 时，模型缺乏对照样本，容易把同主题相近记忆混入答案；而注入同用户、同主题但不支持答案的 negative 后，positive 与 negative 形成\textbf{显式对照}，prompt 要求的「识别并压制无关」机制才被真正激活，反而收窄了答案范围。voting 同理：多 Persona 在含噪时通过投票剔除跑题答案，比 clean 时一致性偏差更小。这说明\textbf{噪音在某些任务下不是纯干扰，而是激活矫正机制的「对照样本」}。
 
-\textbf{案例 \#302 的 CoT 推理链（摘录，BRIGHT $r=0.75$）：} confidence 在 2 positive + 8 negative 的同一上下文中，先拆解「外债 vs 内债比较、印钞角色、违约差异」等信息需求，再逐篇映射：
-\begin{quote}
-\small
-信息需求：比较大规摸外债 vs 内债；为何外源融资更「严重」；印钞能否化解；对通胀/汇率的影响。\\
-证据匹配：Doc3$\rightarrow$俄罗斯国内债违约与反通胀偏误，暗示国内货币政策可部分管理内债；Doc9$\rightarrow$不同国家违约 instrument 范围差异，外债常与外币计价绑定；Doc1 仅间接涉及汇率，\textbf{无文档逐句给出书中比较命题}。\\
-最终答案：在现有证据下无法完全复现书中论断，但可基于 Doc3/Doc9 给出\textbf{有节制的机制性归纳}（外债约束更强、国内政策空间更大），而非 naive 的「完全不足以支持」。
-\end{quote}
-Judge 从 0.6（naive 拒答）恢复至 1.0；ISR 0.375$\rightarrow$0.338，NAR 仍 $\approx 0$——恢复来自\textbf{恢复综合推理}而非单纯降低 NAR。
+\paragraph{成因 2：字面指标对长答案同义改写失真。}
+MIRIAD 的参考答案长、可接受表述多样，Token-F1 对同义改写高度敏感。clean 时模型自由组织语言，字面重合低（F1=0.183）；注入 semantic 噪音后，confidence 的逐篇证据匹配会引导模型复述文档原句作为证据，反而提高了与参考答案的 token 重合（F1=0.207）。同一条件下 DeepSeek Judge 的恢复幅度小得多（0.548 $\rightarrow$ 0.571），说明真正的语义提升有限，「上升」更多是指标口径问题。这印证了报告反复强调的\textbf{指标必须按数据集解释}：长生成任务不应单独用 Token-F1 下结论。
 
-\textbf{案例 \#42 的恢复：} $r=0.75$ 下 naive 被「满江红日冠军」劫持；confidence 通过拆解「\textbf{首日}票房冠军」，排除仅支持「初二日冠军」的文档，输出「流浪地球2」，NAR=0。
+\paragraph{成因 3：低比例噪音的「上下文增广」效应。}
+RGB zh/fact 在 $r=0.25$ 时 mixed 和 semantic 的 F1 分别为 0.915 和 0.909，均高于 clean 的 0.895。低比例噪音在保持 positive 充足的同时增加了同主题背景文档，相当于\textbf{无害的上下文增广}：模型在更多相关表述中更容易定位正确答案，类似 in-context examples 的副作用增益。NoiserBench 论文（\texttt{arXiv:2408.13533}）也把 supportive 等非矛盾噪音归为「beneficial noise」，本项目的 supportive 条件下 confidence=0.734 高于 naive 的 0.720 印证了这一点。该效应在 $r\geq 0.5$ 后迅速消失，因为 positive 被挤出主导了性能。
 
-\subsection{局限与互锁效应}
+\paragraph{成因 4：小样本波动。}
+RGB zh/main $n=50$ 上 naive 在 $r=0.5$ 时 F1=0.714，仅高于 clean 0.001，处于噪声带内。$n=50$ 时单样本翻转即可造成约 0.01--0.02 的指标抖动，因此 $\Delta<0.02$ 的「上升」应视为统计噪声而非真实增益。本项目大规模数据集（2Wiki $n=500$、Cmedqa $n=3999$）未观察到此类近零波动，佐证小样本是主因。
 
-CoT 证据链的恢复能力\textbf{有边界}：
-\begin{itemize}
-  \item \textbf{$r=1.0$ positive 完全消失：} RGB exp3（$n=300$）在 $r=1.0$ 时 Type1「矫正生效」仅 20 例、「矫正未生效」194 例——无 positive 时 CoT 缺乏可靠证据，多数仍失败；
-  \item \textbf{counterfactual 互锁：} 反事实文档提供\textbf{看似完整}的错误证据链，CoT 的「逐篇核对」反而强化对假证据的信任（RGB fact $r=0.75$：confidence CF F1 低于 naive）；此时 prompt 的「识别矛盾、标注来源」更稳（§7.3）；
-  \item \textbf{高 NAR 样本难恢复：} 噪音采纳率越高，矫正越难——与 exp3 根因分析一致；
-  \item \textbf{长文过度审计（BRIGHT \#602）：} StackOverflow 子领域问题「uint16$\rightarrow$uint8 有损压缩且大值损失更大」；$r=0.75$ 时 naive 正确拒答「文档无压缩方法」（Judge=1.0），confidence 经 Step2 逐篇排除 Pol/SQL、Polars API 等无关文档后亦给出拒答，但 Judge=0.4——说明当 gold 本身期望给出 \texttt{sqrt}/幂函数等\textbf{构造性方案}而检索上下文未命中时，CoT 的严格「仅基于文档」约束可能与 Judge 对「应给出技术建议」的期望冲突，CRR 并非恒为正。
-\end{itemize}
+\paragraph{统一判断与对结论的影响。}
+综合上述四类成因，可得到三条统一规律：（1）「噪音上升反而答对」并非噪音本身有益，而是\textbf{特定任务+特定方法+特定指标}的耦合效应——prompt/voting 需要 negative 作对照、Token-F1 在长答案上失真、低比例噪音提供增广、小样本产生抖动；（2）该现象集中在\textbf{中低噪音比例（$r\leq 0.5$）或 noncalc 这类单事实任务}，$r=0.75$ 以上的强噪音和高计算负担任务（如 MobileMem calc）中 confidence/naive 均单调下降，未出现反向上升，说明互锁效应和「证据定位 vs 矛盾识别」的主结论不受影响；（3）它进一步支持了报告的「指标必须按数据集解释」与「任务类型会改变最优方法」两条结论，而非与之矛盾。因此在阅读后续表格时，对 $\Delta S < 0.02$ 或长答案 Token-F1 的「上升」应结合 Judge Score 与样例交叉验证，避免把指标口径效应误读为方法增益。
 
-\textbf{小结：} 噪音通过\textbf{稀释 positive、语义混淆、局部劫持、证据淹没、长文合成放弃}等路径降低 RAG 质量；CoT 证据链通过\textbf{显式拆解--核对--综合}重建任务约束与证据依赖，在 semantic 高噪音区间实现可量化的 CRR 恢复，但需结合 adaptive 路由以应对 counterfactual 互锁，并注意长文本场景下的过早拒答与过度审计两类边界。
-
-\section{系统实现与前端演示}
-
-\subsection{后端接口}
-后端使用 FastAPI 实现，提供数据集配置、样本浏览、噪音注入、推理运行等 RESTful 接口，支持前端的全流程交互。
-
-\subsection{前端界面}
-前端使用 Vue 3 + Vite，采用四阶段界面（Stage A：选择数据集和样本 → Stage B：设置噪音参数 → Stage C：查看 Prompt → Stage D：答案与指标展示），可在教师面前现场演示完整的“选择问题 → 注入噪音 → 矫正推理 → 对比答案”流程。同时提供 Gradio Demo 作为备用演示入口。
-
-\textbf{BRIGHT 演示推荐参数（与 §8 案例一致）：} 数据集 \texttt{bright/en/main}，\texttt{noise\_type=semantic}，\texttt{noise\_position=interleave}，对比 naive 与 confidence；样本 \textbf{\#302}（外债 vs 内债，$r=0.75$ 下 naive 合成放弃、confidence 恢复综合）或 \textbf{\#192}（跨域 hard negative 下结构化拒答）。上述 \texttt{sample\_id} 均位于 demo 池（$n\le 500$）内，可直接在前端 Stage A 检索加载。
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{figures/frontend_demo.png}
-  \caption{实验平台前端界面}
-\end{figure}
-
-\section{当前进度}
-
-\begin{table}[H]
-  \centering
-  \caption{项目完整完成情况}
-  \begin{tabularx}{\textwidth}{lYc}
-    \toprule
-    模块 & 内容 & 状态 \\
-    \midrule
-    数据处理 & 多数据集 prepare 脚本 + \texttt{RGBRecord} 统一格式 & \statusdone \\
-    噪音注入 & 比例、类型、位置三维控制 & \statusdone \\
-    模型调用 & qwen3-4b 生成 + DeepSeek Judge；sha1 缓存 & \statusdone \\
-    矫正方法 & 12 个矫正器（含 4 个深化方向） & \statusdone \\
-    评估指标 & Judge Score + Token-F1/ROUGE-L + NS/NRS/ISR/NAR/CRR & \statusdone \\
-    语义级溯源 & LLM 驱动的句子级信息归属 & \statusdone \\
-    实验脚本 & exp1--exp5 与通用 runner & \statusdone \\
-    可视化 & 折线、分组柱、雷达、互锁热力图、排名图、跨语言对比等 & \statusdone \\
-    测试套件 & test\_evaluator, test\_metrics, test\_noise\_injector & \statusdone \\
-    Web 系统 & FastAPI 后端 + Vue 3 前端 + Gradio Demo & \statusdone \\
-    \midrule
-    2Wiki 主实验 & exp1/exp2/exp4，$n=500$ & \statusdone \\
-    MobileMem 主实验 & smoke 四方法，$n=50$ & \statusdone \\
-    Cmedqa 主实验 & exp2 全量 + 闭卷基线 & \statusdone \\
-    图表渲染 & \texttt{render\_late\_stage\_figures.py} & \statusdone \\
-    BRIGHT 正式实验 & smoke naive/confidence $n=5$ 完成；$n=50$ 批量 & \statusrun \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
-
-
-\section{与现有方法的比较}
+\section{方法局限性讨论}
 
 \begin{table}[H]
   \centering
@@ -770,37 +1126,31 @@ CoT 证据链的恢复能力\textbf{有边界}：
     评估粒度 & 端到端指标 & 端到端指标 & 端到端+ISR/NAR+语义级溯源 \\
     噪音类型适配 & 单一策略 & 单一策略 & 互锁效应驱动的类型自适应 \\
     API 成本 & 高（n+2） & 中 & 低--中（1--4），自适应仅+1 \\
-    中文评测 & 无系统评测 & 无系统评测 & MobileMem + Cmedqa 完整评测 \\
+    中文评测 & 无系统评测 & 无系统评测 & RGB、Cmedqa、MobileMem 等多数据集评测 \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
 \textbf{创新点总结：}
 \begin{enumerate}
-  \item 发现了“互锁效应”——最优矫正方法取决于噪音类型，CoT 证据链在语义噪音下最优但在反事实噪音下反而有害；
+  \item 发现了“互锁效应”——最优矫正方法取决于噪音类型，confidence（CoT 证据链）在语义噪音下通常有效，但在反事实噪音下可能有害；
   \item 提出并验证了自适应矫正器，利用噪音类型检测实现方法路由；
   \item 提出语义级 ISR/NAR，将 token 重叠升级为 LLM 驱动的信息归属判定；
   \item 发现了在高强度反事实噪音下的位置效应，back 位置最差，interleave 最优；
-  \item 提供了 2Wiki / MobileMem / Cmedqa 多域 RAG 鲁棒性 benchmark 与 Judge 评分协议。
+  \item 提供了 RGB、2Wiki、Cmedqa、MIRIAD、MobileMem、BRIGHT、TEMPO、MultiHop-RAG、NoiserBench 的多数据集 RAG 鲁棒性评测；
+  \item 构建了 MobileMem 私人记忆 RAG benchmark，用于评估个人助手场景中的高相关语义噪音。
 \end{enumerate}
 
-\section{运行方式}
 
-项目基于 Python 3.10 和 Node.js 环境，运行步骤如下：
 
-\begin{enumerate}
-  \item 安装 Python 依赖并配置 DeepSeek API 密钥；
-  \item 运行单元测试验证环境配置正确；
-  \item 通过实验脚本依次执行 exp1（噪音影响）、exp2（矫正方法）、exp3（案例研究）、exp4（互锁效应）实验，支持指定语言、样本数和噪音参数；
-  \item 运行图表渲染脚本自动生成所有实验图表；
-  \item 运行 \texttt{python scripts/render\_late\_stage\_figures.py} 生成主实验图表；
-  \item 启动 FastAPI 后端和 Vue 前端（或 Gradio Demo）进行系统演示。
-\end{enumerate}
-
-\section{总结}
-
-本项目围绕 RAG 检索噪音对推理的影响，构建了统一实验框架：在 2WikiMultihopQA、MobileMem 与 CmedqaRetrieval 上实现可控噪音注入、12 种矫正方法与 Judge/Token-F1 双轨评估。主实验清晰呈现\textbf{无噪音可答、中高噪音难答、高噪音失效、矫正恢复}四段式曲线——2Wiki naive F1 从 0.619 经 0.422 跌至 0.067；MobileMem Judge 从 0.808 经 0.764 跌至 0.440，confidence 在 $r=0.75$ 回升至 0.536；Cmedqa confidence CRR=5.17。
-
-互锁效应（semantic 下 confidence 最优、counterfactual 下 prompt 更稳）在 2Wiki 与 RGB fact 对照上得到验证，自适应路由可避开最差策略。§8 进一步从 RGB、MobileMem 与 BRIGHT 典型案例阐明噪音的多类影响机制与 CoT 证据链的恢复逻辑及边界。DeepSeek Judge 解决了 Token-F1 对短答案/计算题的不合理低分；NS/CRR 与曲线形态一致刻画鲁棒性。Web 演示平台与统一实验流水线为后续扩展 BRIGHT、NoiserBench 等语料提供了工程基线。
+\subsection{方法边界与不足}
+\begin{itemize}
+  \item $r=1.0$ 时 positive 消失，矫正多数失效；
+  \item counterfactual 噪音下 confidence 可能强化假证据，需 adaptive/prompt；
+  \item 跨数据集指标口径不同，Token-F1 与 Judge Score 需分别解释；
+  \item 依赖 4B 本地模型与 Judge 主观性；长答案和医学答案仍需人工抽样复核；
+  \item BRIGHT 等长文数据需 prompt 截断；TEMPO、MultiHop-RAG、NoiserBench 为 $n=50$ 批量验证，MIRIAD 为 $n=100$ 医学对照，后续可继续扩大样本量。
+  \item 「噪音上升反而答对」现象（见第~\ref{sec:noise_up_acc_up} 节）在 33 处样本中出现，主要来自强约束提示需要 negative 作对照、Token-F1 在长答案上失真、低比例噪音的上下文增广以及小样本波动；其存在于中低噪音比例或单事实任务，不影响「证据定位 vs 矛盾识别」的互锁主结论，但提醒阅读时对 $\Delta S<0.02$ 或长答案字面指标应结合 Judge 与样例交叉验证。
+\end{itemize}
 
 \end{document}

@@ -71,6 +71,21 @@ class TestContainsMatch:
         assert _contains_match("", "hello") == 0.0
         assert _contains_match("hello", "") == 0.0
 
+    def test_numeric_unit_paraphrase(self):
+        assert _contains_match("486.5元除以5，每颗星约97.3元。", "97.3元/星") == 1.0
+        assert _contains_match("约7.98元。", "8元/星") == 1.0
+
+    def test_numeric_substring_is_not_enough(self):
+        assert _contains_match("180分钟。", "80分钟") == 0.0
+        assert _contains_match("郝明轩发了12条消息。", "2条") == 0.0
+        assert _contains_match("点赞数和弹幕数合计为14664。", "4664") == 0.0
+        assert _contains_match("点赞数和弹幕数合计为7175。", "7175") == 1.0
+
+    def test_duration_equivalence(self):
+        assert _contains_match("还剩5分钟。", "5分00秒") == 1.0
+        assert _contains_match("还剩300秒。", "5分00秒") == 1.0
+        assert _contains_match("还剩301秒。", "5分00秒") == 0.0
+
 
 # ── _token_f1 ──
 
@@ -165,6 +180,14 @@ class TestAggregate:
 
     def test_empty_rows(self):
         assert aggregate([], group_by=("method",)) == []
+
+    def test_keeps_actual_noise_ratio_when_grouping_by_target(self):
+        rows = [
+            self._row(noise_ratio_target=0.5, noise_ratio=0.714),
+            self._row(noise_ratio_target=0.5, noise_ratio=0.714),
+        ]
+        result = aggregate(rows, group_by=("method", "noise_ratio_target"))
+        assert result[0]["noise_ratio"] == 0.714
 
 
 # ── _best_over_golds ──

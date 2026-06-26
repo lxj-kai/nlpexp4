@@ -20,7 +20,28 @@ OUTPUT_DIR = BENCHMARK_ROOT / "output"
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from backend.deps import get_records
+
 WIKI_API = "https://zh.wikipedia.org/w/api.php"
+
+NOISER_BENCH_SUBSETS = {
+    "2wikimqa",
+    "2wikiimqa",
+    "bamboogle",
+    "hotpotqa",
+    "nq",
+    "priorqa",
+    "rgb_nb",
+    "strategyqa",
+    "tempqa",
+}
+
+SUBSET_OPERATIONS = {
+    "main": "qa",
+    "refine": "refine",
+    "fact": "counterfactual",
+    "int": "integration",
+}
 
 
 @router.get("/topics")
@@ -71,6 +92,124 @@ def get_stats():
         with open(stats_file, "r", encoding="utf-8") as f:
             return json.load(f)
     return {"total_records": 0, "topics": {}}
+
+
+def _sort_key(record) -> tuple[int, int | str]:
+    raw_id = getattr(record, "id", "")
+    if isinstance(raw_id, int):
+        return (0, raw_id)
+    if isinstance(raw_id, str) and raw_id.isdigit():
+        return (0, int(raw_id))
+    return (1, str(raw_id))
+
+
+def _record_operation(record, subset: str) -> str:
+    meta = getattr(record, "meta", None) or {}
+    if meta.get("operation"):
+        return str(meta["operation"])
+    if subset in NOISER_BENCH_SUBSETS:
+        return "noiserbench"
+    return SUBSET_OPERATIONS.get(subset, "qa")
+
+
+def _record_scope_type(record) -> str:
+    meta = getattr(record, "meta", None) or {}
+    if meta.get("scope_type"):
+        return str(meta["scope_type"])
+    if meta.get("support_path"):
+        return "support_path"
+    if getattr(record, "positive_wrong", None):
+        return "counterfactual"
+    return "standard"
+
+
+def _record_scope_desc(record, subset: str) -> str:
+    meta = getattr(record, "meta", None) or {}
+    if meta.get("scope_desc"):
+        return str(meta["scope_desc"])
+    counts = [
+        f"P{len(getattr(record, 'positive', []) or [])}",
+        f"N{len(getattr(record, 'negative', []) or [])}",
+    ]
+    wrong_count = len(getattr(record, "positive_wrong", []) or [])
+    if wrong_count:
+        counts.append(f"CF{wrong_count}")
+    return f"{subset} · " + " / ".join(counts)
+
+
+def _record_to_benchmark_dict(record, subset: str) -> dict:
+    meta = getattr(record, "meta", None) or {}
+    return {
+        "id": record.id,
+        "query": record.query,
+        "answer": record.answer,
+        "positive": record.positive,
+        "negative": record.negative,
+        "positive_wrong": record.positive_wrong,
+        "fakeanswer": record.fakeanswer,
+        "mobilemem_meta": meta,
+        "benchmark_meta": {
+            "operation": _record_operation(record, subset),
+            "scope_type": _record_scope_type(record),
+            "scope_desc": _record_scope_desc(record, subset),
+            "metric_name": str(meta.get("metric_name") or ""),
+            "has_support_path": bool(meta.get("support_path")),
+        },
+        "language": getattr(record, "language", "zh"),
+        "subset": getattr(record, "subset", subset),
+    }
+
+
+def _length_set(records: list, attr: str) -> list[int]:
+    return sorted({len(getattr(record, attr, []) or []) for record in records})
+
+
+def _count_values(values: list[str]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for value in values:
+        counts[value] = counts.get(value, 0) + 1
+    return counts
+
+
+def _dataset_response(language: str, subset: str) -> dict:
+    try:
+        records = sorted(get_records(language, subset), key=_sort_key)
+    except (KeyError, ValueError, FileNotFoundError) as e:
+        raise HTTPException(404, f"Dataset not found: {language}/{subset}") from e
+
+    benchmark_records = [_record_to_benchmark_dict(record, subset) for record in records]
+    return {
+        "dataset": subset,
+        "language": language,
+        "filename": f"{language}/{subset}",
+        "total": len(records),
+        "summary": {
+            "id_range": [records[0].id, records[-1].id] if records else [],
+            "positive_docs": _length_set(records, "positive"),
+            "negative_docs": _length_set(records, "negative"),
+            "positive_wrong_docs": _length_set(records, "positive_wrong"),
+            "answer_count": _length_set(records, "answer"),
+            "operations": _count_values([r["benchmark_meta"]["operation"] for r in benchmark_records]),
+            "scope_types": _count_values([r["benchmark_meta"]["scope_type"] for r in benchmark_records]),
+            "has_support_path": any(r["benchmark_meta"]["has_support_path"] for r in benchmark_records),
+        },
+        "records": benchmark_records,
+    }
+
+
+@router.get("/dataset/{subset}")
+def get_benchmark_dataset(subset: str, language: str = "zh"):
+    return _dataset_response(language, subset)
+
+
+@router.get("/mobilemem_shopping_graph_hard_120")
+def get_mobilemem_shopping_graph_hard_120():
+    return _dataset_response("zh", "mobilemem_shopping_graph_hard_120")
+
+
+@router.get("/mobilemem_shopping_graph_noncalc_hard_120")
+def get_mobilemem_shopping_graph_noncalc_hard_120():
+    return _dataset_response("zh", "mobilemem_shopping_graph_noncalc_hard_120")
 
 
 class GenerateRequest(BaseModel):

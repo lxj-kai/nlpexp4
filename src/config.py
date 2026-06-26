@@ -50,7 +50,7 @@ class Config:
     noise_ratios: Tuple[float, ...] = (0.0, 0.25, 0.5, 0.75, 1.0)
     noise_types: Tuple[str, ...] = ("semantic", "counterfactual", "mixed")
     noise_positions: Tuple[str, ...] = ("front", "back", "interleave", "surround")
-    max_docs: int = 10
+    max_docs: int = int(os.getenv("NLP4_MAX_DOCS", "10"))
     min_positive_docs: int = 1
 
     # ── 实验/复现 ──

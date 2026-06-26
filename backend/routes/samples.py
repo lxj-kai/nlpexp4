@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api", tags=["samples"])
 
 @router.get("/samples", response_model=SamplesResponse)
 def api_samples(language: str = "zh", subset: str = "main"):
-    recs = get_records(language, subset)
+    recs = sorted(get_records(language, subset), key=lambda r: r.id)
     items = [SampleItem(id=r.id, label=f"#{r.id} | {r.query[:48]}") for r in recs]
     return SamplesResponse(items=items)
 

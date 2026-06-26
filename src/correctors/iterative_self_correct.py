@@ -109,7 +109,7 @@ class IterativeSelfCorrectCorrector(BaseCorrector):
                         answer=current_answer,
                     )},
                 ],
-                max_tokens=150,
+                max_tokens=512,
             )
             api_calls += 1
             prompt_tokens += check.get("prompt_tokens", 0)

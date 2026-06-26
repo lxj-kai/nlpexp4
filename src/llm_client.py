@@ -122,10 +122,12 @@ class LLMClient:
             max_tokens=max_tokens,
         )
         latency = time.time() - t0
-        content = resp.choices[0].message.content or ""
+        choice = resp.choices[0]
+        content = choice.message.content or ""
         usage = resp.usage
         return {
             "content": content,
+            "finish_reason": getattr(choice, "finish_reason", None),
             "prompt_tokens": getattr(usage, "prompt_tokens", 0) if usage else 0,
             "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
             "latency": latency,

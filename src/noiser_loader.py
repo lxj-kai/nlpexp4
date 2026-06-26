@@ -28,6 +28,14 @@ _SUBSET_MAP = {
     "priorqa": "mix-hop/priorqa.json",
 }
 
+_SUBSET_ALIASES = {
+    "2wikiimqa": "2wikimqa",
+}
+
+
+def normalize_noiser_subset(subset: str) -> str:
+    return _SUBSET_ALIASES.get(subset, subset)
+
 
 def _extract_noise_docs(raw: dict, noise_key: str) -> list[str]:
     val = raw.get(noise_key, [])
@@ -64,12 +72,14 @@ def parse_noiser_record(raw: dict, idx: int, subset: str) -> RGBRecord:
         negative=negative,
         positive_wrong=positive_wrong,
         fakeanswer=raw.get("counterfactual answer", ""),
+        meta={},
         language="en",
         subset=subset,
     )
 
 
 def iter_noiser_records(subset: str = "nq") -> Iterator[RGBRecord]:
+    subset = normalize_noiser_subset(subset)
     fname = _SUBSET_MAP.get(subset)
     if not fname:
         raise ValueError(f"Unknown NoiserBench subset: {subset}. Available: {list(_SUBSET_MAP)}")
@@ -91,6 +101,7 @@ def load_noiser_dataset(
     limit: int | None = None,
     shuffle: bool = True,
 ) -> list[RGBRecord]:
+    subset = normalize_noiser_subset(subset)
     records = list(iter_noiser_records(subset))
     if shuffle:
         import random as _rng
@@ -104,6 +115,14 @@ def load_noiser_dataset(
 def list_noiser_subsets() -> list[str]:
     available = []
     for key, fname in _SUBSET_MAP.items():
-        if (NOISER_DIR / fname).exists():
-            available.append(key)
+        path = NOISER_DIR / fname
+        if not path.exists():
+            continue
+        try:
+            with path.open("r", encoding="utf-8") as f:
+                first = f.read(1)
+            if first in ("[", "{"):
+                available.append(key)
+        except OSError:
+            continue
     return sorted(available)

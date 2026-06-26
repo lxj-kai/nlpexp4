@@ -10,7 +10,7 @@
     <div class="field">
       <label>子集</label>
       <select :value="exp.subset.value" @change="exp.subset.value = $event.target.value; exp.onLangSubsetChange()">
-        <option v-for="s in exp.subsets.value" :key="s" :value="s">{{ s }}</option>
+        <option v-for="s in exp.subsets.value" :key="s" :value="s">{{ exp.subsetLabel(s) }}</option>
       </select>
     </div>
 
@@ -32,16 +32,9 @@
     </div>
 
     <div class="field">
-      <label>类型</label>
-      <select :value="exp.noiseType.value" @change="exp.noiseType.value = $event.target.value">
-        <option v-for="t in exp.noiseTypes.value" :key="t" :value="t">{{ t }}</option>
-      </select>
-    </div>
-
-    <div class="field">
       <label>位置</label>
       <select :value="exp.noisePosition.value" @change="exp.noisePosition.value = $event.target.value">
-        <option v-for="p in exp.noisePositions.value" :key="p" :value="p">{{ p }}</option>
+        <option v-for="p in exp.noisePositions.value" :key="p" :value="p">{{ exp.noisePositionLabel(p) }}</option>
       </select>
     </div>
 
@@ -49,8 +42,8 @@
 
     <div class="field">
       <label>方法</label>
-      <select :value="exp.method.value" @change="exp.method.value = $event.target.value">
-        <option v-for="m in exp.methods.value" :key="m" :value="m">{{ m }}</option>
+      <select :value="exp.method.value" @change="exp.changeMethod($event.target.value)">
+        <option v-for="m in exp.methods.value" :key="m" :value="m">{{ exp.methodLabel(m) }}</option>
       </select>
     </div>
 

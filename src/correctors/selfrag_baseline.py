@@ -30,7 +30,11 @@ from .base import BaseCorrector, register_corrector
 
 def _norm_flag(text: str, candidates: tuple[str, ...]) -> str:
     t = (text or "").strip().upper()
+    ordered = sorted(candidates, key=len, reverse=True)
     for c in candidates:
+        if t == c:
+            return c
+    for c in ordered:
         if c in t:
             return c
     return candidates[0]
@@ -50,7 +54,7 @@ class SelfRAGBaseline(BaseCorrector):
                 {"role": "system", "content": sys_msg},
                 {"role": "user", "content": tmpl.format(query=query, doc=doc[:1500])},
             ],
-            max_tokens=4,
+            max_tokens=8,
         )
         flag = _norm_flag(out["content"], ("RELEVANT", "IRRELEVANT"))
         return flag == "RELEVANT"
@@ -73,7 +77,7 @@ class SelfRAGBaseline(BaseCorrector):
                 {"role": "system", "content": sys_msg},
                 {"role": "user", "content": tmpl.format(query=query, answer=answer, context=format_context(docs))},
             ],
-            max_tokens=4,
+            max_tokens=8,
         )
         return _norm_flag(out["content"], ("SUPPORTED", "PARTIAL", "UNSUPPORTED"))
 

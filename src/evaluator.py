@@ -41,7 +41,76 @@ def _contains_match(pred: str, gold: str) -> float:
     p, g = normalize_answer(pred), normalize_answer(gold)
     if not p or not g:
         return 0.0
-    return 1.0 if g in p else 0.0
+    numeric = _numeric_answer_match(pred, gold)
+    if numeric is not None:
+        return 1.0 if numeric else 0.0
+    if g in p:
+        return 1.0
+    return 0.0
+
+
+def _numeric_answer_match(pred: str, gold: str) -> bool | None:
+    """Match short numeric answers by value instead of raw substring."""
+    gold_duration = _duration_seconds(gold)
+    if gold_duration is not None:
+        pred_durations = _duration_seconds_all(pred)
+        if pred_durations:
+            return gold_duration in pred_durations
+
+    gold_nums = re.findall(r"\d+(?:\.\d+)?", gold)
+    if not gold_nums:
+        return None
+    if len(gold_nums) != 1:
+        return normalize_answer(gold) in normalize_answer(pred)
+
+    pred_nums = re.findall(r"\d+(?:\.\d+)?", pred)
+    if not pred_nums:
+        return False
+
+    gold_num = float(gold_nums[0])
+    gold_norm = normalize_answer(gold.replace(gold_nums[0], ""))
+    pred_norm = normalize_answer(pred)
+    if gold_norm in {"条", "次"}:
+        return any(float(n) == gold_num for n in pred_nums) and (
+            gold_norm in pred_norm or len(pred_nums) == 1
+        )
+    if gold_norm in {"元星", "元/星", "元"}:
+        return any(abs(float(n) - gold_num) <= 0.05 for n in pred_nums) and (
+            "元" in pred_norm or len(pred_nums) == 1
+        )
+    if gold_norm in {"秒", "分钟", "小时"}:
+        return any(float(n) == gold_num for n in pred_nums) and (
+            gold_norm in pred_norm or len(pred_nums) == 1
+        )
+    if not gold_norm:
+        return any(float(n) == gold_num for n in pred_nums)
+    # If the remaining gold text is not a numeric unit, the digit is part of
+    # an entity name such as a book title. Fall back to normal span matching
+    # instead of treating the answer as a pure numeric value.
+    return None
+
+
+def _duration_seconds(text: str) -> int | None:
+    """Parse compact Chinese duration answers such as 5分00秒 or 480分钟."""
+    values = _duration_seconds_all(text)
+    return values[0] if values else None
+
+
+def _duration_seconds_all(text: str) -> list[int]:
+    """Parse all compact Chinese duration mentions in a string."""
+    norm = normalize_answer(text)
+    if not re.search(r"\d", norm):
+        return []
+    pattern = re.compile(r"(?:(\d+)小时)?(?:(\d+)分(?:钟)?)?(?:(\d+)秒)?")
+    out: list[int] = []
+    for m in pattern.finditer(norm):
+        if not m.group(0) or not any(m.groups()):
+            continue
+        hours = int(m.group(1) or 0)
+        minutes = int(m.group(2) or 0)
+        seconds = int(m.group(3) or 0)
+        out.append(hours * 3600 + minutes * 60 + seconds)
+    return out
 
 
 def _token_f1(pred: str, gold: str) -> float:
@@ -184,6 +253,7 @@ def aggregate(rows: list[dict], *, group_by: tuple[str, ...] = ("method", "noise
         groups.setdefault(key, []).append(row)
 
     metric_keys = ("em", "contains", "token_f1", "rouge_l", "judge_score", "isr", "nar")
+    numeric_meta_keys = ("noise_ratio",)
     summaries: list[dict] = []
     for key, items in groups.items():
         summary = {g: k for g, k in zip(group_by, key)}
@@ -191,5 +261,11 @@ def aggregate(rows: list[dict], *, group_by: tuple[str, ...] = ("method", "noise
         for mk in metric_keys:
             vals = [it[mk] for it in items if it.get(mk) is not None]
             summary[mk] = round(sum(vals) / len(vals), 4) if vals else None
+        for mk in numeric_meta_keys:
+            if mk in group_by:
+                continue
+            vals = [it[mk] for it in items if it.get(mk) is not None]
+            if vals:
+                summary[mk] = round(sum(vals) / len(vals), 4)
         summaries.append(summary)
     return summaries

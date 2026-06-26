@@ -28,6 +28,12 @@
             <div class="label">ROUGE-L</div>
             <div class="value">{{ exp.fmt(exp.runResult.value.metrics.rouge_l) }}</div>
           </div>
+          <div class="metric-card">
+            <div class="label">LLM Judge</div>
+            <div class="value">
+              {{ exp.runResult.value.metrics.judge_score == null ? "未启用" : exp.fmt(exp.runResult.value.metrics.judge_score) }}
+            </div>
+          </div>
           <div class="metric-card highlight">
             <div class="label">ISR</div>
             <div class="value">{{ exp.fmt(exp.runResult.value.metrics.isr) }}</div>
@@ -42,6 +48,9 @@
           <span class="verdict-badge" :class="exp.runResult.value.metrics.verdict">
             {{ exp.verdictLabel(exp.runResult.value.metrics.verdict) }}
           </span>
+          <div class="judge-source">
+            {{ exp.runResult.value.metrics.judge_score == null ? "LLM Judger 未返回，已回退规则指标" : "正确/错误由 LLM Judger 判定" }}
+          </div>
         </div>
 
         <div class="meta-line" v-if="exp.runResult.value.meta">

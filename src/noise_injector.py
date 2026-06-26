@@ -1,6 +1,7 @@
 """Noise injector — 控制实验的核心变量：噪音比例 / 类型 / 位置。"""
 from __future__ import annotations
 
+import math
 import random
 from dataclasses import dataclass, field
 from typing import Literal
@@ -46,8 +47,14 @@ def _select_noise_docs(
     noise_type: NoiseType,
     n_noise: int,
     rng: random.Random,
+    *,
+    noise_order: str = "random",
 ) -> tuple[list[str], list[DocLabel]]:
-    """根据 noise_type 从 record 的备选池里选出 n_noise 个噪音文档。"""
+    """根据 noise_type 从 record 的备选池里选出 n_noise 个噪音文档。
+
+    noise_order="priority" 时按 record.negative 的原始顺序取前 n_noise 个（用于让
+    数据集预先排好的“关键陷阱”随噪音上升优先被注入），否则随机抽样。
+    """
     if n_noise <= 0:
         return [], []
 
@@ -74,6 +81,8 @@ def _select_noise_docs(
 
     if n_noise >= len(pool):
         chosen = list(pool)
+    elif noise_order == "priority":
+        chosen = pool[:n_noise]  # traps sit first in record.negative
     else:
         chosen = rng.sample(pool, n_noise)
     docs = [c[0] for c in chosen]
@@ -118,7 +127,9 @@ def inject(
     noise_position: NoisePosition = "interleave",
     max_docs: int = 10,
     min_positive: int = 1,
+    keep_all_positive: bool = False,
     seed: int | None = None,
+    noise_order: str = "random",
 ) -> NoisyContext:
     """对单条记录注入噪音并返回 NoisyContext。"""
     if not 0.0 <= noise_ratio <= 1.0:
@@ -128,7 +139,9 @@ def inject(
 
     # 全噪音特殊路径
     if noise_ratio >= 0.999999999:
-        noise_docs, noise_labels = _select_noise_docs(record, noise_type, max_docs, rng)
+        noise_docs, noise_labels = _select_noise_docs(
+            record, noise_type, max_docs, rng, noise_order=noise_order
+        )
         return NoisyContext(
             sample_id=record.id,
             query=record.query,
@@ -148,6 +161,13 @@ def inject(
     if noise_ratio == 0.0:
         n_pos = min(max_docs, n_pos_pool)
         n_noise = 0
+    elif keep_all_positive:
+        n_pos = min(max_docs, n_pos_pool)
+        if noise_ratio >= 0.999999999:
+            n_noise = max(0, max_docs - n_pos)
+        else:
+            n_noise = int(math.ceil(n_pos * noise_ratio / max(1e-9, 1.0 - noise_ratio)))
+            n_noise = min(n_noise, max_docs - n_pos)
     else:
         approx_total = min(max_docs, n_pos_pool + len(record.negative) + len(record.positive_wrong))
         n_noise = int(round(approx_total * noise_ratio))
@@ -160,7 +180,9 @@ def inject(
     pos_sample = rng.sample(record.positive, n_pos)
     pos_labels: list[DocLabel] = ["positive"] * n_pos
 
-    noise_docs, noise_labels = _select_noise_docs(record, noise_type, n_noise, rng)
+    noise_docs, noise_labels = _select_noise_docs(
+        record, noise_type, n_noise, rng, noise_order=noise_order
+    )
     docs, labels = _arrange(
         pos_sample, noise_docs, pos_labels, noise_labels, noise_position, rng
     )

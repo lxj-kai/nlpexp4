@@ -287,6 +287,165 @@ body {
 }
 
 /* ── Stage C: prompt ── */
+.method-flow {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.method-flow-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.method-name {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.method-summary {
+  font-size: 10px;
+  color: var(--ink-muted);
+  line-height: 1.45;
+  margin-top: 2px;
+}
+
+.method-tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.method-badge,
+.method-cost {
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 3px;
+  padding: 3px 5px;
+}
+
+.method-badge.baseline { background: #e2e8f0; color: #334155; }
+.method-badge.ours { background: #dcfce7; color: #166534; }
+.method-badge.paper-style { background: #dbeafe; color: #1d4ed8; }
+.method-badge.custom { background: #f1f5f9; color: #475569; }
+
+.method-cost {
+  border: 1px solid var(--border);
+  color: var(--ink-muted);
+  background: #fff;
+}
+
+.flow-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 8px;
+}
+
+.flow-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 22px;
+  max-width: 100%;
+  padding: 3px 6px;
+  border: 1px solid #dbe3ef;
+  border-radius: 4px;
+  background: #f8fafc;
+  font-size: 10px;
+  line-height: 1.25;
+  color: var(--ink-body);
+}
+
+.flow-index {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.flow-arrow {
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.prompt-call-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prompt-call {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.prompt-call-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  background: #f8fafc;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.prompt-call-head em {
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 5px;
+  background: #fff;
+  white-space: nowrap;
+}
+
+.prompt-part {
+  border-top: 1px solid #e2e8f0;
+}
+
+.prompt-part:first-child {
+  border-top: 0;
+}
+
+.prompt-part summary {
+  padding: 5px 0;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.3;
+}
+
 .prompt-block pre {
   white-space: pre-wrap;
   background: #f8fafc;
@@ -297,6 +456,19 @@ body {
   font-size: 11px;
   overflow: auto;
   max-height: 100%;
+}
+
+.prompt-call .prompt-block {
+  padding: 0 8px 8px;
+}
+
+.prompt-call .prompt-block pre {
+  margin-bottom: 6px;
+  max-height: 260px;
+}
+
+.prompt-call .call-output {
+  background: #fff;
 }
 
 /* ── Stage D: metrics ── */
@@ -323,7 +495,7 @@ body {
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
   gap: 6px;
 }
 
@@ -366,6 +538,13 @@ body {
 .verdict-badge.partial { background: #fef9c3; color: #854d0e; }
 .verdict-badge.wrong, .verdict-badge.noise_biased { background: #fee2e2; color: #991b1b; }
 
+.judge-source {
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
 .meta-line {
   font-size: 10px;
   color: var(--ink-muted);
@@ -393,4 +572,19 @@ body {
 .app.loading {
   opacity: 0.65;
   pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .app-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .app-header h1 {
+    width: 100%;
+    white-space: normal;
+    line-height: 1.35;
+  }
 }

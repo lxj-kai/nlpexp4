@@ -23,7 +23,26 @@ from .utils import get_logger
 logger = get_logger(__name__)
 
 Language = Literal["zh", "en"]
-Subset = Literal["main", "refine", "fact", "int"]
+Subset = Literal[
+    "main",
+    "refine",
+    "fact",
+    "int",
+    "mobilemem",
+    "mobilemem_cross",
+    "mobilemem_hard",
+    "mobilemem_hard_cross",
+    "mobilemem_reasoning",
+    "mobilemem_reasoning_cross",
+    "mobilemem_reasoning_cross95",
+    "mobilemem_reasoning_challenging",
+    "mobilemem_graph_hard_preview",
+    "mobilemem_graph_hard",
+    "mobilemem_shopping_graph_hard_120",
+    "mobilemem_shopping_graph_noncalc_hard_120",
+    "mobilemem_multihop_preview",
+    "mobilemem_multihop",
+]
 
 
 @dataclass
@@ -37,6 +56,7 @@ class RGBRecord:
     negative: list[str]
     positive_wrong: list[str] = field(default_factory=list)
     fakeanswer: str = ""
+    meta: dict = field(default_factory=dict)
     language: Language = "zh"
     subset: Subset = "main"
 
@@ -67,6 +87,7 @@ def parse_record(raw: dict, *, language: Language, subset: Subset) -> RGBRecord:
         negative=[str(x) for x in raw.get("negative", [])],
         positive_wrong=[str(x) for x in raw.get("positive_wrong", [])],
         fakeanswer=str(raw.get("fakeanswer", "")),
+        meta=dict(raw.get("mobilemem_meta") or {}),
         language=language,
         subset=subset,
     )
@@ -77,11 +98,25 @@ _FILE_MAP: dict[tuple[Language, Subset], str] = {
     ("zh", "refine"): "zh_refine.json",
     ("zh", "fact"): "zh_fact.json",
     ("zh", "int"): "zh_int.json",
-    ("zh", "custom"): "zh_custom.json",
+    ("zh", "mobilemem"): "zh_mobilemem.json",
+    ("zh", "mobilemem_cross"): "zh_mobilemem_cross.json",
+    ("zh", "mobilemem_hard"): "zh_mobilemem_hard.json",
+    ("zh", "mobilemem_hard_cross"): "zh_mobilemem_hard_cross.json",
+    ("zh", "mobilemem_reasoning"): "zh_mobilemem_reasoning.json",
+    ("zh", "mobilemem_reasoning_cross"): "zh_mobilemem_reasoning_cross.json",
+    ("zh", "mobilemem_reasoning_cross95"): "zh_mobilemem_reasoning_cross95.json",
+    ("zh", "mobilemem_reasoning_challenging"): "zh_mobilemem_reasoning_challenging.json",
+    ("zh", "mobilemem_graph_hard_preview"): "zh_mobilemem_graph_hard_preview.json",
+    ("zh", "mobilemem_graph_hard"): "zh_mobilemem_graph_hard.json",
+    ("zh", "mobilemem_shopping_graph_hard_120"): "zh_mobilemem_shopping_graph_hard_120.json",
+    ("zh", "mobilemem_shopping_graph_noncalc_hard_120"): "zh_mobilemem_shopping_graph_noncalc_hard_120.json",
+    ("zh", "mobilemem_multihop_preview"): "zh_mobilemem_multihop_preview.json",
+    ("zh", "mobilemem_multihop"): "zh_mobilemem_multihop.json",
     ("en", "main"): "en.json",
     ("en", "refine"): "en_refine.json",
     ("en", "fact"): "en_fact.json",
     ("en", "int"): "en_int.json",
+    ("en", "mobilemem"): "en_mobilemem.json",
 }
 
 

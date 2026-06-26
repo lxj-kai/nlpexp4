@@ -24,6 +24,13 @@ export async function fetchSample(sampleId, language, subset) {
   return data;
 }
 
+export async function fetchBenchmarkDataset(language, subset) {
+  const { data } = await http.get(`/benchmark/dataset/${encodeURIComponent(subset)}`, {
+    params: { language },
+  });
+  return data;
+}
+
 export async function postInject(body) {
   const { data } = await http.post("/inject", body);
   return data;

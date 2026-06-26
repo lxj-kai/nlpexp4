@@ -60,13 +60,23 @@ def render_injected_html(ctx) -> str:
 # ── Verdict ──
 
 def verdict(metrics) -> str:
-    """根据评测指标判定回答类别。
+    """根据 LLM Judger 优先判定回答类别。
 
     阈值依据：
+    - judge_score 启用时优先使用，5/4 分视为正确，3 分视为部分正确
     - contains == 1.0 即视为命中（contains 取值二元）
     - token_f1 或 rouge_l >= 0.6 之间视为部分正确
     - NAR 显著高于 ISR → 噪音主导
     """
+    if metrics.judge_score is not None:
+        if metrics.judge_score >= 0.8:
+            return "correct"
+        if metrics.judge_score >= 0.6:
+            return "partial"
+        if metrics.nar > metrics.isr + 0.1 and metrics.nar >= 0.3:
+            return "noise_biased"
+        return "wrong"
+
     if metrics.contains >= 1.0:
         return "correct"
     if metrics.token_f1 >= 0.6 or metrics.rouge_l >= 0.6:

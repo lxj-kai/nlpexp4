@@ -5,6 +5,8 @@
       <div class="tab-bar">
         <button :class="{ active: tab === 'experiment' }" @click="tab = 'experiment'">实验平台</button>
         <button :class="{ active: tab === 'benchmark' }" @click="tab = 'benchmark'">数据引擎</button>
+        <button :class="{ active: tab === 'builder' }" @click="tab = 'builder'">数据构建</button>
+        <button :class="{ active: tab === 'methods' }" @click="tab = 'methods'">方法预览</button>
       </div>
     </header>
 
@@ -21,7 +23,9 @@
       </div>
     </template>
 
-    <BenchmarkEngine v-else />
+    <BenchmarkEngine v-else-if="tab === 'benchmark'" />
+    <DataBuilder v-else-if="tab === 'builder'" />
+    <MethodPreview v-else />
   </div>
 </template>
 
@@ -34,11 +38,13 @@ import StageB from "./components/StageB.vue";
 import StageC from "./components/StageC.vue";
 import StageD from "./components/StageD.vue";
 import BenchmarkEngine from "./components/BenchmarkEngine.vue";
+import DataBuilder from "./components/DataBuilder.vue";
+import MethodPreview from "./components/MethodPreview.vue";
 
 const exp = useExperiment();
 provide("exp", exp);
 
-const tab = ref("experiment");
+const tab = ref("benchmark");
 </script>
 
 <style>
@@ -69,5 +75,17 @@ const tab = ref("experiment");
 
 .tab-bar button:hover:not(.active) {
   background: var(--surface);
+}
+
+@media (max-width: 720px) {
+  .tab-bar {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+  }
+
+  .tab-bar button {
+    flex: 1 1 88px;
+  }
 }
 </style>

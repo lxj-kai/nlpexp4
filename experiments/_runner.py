@@ -10,7 +10,7 @@ from typing import Any, Sequence
 from src.config import CONFIG
 from src.correctors import get_corrector
 from src.data_loader import Language, Subset, load_dataset, RGBRecord
-from src.evaluator import Evaluator, aggregate
+from src.evaluator import Evaluator, PRIMARY_SCORE_KEY, aggregate
 from src.llm_client import LLMClient
 from src.metrics import (
     correction_recovery_rate,
@@ -20,9 +20,10 @@ from src.metrics import (
 from src.noise_injector import (
     NoisePosition,
     NoiseType,
+    batch_closed_book,
     batch_inject,
 )
-from src.rag_pipeline import RAGPipeline, RAGResult
+from src.rag_pipeline import ClosedBookPipeline, RAGPipeline, RAGResult
 from src.utils import Timer, get_logger, now_tag, set_seed, write_json
 
 logger = get_logger(__name__)
@@ -67,6 +68,83 @@ class RunResult:
         }
 
 
+def _build_contexts(records: list[RGBRecord], cond: RunCondition, *, dataset: str):
+    """从数据集标注池按 noise_ratio 混合正负文档，模拟 RAG 检索结果。"""
+    if cond.method == "closed_book":
+        return batch_closed_book(records, dataset=dataset)
+    return batch_inject(
+        records,
+        noise_ratio=cond.noise_ratio,
+        noise_type=cond.noise_type,
+        noise_position=cond.noise_position,
+        dataset=dataset,
+    )
+
+
+def _enrich_rows(rows: list[dict], results: list[RAGResult]) -> None:
+    """把 RAGResult metadata 合并进评估行，便于后处理诊断。"""
+    meta_by_id = {r.sample_id: r.metadata for r in results}
+    for row in rows:
+        md = meta_by_id.get(row["sample_id"], {})
+        row["metadata"] = md
+        if md.get("fallback_to_all") is not None:
+            row["fallback_to_all"] = md["fallback_to_all"]
+        if md.get("adaptive_route"):
+            row["adaptive_route"] = md["adaptive_route"]
+        if md.get("converged") is not None:
+            row["converged"] = md["converged"]
+        if md.get("round_log"):
+            row["round_log"] = md["round_log"]
+
+
+def compute_method_diagnostics(results: list[RunResult]) -> dict[str, Any]:
+    """统计 SelfRAG 回退率、adaptive 路由分布、迭代收敛率等。"""
+    diag: dict[str, Any] = {}
+
+    selfrag_rows = [
+        row
+        for r in results
+        if r.condition.method == "selfrag"
+        for row in r.rows
+    ]
+    if selfrag_rows:
+        fallbacks = [bool(row.get("fallback_to_all")) for row in selfrag_rows]
+        diag["selfrag"] = {
+            "n": len(fallbacks),
+            "fallback_rate": round(sum(fallbacks) / len(fallbacks), 4),
+            "fallback_count": sum(fallbacks),
+        }
+
+    adaptive_rows = [
+        row
+        for r in results
+        if r.condition.method == "adaptive"
+        for row in r.rows
+    ]
+    if adaptive_rows:
+        routes: dict[str, int] = {}
+        for row in adaptive_rows:
+            route = row.get("adaptive_route", "UNKNOWN")
+            routes[route] = routes.get(route, 0) + 1
+        diag["adaptive"] = {"n": len(adaptive_rows), "route_distribution": routes}
+
+    sc_rows = [
+        row
+        for r in results
+        if r.condition.method == "iterative_sc"
+        for row in r.rows
+    ]
+    if sc_rows:
+        converged = [bool(row.get("converged")) for row in sc_rows]
+        diag["iterative_sc"] = {
+            "n": len(converged),
+            "convergence_rate": round(sum(converged) / len(converged), 4),
+            "converged_count": sum(converged),
+        }
+
+    return diag
+
+
 def _run_method(
     method: str,
     contexts,
@@ -76,6 +154,11 @@ def _run_method(
     show_progress: bool,
     workers: int = 1,
 ) -> list[RAGResult]:
+    if method == "closed_book":
+        pipe = ClosedBookPipeline(llm=llm)
+        return pipe.batch_answer(
+            contexts, language=language, show_progress=show_progress, workers=workers
+        )
     if method == "naive":
         pipe = RAGPipeline(llm=llm)
         return pipe.batch_answer(
@@ -94,21 +177,18 @@ def run_conditions(
     llm: LLMClient | None = None,
     evaluator: Evaluator | None = None,
     language: str = "zh",
+    dataset: str | None = None,
     show_progress: bool = True,
     workers: int = 1,
 ) -> list[RunResult]:
     """主循环：对每个 condition 跑全部 records。"""
     llm = llm or LLMClient()
-    evaluator = evaluator or Evaluator(use_llm_judge=False, llm=llm)
+    evaluator = evaluator or Evaluator(use_llm_judge=True, use_legacy_metrics=False, llm=llm)
+    ds = (dataset or CONFIG.dataset or "rgb").strip().lower()
     out: list[RunResult] = []
     for cond in conditions:
         with Timer(cond.short()) as t:
-            ctxs = batch_inject(
-                list(records),
-                noise_ratio=cond.noise_ratio,
-                noise_type=cond.noise_type,
-                noise_position=cond.noise_position,
-            )
+            ctxs = _build_contexts(list(records), cond, dataset=ds)
             results = _run_method(
                 cond.method,
                 ctxs,
@@ -117,7 +197,10 @@ def run_conditions(
                 show_progress=show_progress,
                 workers=workers,
             )
-            rows = evaluator.evaluate_batch(results)
+            rows = evaluator.evaluate_batch(
+                results, language=language, workers=workers, show_progress=show_progress
+            )
+            _enrich_rows(rows, results)
             for r in rows:
                 r["method"] = cond.method
                 r["noise_ratio_target"] = cond.noise_ratio
@@ -138,7 +221,7 @@ def run_conditions(
 def compute_robustness_table(
     results: list[RunResult],
     *,
-    score_key: str = "token_f1",
+    score_key: str = PRIMARY_SCORE_KEY,
 ) -> list[dict]:
     """从多 condition 结果中提取 NS / NRS / CRR / ISR / NAR 鲁棒性指标。
 
@@ -216,6 +299,12 @@ def compute_robustness_table(
         nar_avg = (
             sum(r.summary.get("nar", 0.0) or 0.0 for r in ms) / len(ms) if ms else 0.0
         )
+        isr_sem_avg = (
+            sum(r.summary.get("isr_semantic", 0.0) or 0.0 for r in ms) / len(ms) if ms else 0.0
+        )
+        nar_sem_avg = (
+            sum(r.summary.get("nar_semantic", 0.0) or 0.0 for r in ms) / len(ms) if ms else 0.0
+        )
 
         noise_ratio_actual = [
             r.summary.get("noise_ratio", r.condition.noise_ratio)
@@ -243,6 +332,8 @@ def compute_robustness_table(
                 "CRR": None if crr is None else round(crr, 4),
                 "ISR_avg": round(isr_avg, 4),
                 "NAR_avg": round(nar_avg, 4),
+                "ISR_semantic_avg": round(isr_sem_avg, 4),
+                "NAR_semantic_avg": round(nar_sem_avg, 4),
                 "n_conditions": len(ms),
                 "ratios": ratios,
                 "scores": [round(s, 4) for s in scores],
@@ -278,6 +369,7 @@ def save_run(
         "config": CONFIG.to_dict(),
         "results": [r.to_dict() for r in results],
         "robustness_table": compute_robustness_table(results),
+        "method_diagnostics": compute_method_diagnostics(results),
     }
     if extras:
         out.update(extras)

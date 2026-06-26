@@ -239,15 +239,25 @@ body {
 }
 
 .qa-item .val {
-  padding: 4px 8px;
+  padding: 6px 8px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: #fff;
   font-size: 12px;
-  line-height: 1.5;
-  max-height: 48px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.qa-item .val-scroll {
+  min-height: 3.5em;
+  max-height: 9em;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+}
+
+.qa-item--text .val-scroll {
+  max-height: 11em;
 }
 
 /* ── Document cards (compact) ── */

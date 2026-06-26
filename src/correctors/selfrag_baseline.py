@@ -11,9 +11,6 @@ from __future__ import annotations
 
 from ..noise_injector import NoisyContext
 from ..prompts import (
-    NAIVE_SYSTEM_EN,
-    NAIVE_SYSTEM_ZH,
-    NAIVE_USER_TMPL,
     SELFRAG_REL_SYSTEM_EN,
     SELFRAG_REL_SYSTEM_ZH,
     SELFRAG_REL_USER_TMPL,
@@ -22,6 +19,8 @@ from ..prompts import (
     SELFRAG_SUPPORT_SYSTEM_ZH,
     SELFRAG_SUPPORT_USER_TMPL,
     SELFRAG_SUPPORT_USER_TMPL_EN,
+    build_naive_prompt,
+    context_dataset,
     format_context,
 )
 from ..rag_pipeline import RAGResult
@@ -55,9 +54,15 @@ class SelfRAGBaseline(BaseCorrector):
         flag = _norm_flag(out["content"], ("RELEVANT", "IRRELEVANT"))
         return flag == "RELEVANT"
 
-    def _generate(self, query: str, docs: list[str], *, language: str = "zh") -> dict:
-        sys_msg = NAIVE_SYSTEM_ZH if language == "zh" else NAIVE_SYSTEM_EN
-        user = NAIVE_USER_TMPL.format(query=query, n=len(docs), context=format_context(docs))
+    def _generate(
+        self,
+        query: str,
+        docs: list[str],
+        *,
+        language: str = "zh",
+        dataset: str | None = None,
+    ) -> dict:
+        sys_msg, user = build_naive_prompt(query, docs, language=language, dataset=dataset)
         return self.llm.chat(
             [
                 {"role": "system", "content": sys_msg},
@@ -88,7 +93,8 @@ class SelfRAGBaseline(BaseCorrector):
         rel_docs = [d for _, d, _ in relevant]
         rel_labels = [l for _, _, l in relevant]
 
-        gen = self._generate(ctx.query, rel_docs, language=language)
+        ds = context_dataset(ctx)
+        gen = self._generate(ctx.query, rel_docs, language=language, dataset=ds)
         answer = (gen["content"] or "").strip()
 
         support = self._judge_support(ctx.query, answer, rel_docs, language=language)
@@ -97,7 +103,7 @@ class SelfRAGBaseline(BaseCorrector):
 
         if support == "UNSUPPORTED" and len(rel_docs) > 1:
             top_docs = rel_docs[: max(1, len(rel_docs) // 2)]
-            gen2 = self._generate(ctx.query, top_docs, language=language)
+            gen2 = self._generate(ctx.query, top_docs, language=language, dataset=ds)
             answer = (gen2["content"] or "").strip()
             api_calls += 1
             regenerated = True

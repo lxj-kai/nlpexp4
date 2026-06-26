@@ -1,6 +1,13 @@
 <template>
   <div class="toolbar">
     <div class="field">
+      <label>数据集</label>
+      <select :value="exp.dataset.value" @change="exp.dataset.value = $event.target.value; exp.onDatasetChange()">
+        <option v-for="d in exp.datasets.value" :key="d.id" :value="d.id">{{ d.label }}</option>
+      </select>
+    </div>
+
+    <div class="field">
       <label>语言</label>
       <select :value="exp.language.value" @change="exp.language.value = $event.target.value; exp.onLangSubsetChange()">
         <option v-for="l in exp.languages.value" :key="l" :value="l">{{ l === "zh" ? "中文" : "English" }}</option>
@@ -37,7 +44,6 @@
         <option v-for="t in exp.noiseTypes.value" :key="t" :value="t">{{ t }}</option>
       </select>
     </div>
-
     <div class="field">
       <label>位置</label>
       <select :value="exp.noisePosition.value" @change="exp.noisePosition.value = $event.target.value">

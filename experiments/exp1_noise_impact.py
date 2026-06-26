@@ -87,7 +87,12 @@ def main() -> None:
         tag_suffix = ""
 
     logger.info(f"exp1: {len(records)} samples × {len(conditions)} conditions")
-    results = run_conditions(records=records, conditions=conditions, language=args.language)
+    results = run_conditions(
+        records=records,
+        conditions=conditions,
+        language=args.language,
+        dataset=args.dataset or CONFIG.dataset,
+    )
     path = save_run(
         experiment_name=f"exp1_noise_impact_{args.language}_{args.subset}{tag_suffix}",
         results=results,

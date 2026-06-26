@@ -16,6 +16,7 @@ class SamplesResponse(BaseModel):
 
 
 class InjectRequest(BaseModel):
+    dataset: str = "rgb"
     language: Literal["zh", "en"] = "zh"
     subset: Literal["main", "refine", "fact", "int"] = "main"
     sample_id: int
@@ -35,12 +36,16 @@ class RunRequest(InjectRequest):
 
 
 class MetricsOut(BaseModel):
-    em: float
-    contains: float
-    token_f1: float
-    rouge_l: float
+    judge_score: float | None = None
+    judge_correct: float | None = None
     isr: float
     nar: float
+    isr_semantic: float | None = None
+    nar_semantic: float | None = None
+    em: float | None = None
+    contains: float | None = None
+    token_f1: float | None = None
+    rouge_l: float | None = None
     verdict: str
 
 

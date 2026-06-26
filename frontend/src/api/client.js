@@ -10,16 +10,16 @@ export async function fetchConfig() {
   return data;
 }
 
-export async function fetchSamples(language, subset) {
+export async function fetchSamples(dataset, language, subset) {
   const { data } = await http.get("/samples", {
-    params: { language, subset },
+    params: { dataset, language, subset },
   });
   return data;
 }
 
-export async function fetchSample(sampleId, language, subset) {
+export async function fetchSample(sampleId, dataset, language, subset) {
   const { data } = await http.get(`/sample/${sampleId}`, {
-    params: { language, subset },
+    params: { dataset, language, subset },
   });
   return data;
 }

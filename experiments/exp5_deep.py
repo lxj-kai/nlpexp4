@@ -112,7 +112,7 @@ def main() -> None:
 
     path2 = save_run(
         experiment_name=f"exp5_deep_attribution_{args.language}",
-        results=results_adaptive[:2],  # placeholder
+        results=[conf_result],
         extras={"phase": "attribution", "attributions": attributions},
     )
     print(f"saved attribution → {path2}")

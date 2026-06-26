@@ -72,11 +72,19 @@ def run(
     )
     logger.info(f"loaded {len(records)} samples from {ds}/{language}/{subset}")
 
-    contexts_clean = batch_inject(records, noise_ratio=0.0)
-    contexts_noisy = batch_inject(records, noise_ratio=0.5, noise_type="semantic")
+    contexts_clean = batch_inject(records, noise_ratio=0.0, dataset=ds)
+    contexts_noisy = batch_inject(
+        records, noise_ratio=0.5, noise_type="semantic", dataset=ds
+    )
 
     llm = _DryLLM() if dry else LLMClient()
-    evaluator = Evaluator(use_llm_judge=False)
+    evaluator = Evaluator(
+        use_llm_judge=not dry,
+        use_legacy_metrics=False,
+        use_semantic_attribution=not dry,
+        llm=llm,  # type: ignore[arg-type]
+        judge_llm=llm if dry else None,  # type: ignore[arg-type]
+    )
 
     all_rows: list[dict] = []
     for label, ctxs in [("clean", contexts_clean), ("noisy", contexts_noisy)]:
@@ -116,7 +124,11 @@ def main() -> None:
     p.add_argument("--dry", action="store_true", help="不真实调用 LLM")
     p.add_argument("--language", choices=("zh", "en"), default="zh")
     p.add_argument("--subset", default="main", choices=("main", "refine", "fact", "int"))
-    p.add_argument("--dataset", choices=("rgb", "miriad", "cmedqa"), default=None, help="默认读 NLP4_DATASET")
+    p.add_argument(
+        "--dataset",
+        default=None,
+        help="默认读 NLP4_DATASET；如 bright, multihop_rag, tempo, 2wiki, cmedqa, rgb, miriad",
+    )
     p.add_argument(
         "--methods",
         type=str,

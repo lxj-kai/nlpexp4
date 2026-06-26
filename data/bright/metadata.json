@@ -1,0 +1,23 @@
+{
+  "source": "xlangai/BRIGHT",
+  "subdomains": [
+    "biology",
+    "earth_science",
+    "economics",
+    "psychology",
+    "robotics",
+    "stackoverflow",
+    "sustainable_living",
+    "pony",
+    "leetcode",
+    "aops",
+    "theoremqa_theorems",
+    "theoremqa_questions"
+  ],
+  "raw_examples": 1384,
+  "main_size": 1384,
+  "fact_size": 1384,
+  "n_neg": 8,
+  "seed": 42,
+  "neg_strategy": "excluded_ids hard negatives + same-subdomain distractors"
+}

@@ -2,7 +2,11 @@
   <div class="app" :class="{ loading: exp.busy.value }">
     <header class="app-header">
       <h1>面向 RAG 噪音的鲁棒性推理实验平台</h1>
-      <span class="lead">RGB · 噪音注入 · 矫正方法 · 鲁棒性评估</span>
+      <span class="lead">
+        {{ exp.datasetLabel.value }}
+        · 生成 {{ exp.generationModel.value || "Qwen2.5-0.5B (LM Studio)" }}
+        · 审查 {{ exp.judgeModel.value || "DeepSeek" }}
+      </span>
     </header>
 
     <ParamPanel />

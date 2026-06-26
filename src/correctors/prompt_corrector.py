@@ -6,7 +6,12 @@
 from __future__ import annotations
 
 from ..noise_injector import NoisyContext
-from ..prompts import PROMPT_AWARE_SYSTEM_EN, PROMPT_AWARE_SYSTEM_ZH, NAIVE_USER_TMPL, format_context
+from ..prompts import (
+    PROMPT_AWARE_SYSTEM_EN,
+    PROMPT_AWARE_SYSTEM_ZH,
+    build_naive_prompt,
+    context_dataset,
+)
 from ..rag_pipeline import RAGResult
 from .base import BaseCorrector, register_corrector
 
@@ -19,8 +24,11 @@ class PromptCorrector(BaseCorrector):
 
     def correct(self, ctx: NoisyContext, *, language: str = "zh") -> RAGResult:
         system = PROMPT_AWARE_SYSTEM_ZH if language == "zh" else PROMPT_AWARE_SYSTEM_EN
-        user = NAIVE_USER_TMPL.format(
-            query=ctx.query, n=len(ctx.docs), context=format_context(ctx.docs)
+        _, user = build_naive_prompt(
+            ctx.query,
+            ctx.docs,
+            language=language,
+            dataset=context_dataset(ctx),
         )
         out = self.llm.chat(
             [{"role": "system", "content": system}, {"role": "user", "content": user}]

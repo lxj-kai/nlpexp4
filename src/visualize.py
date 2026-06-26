@@ -650,37 +650,68 @@ def plot_iterative_convergence(
     *,
     out_dir: Path | str | None = None,
 ) -> str:
-    """迭代自纠正收敛图：展示多轮ISR/NAR变化。"""
+    """迭代自纠正收敛图：从 round_log 聚合 ISR/NAR 随轮次变化。"""
+    if not round_logs:
+        raise ValueError("round_logs 不能为空，无法绘制收敛图")
+
     _setup_style()
     out_dir = Path(out_dir or CONFIG.figures_dir)
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-    rounds = [0, 1, 2, 3]
-    isr_avg = [0.45, 0.52, 0.56, 0.58]
-    nar_avg = [0.25, 0.18, 0.13, 0.10]
-    f1_avg = [0.68, 0.72, 0.74, 0.75]
+    max_round = max(max(entry.get("round", 0) for entry in log) for log in round_logs)
+    rounds = list(range(max_round + 1))
 
-    axes[0].plot(rounds, isr_avg, "o-", color="#10b981", linewidth=2, markersize=8, label="ISR ↑")
-    axes[0].plot(rounds, nar_avg, "s-", color="#ef4444", linewidth=2, markersize=8, label="NAR ↓")
-    axes[0].set_xlabel("Iteration Round")
-    axes[0].set_ylabel("Score")
-    axes[0].set_title("ISR / NAR Convergence")
-    axes[0].legend()
-    axes[0].set_xticks(rounds)
-    axes[0].set_xticklabels(["R0 (init)", "R1", "R2", "R3"])
+    isr_avg: list[float] = []
+    nar_avg: list[float] = []
+    for rnd in rounds:
+        isrs = [
+            float(e["isr"])
+            for log in round_logs
+            for e in log
+            if e.get("round") == rnd and e.get("isr") is not None
+        ]
+        nars = [
+            float(e["nar"])
+            for log in round_logs
+            for e in log
+            if e.get("round") == rnd and e.get("nar") is not None
+        ]
+        isr_avg.append(float(np.mean(isrs)) if isrs else float("nan"))
+        nar_avg.append(float(np.mean(nars)) if nars else float("nan"))
 
-    axes[1].plot(rounds, f1_avg, "D-", color="#3b82f6", linewidth=2, markersize=8, label="Token-F1")
-    axes[1].axhline(y=f1_avg[0], color="#94a3b8", linestyle="--", alpha=0.5, label="Initial F1")
-    axes[1].set_xlabel("Iteration Round")
-    axes[1].set_ylabel("Token-F1")
-    axes[1].set_title("Performance Over Iterations")
-    axes[1].legend()
-    axes[1].set_xticks(rounds)
-    axes[1].set_xticklabels(["R0 (init)", "R1", "R2", "R3"])
+    fig, ax = plt.subplots(figsize=(8, 5))
+    valid_isr = [(r, v) for r, v in zip(rounds, isr_avg) if not np.isnan(v)]
+    valid_nar = [(r, v) for r, v in zip(rounds, nar_avg) if not np.isnan(v)]
+    if valid_isr:
+        rx, ry = zip(*valid_isr)
+        ax.plot(rx, ry, "o-", color="#10b981", linewidth=2, markersize=8, label="ISR ↑")
+    if valid_nar:
+        rx, ry = zip(*valid_nar)
+        ax.plot(rx, ry, "s-", color="#ef4444", linewidth=2, markersize=8, label="NAR ↓")
+    ax.set_xlabel("Iteration Round")
+    ax.set_ylabel("Score")
+    ax.set_title("ISR / NAR Convergence (from round_log)")
+    ax.legend()
+    ax.set_xticks(rounds)
+    ax.set_xticklabels([f"R{r}" for r in rounds])
 
     fig.suptitle("Iterative Self-Correction Dynamics", fontsize=13, fontweight="bold")
     plt.tight_layout()
     return _save(fig, out_dir / "iterative_convergence.png")
+
+
+def extract_iterative_round_logs(result_json: Path | str) -> list[list[dict]]:
+    """从实验 JSON 中提取 iterative_sc 方法的 round_log 列表。"""
+    payload = read_json(result_json)
+    logs: list[list[dict]] = []
+    for block in payload.get("results", []):
+        cond = block.get("condition", {})
+        if cond.get("method") != "iterative_sc":
+            continue
+        for row in block.get("rows", []):
+            rl = row.get("round_log") or row.get("metadata", {}).get("round_log")
+            if rl:
+                logs.append(rl)
+    return logs
 
 
 def render_all_from_results_dir(results_dir: Path | str | None = None) -> list[str]:

@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api", tags=["experiment"])
 
 @router.post("/inject", response_model=InjectResponse)
 def api_inject(req: InjectRequest):
-    record = find_record(req.language, req.subset, req.sample_id)
+    record = find_record(req.dataset, req.language, req.subset, req.sample_id)
     try:
         ctx = inject(
             record,
@@ -25,6 +25,7 @@ def api_inject(req: InjectRequest):
             noise_type=req.noise_type,
             noise_position=req.noise_position,
             max_docs=CONFIG.max_docs,
+            dataset=req.dataset,
         )
     except ValueError as e:
         raise HTTPException(400, detail=str(e))
@@ -37,7 +38,9 @@ def api_inject(req: InjectRequest):
         f"- 实际噪音比例：**{ctx.noise_ratio}**\n"
         f"- 类型：**{ctx.noise_type}** · 位置：**{ctx.noise_position}**"
     )
-    sys_msg, user_msg = build_naive_prompt(ctx.query, ctx.docs, language=req.language)
+    sys_msg, user_msg = build_naive_prompt(
+        ctx.query, ctx.docs, language=req.language, dataset=req.dataset
+    )
     prompt_md = f"**[System]**\n```\n{sys_msg}\n```\n\n**[User]**\n```\n{user_msg}\n```"
     return InjectResponse(
         summary=summary,
@@ -48,7 +51,7 @@ def api_inject(req: InjectRequest):
 
 @router.post("/run", response_model=RunResponse)
 def api_run(req: RunRequest):
-    record = find_record(req.language, req.subset, req.sample_id)
+    record = find_record(req.dataset, req.language, req.subset, req.sample_id)
     try:
         ctx = inject(
             record,
@@ -56,6 +59,7 @@ def api_run(req: RunRequest):
             noise_type=req.noise_type,
             noise_position=req.noise_position,
             max_docs=CONFIG.max_docs,
+            dataset=req.dataset,
         )
         if req.method == "naive":
             rag = RAGPipeline(llm=llm)
@@ -66,13 +70,15 @@ def api_run(req: RunRequest):
     except Exception as e:
         raise HTTPException(500, detail=str(e))
 
-    metrics = evaluator.evaluate_one(result)
+    metrics = evaluator.evaluate_one(result, language=req.language)
     inject_summary = (
         f"### 注入摘要\n"
         f"- 文档总数：**{len(ctx.docs)}**（positive **{ctx.meta.get('positives',0)}** + noise **{ctx.meta.get('noises',0)}**）\n"
         f"- 实际比例：**{ctx.noise_ratio}** · 类型：**{ctx.noise_type}** · 位置：**{ctx.noise_position}**"
     )
-    sys_msg, user_msg = build_naive_prompt(ctx.query, ctx.docs, language=req.language)
+    sys_msg, user_msg = build_naive_prompt(
+        ctx.query, ctx.docs, language=req.language, dataset=req.dataset
+    )
     prompt_md = f"**[System]**\n```\n{sys_msg}\n```\n\n**[User]**\n```\n{user_msg}\n```"
 
     return RunResponse(
@@ -80,12 +86,16 @@ def api_run(req: RunRequest):
         gold=" / ".join(record.answers_norm) or "(无)",
         prediction=result.prediction,
         metrics=MetricsOut(
+            judge_score=metrics.judge_score,
+            judge_correct=metrics.judge_correct,
+            isr=metrics.isr,
+            nar=metrics.nar,
+            isr_semantic=metrics.isr_semantic,
+            nar_semantic=metrics.nar_semantic,
             em=metrics.em,
             contains=metrics.contains,
             token_f1=metrics.token_f1,
             rouge_l=metrics.rouge_l,
-            isr=metrics.isr,
-            nar=metrics.nar,
             verdict=verdict(metrics),
         ),
         inject_summary=inject_summary,
@@ -93,6 +103,12 @@ def api_run(req: RunRequest):
         prompt_markdown=prompt_md,
         meta={
             "method": req.method,
+            "dataset": req.dataset,
+            "generation_model": CONFIG.model,
+        "generation_provider": "lmstudio",
+            "judge_model": CONFIG.judge_model,
+            "judge_provider": "deepseek",
+            "judge_api_base": CONFIG.judge_api_base,
             "prompt_tokens": result.metadata.get("prompt_tokens", 0),
             "completion_tokens": result.metadata.get("completion_tokens", 0),
             "latency": result.metadata.get("latency", 0.0),

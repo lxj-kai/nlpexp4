@@ -1,4 +1,4 @@
-"""Deepseek API 连通性测试 + 简易调用示例。"""
+"""LM Studio API 连通性测试 + 简易调用示例。"""
 from __future__ import annotations
 
 import sys
@@ -13,7 +13,7 @@ from src.llm_client import LLMClient
 def main() -> None:
     print("API_BASE:", CONFIG.api_base)
     print("MODEL:", CONFIG.model)
-    print("KEY_LEN:", len(CONFIG.api_key))
+    print("JUDGE_MODEL:", CONFIG.judge_model)
 
     llm = LLMClient()
     out = llm.generate(

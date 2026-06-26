@@ -91,11 +91,16 @@ class IterativeSelfCorrectCorrector(BaseCorrector):
         completion_tokens += gen.get("completion_tokens", 0)
         current_answer = (gen["content"] or "").strip()
 
+        attr0 = attribute_answer(current_answer, ctx.docs, list(ctx.labels))
         round_log.append({
             "round": 0,
             "answer": current_answer,
             "action": "initial_generation",
+            "isr": attr0.isr,
+            "nar": attr0.nar,
         })
+
+        converged = False
 
         # 迭代轮次
         for rnd in range(1, self.max_rounds + 1):
@@ -118,12 +123,16 @@ class IterativeSelfCorrectCorrector(BaseCorrector):
             check_content = check.get("content", "") or ""
 
             if _check_pass(check_content):
+                attr = attribute_answer(current_answer, ctx.docs, list(ctx.labels))
                 round_log.append({
                     "round": rnd,
                     "answer": current_answer,
                     "action": "pass",
                     "check_output": check_content[:200],
+                    "isr": attr.isr,
+                    "nar": attr.nar,
                 })
+                converged = True
                 break  # 收敛，停止迭代
 
             issue = _extract_issue(check_content)
@@ -144,6 +153,7 @@ class IterativeSelfCorrectCorrector(BaseCorrector):
             completion_tokens += revise.get("completion_tokens", 0)
 
             new_answer = (revise["content"] or "").strip() if revise.get("content") else current_answer
+            attr = attribute_answer(new_answer, ctx.docs, list(ctx.labels))
 
             round_log.append({
                 "round": rnd,
@@ -152,6 +162,8 @@ class IterativeSelfCorrectCorrector(BaseCorrector):
                 "action": "revised",
                 "issue": issue[:200],
                 "check_output": check_content[:200],
+                "isr": attr.isr,
+                "nar": attr.nar,
             })
             current_answer = new_answer
 
@@ -175,7 +187,7 @@ class IterativeSelfCorrectCorrector(BaseCorrector):
                 "latency": elapsed,
                 "rounds": len(round_log),
                 "round_log": round_log,
-                "converged": len(round_log) < self.max_rounds + 1,
+                "converged": converged,
                 **ctx.meta,
             },
         )

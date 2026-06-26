@@ -4,21 +4,29 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from src.correctors import list_correctors
+from src.dataset_registry import config_payload
 
 router = APIRouter(prefix="/api", tags=["meta"])
 
 
 @router.get("/health")
 def health():
-    return {"status": "ok"}
+    from src.config import CONFIG
+
+    return {
+        "status": "ok",
+        "generation_model": CONFIG.model,
+        "generation_api_base": CONFIG.api_base,
+        "generation_provider": "lmstudio",
+        "judge_model": CONFIG.judge_model,
+        "judge_api_base": CONFIG.judge_api_base,
+        "judge_provider": "deepseek",
+    }
 
 
 @router.get("/config")
 def api_config():
     return {
-        "noise_types": ["semantic", "counterfactual", "mixed"],
-        "noise_positions": ["front", "back", "interleave", "surround"],
+        **config_payload(),
         "methods": ["naive", *list_correctors()],
-        "subsets": ["main", "refine", "fact", "int"],
-        "languages": ["zh", "en"],
     }

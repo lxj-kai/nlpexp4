@@ -1,12 +1,13 @@
-"""Deepseek API client with retry + disk cache + token bookkeeping."""
+"""OpenAI-compatible LLM client (LM Studio) with retry + disk cache + token bookkeeping."""
 from __future__ import annotations
 
 import hashlib
 import json
+import re
 import threading
 import time
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 from openai import OpenAI, APIError, APITimeoutError, RateLimitError
 from tenacity import (
@@ -20,6 +21,77 @@ from .config import CONFIG
 from .utils import get_logger
 
 logger = get_logger(__name__)
+
+_GEMMA4_PAT = re.compile(r"gemma[-_ ]?4", re.I)
+_FINAL_ANSWER_PATS = (
+    re.compile(
+        r"(?:Final Answer|最终答案|Final answer)[^:\n]*[:：]\**\s*(.+?)(?:\n|$)",
+        re.I | re.S,
+    ),
+    re.compile(
+        r"Formulate the Final Answer[^:\n]*[:：]\**\s*(.+?)(?:\.\s*$|\n)",
+        re.I | re.S,
+    ),
+)
+_META_LINE_PAT = re.compile(
+    r"^(?:\d+\.|\*+|---|\[|thinking process|analyze|identify|synthesize|formulate|self-correction)",
+    re.I,
+)
+
+
+def is_gemma4_model(model: str) -> bool:
+    """识别 Gemma 4 系列（如 google/gemma-4-e4b）。"""
+    return bool(_GEMMA4_PAT.search(model or ""))
+
+
+def _message_field(message: Any, attr: str, *, extra_keys: tuple[str, ...] = ()) -> str:
+    val = getattr(message, attr, None)
+    if val:
+        return str(val).strip()
+    extra = getattr(message, "model_extra", None) or {}
+    for key in extra_keys:
+        if extra.get(key):
+            return str(extra[key]).strip()
+    return ""
+
+
+def _strip_gemma_answer_markup(text: str) -> str:
+    t = text.strip().strip('"').strip("'")
+    return re.sub(r"^\*+|\*+$", "", t).strip()
+
+
+def extract_gemma4_content(message: Any) -> str:
+    """Gemma 4 在 LM Studio 等后端可能把 thinking 放在 reasoning 字段、content 为空。"""
+    content = _message_field(message, "content")
+    if content:
+        return content
+
+    reasoning = _message_field(
+        message,
+        "reasoning_content",
+        extra_keys=("reasoning_content", "reasoning"),
+    )
+    if not reasoning:
+        return ""
+
+    if "<channel|>" in reasoning:
+        tail = reasoning.split("<channel|>")[-1].strip()
+        if tail:
+            return _strip_gemma_answer_markup(tail)
+
+    for pat in _FINAL_ANSWER_PATS:
+        m = pat.search(reasoning)
+        if m:
+            ans = _strip_gemma_answer_markup(m.group(1))
+            if ans:
+                return ans
+
+    for ln in reversed([x.strip() for x in reasoning.splitlines() if x.strip()]):
+        if len(ln) < 2 or _META_LINE_PAT.match(ln):
+            continue
+        return _strip_gemma_answer_markup(ln)
+
+    return ""
 
 
 class LLMUsage:
@@ -58,24 +130,33 @@ def _cache_key(
 
 
 class LLMClient:
-    """Deepseek 调用入口。
+    """LM Studio / OpenAI 兼容 API 调用入口。
 
-    - 启用磁盘缓存，避免相同 prompt 重复花钱
+    - 启用磁盘缓存，避免相同 prompt 重复调用
     - 自动指数退避重试
     - 内置 token 使用统计
     """
 
-    def __init__(self, *, use_cache: bool = True) -> None:
-        if not CONFIG.api_key:
-            logger.warning("DEEPSEEK_API_KEY 未配置，调用会失败")
+    def __init__(
+        self,
+        *,
+        use_cache: bool = True,
+        api_key: str | None = None,
+        api_base: str | None = None,
+        cache_subdir: str = "llm",
+        default_model: str | None = None,
+    ) -> None:
+        self._api_key = api_key if api_key is not None else CONFIG.api_key
+        self._api_base = api_base if api_base is not None else CONFIG.api_base
+        self.default_model = default_model or CONFIG.model
         self.client = OpenAI(
-            api_key=CONFIG.api_key or "EMPTY",
-            base_url=CONFIG.api_base,
+            api_key=self._api_key or "lm-studio",
+            base_url=self._api_base,
             timeout=CONFIG.timeout,
         )
         self.usage = LLMUsage()
         self.use_cache = use_cache
-        self.cache_dir = CONFIG.cache_dir / "llm"
+        self.cache_dir = CONFIG.cache_dir / cache_subdir
         self._cache_lock = threading.Lock()
         if use_cache:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -128,7 +209,17 @@ class LLMClient:
             max_tokens=max_tokens,
         )
         latency = time.time() - t0
-        content = resp.choices[0].message.content or ""
+        msg = resp.choices[0].message
+        if is_gemma4_model(model):
+            content = extract_gemma4_content(msg)
+            if not content and (msg.content or _message_field(msg, "reasoning_content", extra_keys=("reasoning_content", "reasoning"))):
+                logger.warning(
+                    "Gemma 4 returned empty extractable answer (model=%s); "
+                    "check max_tokens or reasoning length",
+                    model,
+                )
+        else:
+            content = msg.content or ""
         usage = resp.usage
         return {
             "content": content,
@@ -146,15 +237,18 @@ class LLMClient:
         temperature: float | None = None,
         max_tokens: int | None = None,
     ) -> dict:
-        model = model or CONFIG.model
+        model = model or self.default_model
         temperature = CONFIG.temperature if temperature is None else temperature
         max_tokens = max_tokens or CONFIG.max_tokens
 
         key = _cache_key(model, messages, temperature, max_tokens)
         cached = self._load_cache(key)
         if cached is not None:
-            cached["cached"] = True
-            return cached
+            if is_gemma4_model(model) and not (cached.get("content") or "").strip():
+                cached = None
+            else:
+                cached["cached"] = True
+                return cached
 
         payload = self._raw_chat(
             messages, model=model, temperature=temperature, max_tokens=max_tokens
@@ -183,3 +277,22 @@ def get_client(*, use_cache: bool = True) -> LLMClient:
     if _GLOBAL_CLIENT is None:
         _GLOBAL_CLIENT = LLMClient(use_cache=use_cache)
     return _GLOBAL_CLIENT
+
+
+_GLOBAL_JUDGE: LLMClient | None = None
+
+
+def get_judge_client(*, use_cache: bool = True) -> LLMClient:
+    """DeepSeek judge client — 与本地生成模型分离。"""
+    global _GLOBAL_JUDGE
+    if _GLOBAL_JUDGE is None:
+        if not CONFIG.judge_api_key:
+            logger.warning("DEEPSEEK_API_KEY 未配置，Judge 调用会失败")
+        _GLOBAL_JUDGE = LLMClient(
+            use_cache=use_cache,
+            api_key=CONFIG.judge_api_key,
+            api_base=CONFIG.judge_api_base,
+            cache_subdir="judge",
+            default_model=CONFIG.judge_model,
+        )
+    return _GLOBAL_JUDGE

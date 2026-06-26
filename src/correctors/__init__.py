@@ -15,6 +15,7 @@ from .ablated_confidence import (  # noqa: F401
     AblatedNoTagCorrector,
 )
 from .iterative_self_correct import IterativeSelfCorrectCorrector  # noqa: F401
+from .multihop_corrector import MultihopDecomposeCorrector  # noqa: F401
 
 __all__ = [
     "BaseCorrector",
@@ -32,4 +33,5 @@ __all__ = [
     "AblatedNoEvidenceCorrector",
     "AblatedNoTagCorrector",
     "IterativeSelfCorrectCorrector",
+    "MultihopDecomposeCorrector",
 ]

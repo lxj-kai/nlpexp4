@@ -1,0 +1,24 @@
+{
+  "source": "tempo26/Tempo",
+  "domains": [
+    "bitcoin",
+    "cardano",
+    "iota",
+    "monero",
+    "economics",
+    "law",
+    "politics",
+    "history",
+    "quant",
+    "travel",
+    "workplace",
+    "genealogy",
+    "hsm"
+  ],
+  "raw_examples": 1730,
+  "main_size": 1730,
+  "fact_size": 1730,
+  "n_neg": 8,
+  "seed": 42,
+  "neg_strategy": "same-domain corpus distractors"
+}

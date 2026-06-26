@@ -95,7 +95,7 @@ def run_cross_method(
     )
 
     llm = get_client()
-    evaluator = Evaluator(use_llm_judge=False, llm=llm)
+    evaluator = Evaluator(use_llm_judge=True, use_legacy_metrics=False, llm=llm)
 
     # 对每种方法运行矫正
     results: dict[str, list[dict]] = {}

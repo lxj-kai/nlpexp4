@@ -2,11 +2,6 @@
 openai>=1.30.0
 tiktoken>=0.7.0
 tenacity>=8.2.3
-
-# ===== Embedding & Retrieval =====
-sentence-transformers>=2.7.0
-text2vec>=1.2.0
-faiss-cpu>=1.7.4
 numpy>=1.24.0,<2.0.0
 
 # ===== Evaluation =====
@@ -29,9 +24,6 @@ tqdm>=4.66.0
 # ===== Backend =====
 fastapi>=0.111.0
 uvicorn[standard]>=0.30.0
-
-# ===== Demo =====
-gradio>=4.20.0
 
 datasets>=2.19.0
 huggingface_hub>=0.23.0

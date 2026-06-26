@@ -60,17 +60,15 @@ def render_injected_html(ctx) -> str:
 # ── Verdict ──
 
 def verdict(metrics) -> str:
-    """根据评测指标判定回答类别。
-
-    阈值依据：
-    - contains == 1.0 即视为命中（contains 取值二元）
-    - token_f1 或 rouge_l >= 0.6 之间视为部分正确
-    - NAR 显著高于 ISR → 噪音主导
-    """
-    if metrics.contains >= 1.0:
-        return "correct"
-    if metrics.token_f1 >= 0.6 or metrics.rouge_l >= 0.6:
-        return "partial"
+    """根据 DeepSeek Judge 与 ISR/NAR 判定回答类别。"""
+    if metrics.judge_score is not None:
+        if metrics.judge_correct == 1.0 or metrics.judge_score >= 0.8:
+            return "correct"
+        if metrics.judge_score >= 0.6:
+            return "partial"
+        if metrics.nar > metrics.isr + 0.1 and metrics.nar >= 0.3:
+            return "noise_biased"
+        return "wrong"
     if metrics.nar > metrics.isr + 0.1 and metrics.nar >= 0.3:
         return "noise_biased"
     return "wrong"

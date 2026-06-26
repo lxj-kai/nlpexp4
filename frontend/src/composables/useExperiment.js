@@ -1,4 +1,4 @@
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import {
   fetchConfig,
   fetchSample,
@@ -7,13 +7,79 @@ import {
   postRun,
 } from "../api/client.js";
 
+/** 与 backend dataset_registry 同步；/config 失败时作 fallback */
+const FALLBACK_DATASETS = [
+  {
+    id: "rgb",
+    label: "RGB（基准 · 新闻/百科）",
+    languages: ["zh", "en"],
+    subsets: ["main", "refine", "fact", "int"],
+    default_language: "zh",
+    default_subset: "main",
+  },
+  {
+    id: "2wiki",
+    label: "2WikiMultihopQA（英文多跳 · hard neg）",
+    languages: ["en"],
+    subsets: ["main", "fact"],
+    default_language: "en",
+    default_subset: "main",
+  },
+  {
+    id: "cmedqa",
+    label: "CmedqaRetrieval（中文医学）",
+    languages: ["zh"],
+    subsets: ["main", "fact"],
+    default_language: "zh",
+    default_subset: "main",
+  },
+  {
+    id: "miriad",
+    label: "MIRIAD-5.8M（英文医学 · 大规模）",
+    languages: ["en"],
+    subsets: ["main", "fact"],
+    default_language: "en",
+    default_subset: "main",
+  },
+  {
+    id: "bright",
+    label: "BRIGHT（英文 · hard neg · 长文推理）",
+    languages: ["en"],
+    subsets: ["main", "fact"],
+    default_language: "en",
+    default_subset: "main",
+  },
+  {
+    id: "multihop_rag",
+    label: "MultiHop-RAG（英文 · evidence 明确 · 新闻整合）",
+    languages: ["en"],
+    subsets: ["main", "fact"],
+    default_language: "en",
+    default_subset: "main",
+  },
+  {
+    id: "tempo",
+    label: "TEMPO（英文 · 论坛长文 · 多域）",
+    languages: ["en"],
+    subsets: ["main", "fact"],
+    default_language: "en",
+    default_subset: "main",
+  },
+];
+
 export function useExperiment() {
+  const datasets = ref([...FALLBACK_DATASETS]);
   const languages = ref(["zh", "en"]);
   const subsets = ref(["main", "refine", "fact", "int"]);
-  const noiseTypes = ref(["semantic", "counterfactual", "mixed"]);
+  const noiseTypesAll = ref(["semantic", "counterfactual", "mixed"]);
   const noisePositions = ref(["front", "back", "interleave", "surround"]);
   const methods = ref(["naive"]);
 
+  const generationModel = ref("");
+  const judgeModel = ref("");
+  const judgeApiBase = ref("");
+
+  const dataset = ref("rgb");
   const language = ref("zh");
   const subset = ref("main");
   const sampleId = ref(0);
@@ -35,8 +101,44 @@ export function useExperiment() {
   const error = ref("");
   const warn = ref("");
 
+  const datasetLabel = computed(() => {
+    const spec = datasets.value.find((d) => d.id === dataset.value);
+    return spec?.label || dataset.value;
+  });
+
+  /** fact 子集才有 positive_wrong，才支持 counterfactual / mixed */
+  const noiseTypes = computed(() => {
+    if (subset.value === "fact") {
+      return noiseTypesAll.value;
+    }
+    return noiseTypesAll.value.filter((t) => t === "semantic");
+  });
+
+  function currentSpec() {
+    return datasets.value.find((d) => d.id === dataset.value) || null;
+  }
+
+  function applyDatasetSpec(spec) {
+    if (!spec) return;
+    languages.value = spec.languages || languages.value;
+    subsets.value = spec.subsets || subsets.value;
+    if (!languages.value.includes(language.value)) {
+      language.value = spec.default_language || languages.value[0];
+    }
+    if (!subsets.value.includes(subset.value)) {
+      subset.value = spec.default_subset || subsets.value[0];
+    }
+  }
+
+  watch(noiseTypes, (types) => {
+    if (!types.includes(noiseType.value)) {
+      noiseType.value = "semantic";
+    }
+  });
+
   function payload() {
     return {
+      dataset: dataset.value,
       language: language.value,
       subset: subset.value,
       sample_id: sampleId.value,
@@ -48,6 +150,10 @@ export function useExperiment() {
 
   function fmt(n) {
     return typeof n === "number" ? n.toFixed(3) : "—";
+  }
+
+  function fmtPct(n) {
+    return typeof n === "number" ? `${(n * 100).toFixed(1)}%` : "—";
   }
 
   function verdictLabel(v) {
@@ -63,18 +169,34 @@ export function useExperiment() {
       .replace(/\n/g, "<br>");
   }
 
-  async function onLangSubsetChange() {
+  async function reloadSamples() {
     error.value = "";
     try {
-      const data = await fetchSamples(language.value, subset.value);
+      const data = await fetchSamples(dataset.value, language.value, subset.value);
       samples.value = data.items || [];
       if (samples.value.length) {
         sampleId.value = samples.value[0].id;
         await loadSample();
+      } else {
+        query.value = "";
+        gold.value = "";
+        retrievalHtml.value = "";
+        error.value = `数据集 ${datasetLabel.value} 无样本，请先运行 prepare 脚本`;
       }
     } catch (e) {
-      error.value = e.message || String(e);
+      error.value = e.response?.data?.detail || e.message || String(e);
     }
+  }
+
+  async function onDatasetChange() {
+    applyDatasetSpec(currentSpec());
+    runResult.value = null;
+    await reloadSamples();
+  }
+
+  async function onLangSubsetChange() {
+    runResult.value = null;
+    await reloadSamples();
   }
 
   async function loadSample() {
@@ -84,12 +206,17 @@ export function useExperiment() {
     injectedHtml.value = "";
     promptMarkdown.value = "";
     try {
-      const data = await fetchSample(sampleId.value, language.value, subset.value);
+      const data = await fetchSample(
+        sampleId.value,
+        dataset.value,
+        language.value,
+        subset.value,
+      );
       query.value = data.query;
       gold.value = data.gold;
       retrievalHtml.value = data.retrieval_html;
     } catch (e) {
-      error.value = e.message || String(e);
+      error.value = e.response?.data?.detail || e.message || String(e);
     }
   }
 
@@ -114,7 +241,7 @@ export function useExperiment() {
   async function doRun() {
     busy.value = true;
     error.value = "";
-    warn.value = "正在调用 LLM，请稍候…";
+    warn.value = "正在调用 LM Studio 问答 + DeepSeek 审查，请稍候…";
     try {
       const data = await postRun({ ...payload(), method: method.value });
       injectSummary.value = data.inject_summary;
@@ -134,25 +261,60 @@ export function useExperiment() {
   onMounted(async () => {
     try {
       const cfg = await fetchConfig();
-      if (cfg.noise_types) noiseTypes.value = cfg.noise_types;
+      if (cfg.datasets?.length) datasets.value = cfg.datasets;
+      if (cfg.default_dataset) dataset.value = cfg.default_dataset;
+      if (cfg.noise_types) noiseTypesAll.value = cfg.noise_types;
       if (cfg.noise_positions) noisePositions.value = cfg.noise_positions;
       if (cfg.methods) methods.value = cfg.methods;
-      if (cfg.subsets) subsets.value = cfg.subsets;
-      if (cfg.languages) languages.value = cfg.languages;
-    } catch {
-      /* use defaults */
+      if (cfg.generation_model) generationModel.value = cfg.generation_model;
+      if (cfg.judge_model) judgeModel.value = cfg.judge_model;
+      if (cfg.judge_api_base) judgeApiBase.value = cfg.judge_api_base;
+      applyDatasetSpec(currentSpec());
+    } catch (e) {
+      warn.value = `配置加载失败，使用本地数据集列表（${e.message || e}）`;
+      applyDatasetSpec(currentSpec());
     }
-    await onLangSubsetChange();
+    await reloadSamples();
   });
 
   return {
-    languages, subsets, noiseTypes, noisePositions, methods,
-    language, subset, sampleId, samples,
-    noiseRatio, noiseType, noisePosition, method,
-    query, gold, retrievalHtml,
-    injectSummary, injectedHtml, promptMarkdown, runResult,
-    busy, error, warn,
-    fmt, verdictLabel, renderMd,
-    onLangSubsetChange, loadSample, doInject, doRun,
+    datasets,
+    languages,
+    subsets,
+    noiseTypes,
+    noisePositions,
+    methods,
+    generationModel,
+    judgeModel,
+    judgeApiBase,
+    datasetLabel,
+    dataset,
+    language,
+    subset,
+    sampleId,
+    samples,
+    noiseRatio,
+    noiseType,
+    noisePosition,
+    method,
+    query,
+    gold,
+    retrievalHtml,
+    injectSummary,
+    injectedHtml,
+    promptMarkdown,
+    runResult,
+    busy,
+    error,
+    warn,
+    fmt,
+    fmtPct,
+    verdictLabel,
+    renderMd,
+    onDatasetChange,
+    onLangSubsetChange,
+    loadSample,
+    doInject,
+    doRun,
   };
 }

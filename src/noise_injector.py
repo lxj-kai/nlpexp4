@@ -1,10 +1,20 @@
-"""Noise injector — 控制实验的核心变量：噪音比例 / 类型 / 位置。"""
+"""Noise injector — 模拟 RAG 检索上下文：从数据集标注池混合正负文档。
+
+RGB 类数据集每条样本含：
+  - positive: 可支撑回答的文档（检索结果中的「好文档」）
+  - negative: 语义相关但无法支撑回答的文档（检索噪音，缺逻辑依赖）
+  - positive_wrong (fact 子集): 反事实文档（表面像 positive 但内容错误）
+
+本模块按 noise_ratio / noise_type / noise_position 控制混合方式，
+输出 NoisyContext 供 pipeline 拼接后送入 LLM。
+"""
 from __future__ import annotations
 
 import random
 from dataclasses import dataclass, field
 from typing import Literal
 
+from .config import CONFIG
 from .data_loader import RGBRecord
 from .utils import get_logger
 
@@ -123,8 +133,10 @@ def inject(
     max_docs: int = 10,
     min_positive: int = 1,
     seed: int | None = None,
+    dataset: str | None = None,
 ) -> NoisyContext:
     """对单条记录注入噪音并返回 NoisyContext。"""
+    ds = (dataset or getattr(record, "dataset", None) or CONFIG.dataset or "rgb").strip().lower()
     if not 0.0 <= noise_ratio <= 1.0:
         raise ValueError("noise_ratio 必须 ∈ [0,1]")
 
@@ -142,7 +154,7 @@ def inject(
             noise_ratio=1.0,
             noise_type=noise_type,
             noise_position=noise_position,
-            meta={"total": len(noise_docs), "positives": 0},
+            meta={"total": len(noise_docs), "positives": 0, "dataset": ds},
         )
 
     n_pos_pool = len(record.positive)
@@ -184,6 +196,7 @@ def inject(
             "total": actual_total,
             "positives": n_pos,
             "noises": len(noise_docs),
+            "dataset": ds,
         },
     )
 
@@ -191,3 +204,27 @@ def inject(
 def batch_inject(records: list[RGBRecord], **kwargs) -> list[NoisyContext]:
     """批量注入；任何无法构造的样本直接抛错。"""
     return [inject(r, **kwargs) for r in records]
+
+
+def batch_closed_book(records: list[RGBRecord], *, dataset: str | None = None) -> list[NoisyContext]:
+    """构造 closed-book 上下文：只保留问题与 gold，不提供任何文档。"""
+    default_ds = (dataset or CONFIG.dataset or "rgb").strip().lower()
+    return [
+        NoisyContext(
+            sample_id=record.id,
+            query=record.query,
+            gold_answers=record.answers_norm,
+            docs=[],
+            labels=[],
+            noise_ratio=0.0,
+            noise_type="semantic",
+            noise_position="interleave",
+            meta={
+                "closed_book": True,
+                "total": 0,
+                "positives": 0,
+                "dataset": (dataset or getattr(record, "dataset", None) or default_ds),
+            },
+        )
+        for record in records
+    ]

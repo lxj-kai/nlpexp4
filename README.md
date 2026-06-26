@@ -13,12 +13,15 @@
 ```text
 nlpexp4/
 ├── data/rgb/                  # RGB 数据集 (zh.json / en.json 等)
+├── data/2wiki/                # 2WikiMultihopQA（prepare_2wiki.py）
+├── data/cmedqa/               # CmedqaRetrieval（prepare_cmedqa.py）
+├── data/miriad/               # MIRIAD-5.8M（prepare_miriad.py）
 ├── data/processed/            # 面向验收的 input/output/reference 标准 JSON
 ├── src/                       # 核心模块
 │   ├── config.py              # 全局配置 (dataclass)
 │   ├── data_loader.py         # RGB 数据加载
 │   ├── noise_injector.py      # 噪音注入器（类型/比例/位置）
-│   ├── llm_client.py          # Deepseek API 客户端
+│   ├── llm_client.py          # LM Studio (OpenAI 兼容) 客户端
 │   ├── rag_pipeline.py        # Naive RAG pipeline
 │   ├── evaluator.py           # EM / F1 / ROUGE-L / LLM-Judge
 │   ├── metrics.py             # 5 个自主鲁棒性指标
@@ -43,9 +46,8 @@ nlpexp4/
 │   ├── exp4_existing_methods.py # 现有方法对比
 │   ├── exp5_deep.py           # 深度实验集成
 │   └── results/               # 自动落盘的 JSON 结果
-├── demo/app.py                # Gradio 交互 Demo
-├── backend/                   # FastAPI 后端
-├── frontend/                  # Vue 3 前端
+├── backend/                   # FastAPI 后端（/api/config、/samples、/inject、/run）
+├── frontend/                  # Vue 3 交互前端（四 Stage 演示）
 ├── figures/                   # 实验图表
 ├── report_latex/              # LaTeX 实验报告
 ├── tests/                     # 测试套件
@@ -63,9 +65,10 @@ source .venv/bin/activate  # Linux/Mac
 # .venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 
-# 2. 配置 API Key
+# 2. 配置模型
 cp .env.example .env
-# 编辑 .env 填入 DEEPSEEK_API_KEY
+# LM Studio：本地问答（LMSTUDIO_MODEL）
+# DeepSeek：审查 Judge（DEEPSEEK_API_KEY）
 
 # 3. Smoke Test
 python -m src.smoke_test
@@ -251,16 +254,49 @@ python scripts/show_exp3.py
 python scripts/show_exp4.py
 ```
 
-## 6. 系统启动
+## 6. 系统启动（Vue + FastAPI）
+
+交互演示使用 **Vue 3 前端 + FastAPI 后端**，支持 4 个数据集：`rgb`、`2wiki`、`cmedqa`、`miriad`。
+
+### 6.1 准备数据集（首次）
 
 ```bash
-# Gradio Demo
-python demo/app.py                    # http://127.0.0.1:7861
-
-# Vue 前端 + FastAPI 后端
-uvicorn backend.main:app --reload --port 8000
-cd frontend && npm install && npm run dev   # http://127.0.0.1:5173
+# RGB 已随仓库提供；以下三个需按需下载转换
+python scripts/prepare_2wiki.py
+python scripts/prepare_cmedqa.py
+python scripts/prepare_miriad.py   # 完整约 7GB，可按 --limit 试跑
 ```
+
+### 6.2 启动后端
+
+```bash
+source .venv/bin/activate
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+健康检查：`curl http://127.0.0.1:8000/api/health`
+
+### 6.3 启动前端
+
+```bash
+cd frontend
+
+npm run dev
+```
+
+浏览器打开 **http://127.0.0.1:5173**（Vite 将 `/api` 代理到 `http://127.0.0.1:8000`）。
+
+### 6.4 关闭
+
+在各自终端按 `Ctrl+C` 停止后端与前端进程。
+
+### 6.5 常见问题
+
+| 现象 | 处理 |
+|------|------|
+| 下拉框无 `2wiki` / `cmedqa` / `miriad` | 确认后端已重启；访问 `http://127.0.0.1:8000/api/config` 应返回 4 个数据集 |
+| 切换数据集后提示「无样本」 | 运行对应 `scripts/prepare_*.py` 生成 `data/` 下 JSON |
+| 前端请求失败 | 先启动后端 8000，再启动 Vite 5173 |
 
 ## 7. LaTeX 报告编译
 
@@ -311,5 +347,5 @@ xelatex main.tex     # 第二次编译（生成目录）
 | 时间 | 事项 |
 |---|---|
 | 5月26日 | 中期检查（设计方案 + 架构图） |
-| 6月26日 | 系统演示（Gradio Demo） |
+| 6月26日 | 系统演示（Vue + FastAPI） |
 | 6月30日 | 最终提交（代码 + 报告 zip） |

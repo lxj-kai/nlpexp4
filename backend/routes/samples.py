@@ -11,17 +11,18 @@ router = APIRouter(prefix="/api", tags=["samples"])
 
 
 @router.get("/samples", response_model=SamplesResponse)
-def api_samples(language: str = "zh", subset: str = "main"):
-    recs = get_records(language, subset)
+def api_samples(dataset: str = "rgb", language: str = "zh", subset: str = "main"):
+    recs = get_records(dataset, language, subset)
     items = [SampleItem(id=r.id, label=f"#{r.id} | {r.query[:48]}") for r in recs]
     return SamplesResponse(items=items)
 
 
 @router.get("/sample/{sample_id}")
-def api_sample(sample_id: int, language: str = "zh", subset: str = "main"):
-    record = find_record(language, subset, sample_id)
+def api_sample(sample_id: int, dataset: str = "rgb", language: str = "zh", subset: str = "main"):
+    record = find_record(dataset, language, subset, sample_id)
     return {
         "id": record.id,
+        "dataset": record.dataset,
         "query": record.query,
         "gold": " / ".join(record.answers_norm) or "(无)",
         "retrieval_html": render_retrieval_html(record),

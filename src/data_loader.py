@@ -19,6 +19,10 @@ scripts/prepare_cmedqa.py 从 HuggingFace 转换而来。
 2WikiMultihopQA（data/2wiki/）提供 en.json / en_fact.json，由
 scripts/prepare_2wiki.py 从 xanhho/2WikiMultihopQA 转换而来；负例为
 同 context 内的 distractor 段落（hard negative）。
+
+BRIGHT（data/bright/）、MultiHop-RAG（data/multihop_rag/）、TEMPO（data/tempo/）
+提供 en.json / en_fact.json，分别由 scripts/prepare_bright.py、
+scripts/prepare_multihop_rag.py、scripts/prepare_tempo.py 从 HuggingFace 转换。
 """
 from __future__ import annotations
 
@@ -34,7 +38,9 @@ logger = get_logger(__name__)
 
 Language = Literal["zh", "en"]
 Subset = Literal["main", "refine", "fact", "int"]
-DatasetName = Literal["rgb", "miriad", "cmedqa", "2wiki"]
+DatasetName = Literal[
+    "rgb", "miriad", "cmedqa", "2wiki", "bright", "multihop_rag", "tempo"
+]
 
 
 @dataclass
@@ -112,10 +118,23 @@ _2WIKI_SUPPORTED: set[tuple[Language, Subset]] = {
     ("en", "fact"),
 }
 
+_EN_FACT_SUPPORTED: set[tuple[Language, Subset]] = {
+    ("en", "main"),
+    ("en", "fact"),
+}
+
 
 def _resolve_dataset(dataset: DatasetName | None) -> DatasetName:
     name = (dataset or CONFIG.dataset or "rgb").strip().lower()
-    if name not in ("rgb", "miriad", "cmedqa", "2wiki"):
+    if name not in (
+        "rgb",
+        "miriad",
+        "cmedqa",
+        "2wiki",
+        "bright",
+        "multihop_rag",
+        "tempo",
+    ):
         raise ValueError(f"unknown dataset: {name!r}")
     return name  # type: ignore[return-value]
 
@@ -159,16 +178,25 @@ def iter_records(
             raise ValueError(
                 f"2WikiMultihopQA only supports en/main and en/fact, got {language}/{subset}"
             )
+    if ds in ("bright", "multihop_rag", "tempo"):
+        if (language, subset) not in _EN_FACT_SUPPORTED:
+            raise ValueError(
+                f"{ds} only supports en/main and en/fact, got {language}/{subset}"
+            )
     fname = _FILE_MAP[(language, subset)]
     path = _data_dir_for(ds) / fname
     if not path.exists():
-        if ds == "cmedqa":
+        _PREPARE_HINTS = {
+            "cmedqa": "python scripts/prepare_cmedqa.py",
+            "2wiki": "python scripts/prepare_2wiki.py",
+            "bright": "python scripts/prepare_bright.py",
+            "multihop_rag": "python scripts/prepare_multihop_rag.py",
+            "tempo": "python scripts/prepare_tempo.py",
+        }
+        hint = _PREPARE_HINTS.get(ds)
+        if hint:
             raise FileNotFoundError(
-                f"dataset file not found: {path}. Run `python scripts/prepare_cmedqa.py` first."
-            )
-        if ds == "2wiki":
-            raise FileNotFoundError(
-                f"dataset file not found: {path}. Run `python scripts/prepare_2wiki.py` first."
+                f"dataset file not found: {path}. Run `{hint}` first."
             )
         raise FileNotFoundError(f"dataset file not found: {path}")
     with open(path, "r", encoding="utf-8") as f:
@@ -228,7 +256,7 @@ def load_all_subsets(
     language: Language = "zh", *, dataset: DatasetName | None = None
 ) -> dict[Subset, list[RGBRecord]]:
     ds = _resolve_dataset(dataset)
-    if ds in ("miriad", "cmedqa", "2wiki"):
+    if ds in ("miriad", "cmedqa", "2wiki", "bright", "multihop_rag", "tempo"):
         raise ValueError(
             f"{ds} only supports main/fact via explicit load_dataset(..., subset=...); "
             "load_all_subsets is not supported"

@@ -1,0 +1,8 @@
+{
+  "source": "yixuantt/MultiHopRAG",
+  "main_size": 2255,
+  "fact_size": 2255,
+  "n_neg": 8,
+  "seed": 42,
+  "neg_strategy": "corpus articles excluding evidence URLs"
+}

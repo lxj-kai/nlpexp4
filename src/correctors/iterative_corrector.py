@@ -15,10 +15,8 @@ from ..prompts import (
     ITER_FILTER_SYSTEM_ZH,
     ITER_FILTER_USER_TMPL,
     ITER_FILTER_USER_TMPL_EN,
-    NAIVE_SYSTEM_EN,
-    NAIVE_SYSTEM_ZH,
-    NAIVE_USER_TMPL,
-    format_context,
+    build_naive_prompt,
+    context_dataset,
 )
 from ..rag_pipeline import RAGResult
 from .base import BaseCorrector, register_corrector
@@ -69,9 +67,11 @@ class IterativeCorrector(BaseCorrector):
         filt_docs = [ctx.docs[i] for i in keep_idx]
         filt_labels = [ctx.labels[i] for i in keep_idx]
 
-        sys_gen = NAIVE_SYSTEM_ZH if language == "zh" else NAIVE_SYSTEM_EN
-        user = NAIVE_USER_TMPL.format(
-            query=ctx.query, n=len(filt_docs), context=format_context(filt_docs)
+        sys_gen, user = build_naive_prompt(
+            ctx.query,
+            filt_docs,
+            language=language,
+            dataset=context_dataset(ctx),
         )
         out = self.llm.chat(
             [

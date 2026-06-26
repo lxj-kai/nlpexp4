@@ -15,11 +15,24 @@ load_dotenv()
 
 PROJECT_ROOT: Path = Path(__file__).resolve().parents[1]
 
+
+def normalize_openai_base(url: str) -> str:
+    """LM Studio 等服务地址统一补全 /v1 后缀。"""
+    base = (url or "").strip().rstrip("/")
+    if not base:
+        return "http://127.0.0.1:1234/v1"
+    if not base.endswith("/v1"):
+        base = f"{base}/v1"
+    return base
+
 _DATASET_DIRS: dict[str, Path] = {
     "rgb": PROJECT_ROOT / "data" / "rgb",
     "miriad": PROJECT_ROOT / "data" / "miriad",
     "cmedqa": PROJECT_ROOT / "data" / "cmedqa",
     "2wiki": PROJECT_ROOT / "data" / "2wiki",
+    "bright": PROJECT_ROOT / "data" / "bright",
+    "multihop_rag": PROJECT_ROOT / "data" / "multihop_rag",
+    "tempo": PROJECT_ROOT / "data" / "tempo",
 }
 
 
@@ -41,11 +54,20 @@ def resolve_data_dir(dataset: str | None = None) -> Path:
 class Config:
     """全局只读配置（dataclass + frozen 防误改）。"""
 
-    # ── API ──
-    api_key: str = os.getenv("DEEPSEEK_API_KEY", "")
-    api_base: str = os.getenv("DEEPSEEK_API_BASE", "https://api.deepseek.com/v1")
-    model: str = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
-    judge_model: str = os.getenv("DEEPSEEK_JUDGE_MODEL", "deepseek-chat")
+    # ── LM Studio（问答生成）──
+    api_key: str = os.getenv("LMSTUDIO_API_KEY", "lm-studio")
+    api_base: str = normalize_openai_base(
+        os.getenv("LMSTUDIO_API_BASE", "http://127.0.0.1:1234")
+    )
+    model: str = os.getenv("LMSTUDIO_MODEL", "qwen2.5-0.5b-instruct-mlx")
+
+    # ── DeepSeek（审查 Judge，与生成模型分离）──
+    judge_api_key: str = os.getenv("DEEPSEEK_API_KEY", "")
+    judge_api_base: str = os.getenv("DEEPSEEK_API_BASE", "https://api.deepseek.com/v1")
+    judge_model: str = os.getenv(
+        "DEEPSEEK_JUDGE_MODEL",
+        os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
+    )
     timeout: int = 60
     max_retries: int = 3
     temperature: float = 0.0
@@ -97,6 +119,7 @@ class Config:
             if isinstance(v, Path):
                 d[k] = str(v)
         d.pop("api_key", None)
+        d.pop("judge_api_key", None)
         return d
 
 

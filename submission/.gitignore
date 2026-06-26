@@ -7,5 +7,6 @@ venv/
 .cache_llm/
 frontend/node_modules/
 frontend/dist/
+待填写*
 frontend/.vite/
 .DS_Store

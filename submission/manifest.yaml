@@ -52,6 +52,7 @@ exclude_globs:
   - "experiments/results/*.log"
   - "report_latex/**"
   - "report/**"
+  - "**/待填写*"
 
 # 同步到 submission/ 时保留的构建工具（不覆盖、不删除）
 meta_keep:

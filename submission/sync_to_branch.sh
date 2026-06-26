@@ -18,8 +18,4 @@ rsync -a --delete \
   --exclude 'nlpexp4_final/' \
   "$STAGING/" ./
 
-if compgen -G "待填写*" > /dev/null; then
-  cp 待填写* ./ 2>/dev/null || true
-fi
-
 echo "Done. Deliverable at submission/ (src/, report_final/, experiments/, ...)"

@@ -56,3 +56,6 @@ data/2wiki/en_fact.json
 
 # Claude
 .claude/
+
+# 终期提交包（独立 submission 分支，开发分支不跟踪）
+submission/

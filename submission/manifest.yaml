@@ -1,0 +1,66 @@
+# 终期提交包清单 — 由 submission/build.py 读取
+# 输出目录完全独立，解压后可直接运行，不依赖开发仓库路径
+
+package_name: nlpexp4_final
+
+include:
+  - src
+  - backend
+  - tests
+  - requirements.txt
+  - .env.example
+  - experiments/*.py
+  - experiments/results
+  - frontend
+  - data/rgb
+  - data/2wiki/en.json
+  - data/2wiki/en_fact.json
+  - data/2wiki/metadata.json
+  - data/cmedqa/zh.json
+  - data/cmedqa/zh_fact.json
+  - data/cmedqa/metadata.json
+  - data/mobilemem
+  - data/processed
+  - figures
+  - report_final/main.tex
+  - report_final/main.pdf
+  - report_final/figures
+  - report_final/README.md
+  - scripts/run_all_full.py
+  - scripts/render_all_figures.py
+  - scripts/render_demo_figures.py
+  - scripts/render_late_stage_figures.py
+  - scripts/show_exp1.py
+  - scripts/show_exp2.py
+  - scripts/show_exp3.py
+  - scripts/show_exp4.py
+  - scripts/export_standard_io.py
+  - scripts/organize_results.py
+
+exclude_globs:
+  - "**/__pycache__/**"
+  - "**/*.py[cod]"
+  - "**/.DS_Store"
+  - "**/.env"
+  - "**/.cache/**"
+  - "**/.cache_llm/**"
+  - "**/.venv/**"
+  - "**/node_modules/**"
+  - "**/frontend/dist/**"
+  - "**/frontend/.vite/**"
+  - "**/*.aux"
+  - "**/*.log"
+  - "**/*.out"
+  - "**/*.toc"
+  - "**/*.fls"
+  - "**/*.fdb_latexmk"
+  - "**/*.synctex.gz"
+  - "**/.texpadtmp/**"
+  - "data/**/raw/**"
+  - "data/miriad/**"
+  - "data/bright/**"
+  - "data/tempo/**"
+  - "data/multihop_rag/**"
+  - "data/noiser_bench/**"
+  - "experiments/results/raw/**"
+  - "experiments/results/*.log"

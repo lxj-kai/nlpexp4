@@ -57,5 +57,6 @@ data/2wiki/en_fact.json
 # Claude
 .claude/
 
-# 终期提交包（独立 submission 分支，开发分支不跟踪）
-submission/
+# 提交包构建产物（develop 不入库；同步到 submission 分支时再 add nlpexp4_final/）
+submission/dist/
+submission/nlpexp4_final/

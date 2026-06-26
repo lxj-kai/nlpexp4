@@ -88,7 +88,7 @@
 \newpage
 
 \begin{abstract}
-本项目研究大模型 RAG 场景中检索文档噪音对推理质量的影响及矫正方法。针对强生成模型易凭参数记忆直接作答、Token-F1 难以衡量语义等价答案两类评测失真，项目选取 2WikiMultihopQA、MobileMem、CmedqaRetrieval 等更具检索依赖性的语料，设计 DeepSeek Judge 大模型评分，并在统一框架下实现比例/类型/位置三维度可控噪音注入与 12 种矫正方法。主实验清晰呈现「无噪音可答 $\rightarrow$ 中高噪音难答 $\rightarrow$ 高噪音失效 $\rightarrow$ 矫正恢复」四段式曲线；§8 从 ISR/NAR 归因与典型案例出发，系统解释语义混淆、局部劫持与证据淹没三类噪音机制，以及 CoT 证据链「拆解--核对--综合」的恢复原理。并发现互锁效应——CoT 证据链在语义噪音下最优，简单 prompt 在反事实噪音下更稳——据此实现自适应噪音路由。系统同步提供 NS/NRS/ISR/NAR/CRR 鲁棒性指标与 Web 演示平台。
+本项目研究大模型 RAG 场景中检索文档噪音对推理质量的影响及矫正方法。针对强生成模型易凭参数记忆直接作答、Token-F1 难以衡量语义等价答案两类评测失真，项目选取 2WikiMultihopQA、MobileMem、CmedqaRetrieval 等更具检索依赖性的语料，设计 DeepSeek Judge 大模型评分，并在统一框架下实现比例/类型/位置三维度可控噪音注入与 12 种矫正方法。主实验清晰呈现「无噪音可答 $\rightarrow$ 中高噪音难答 $\rightarrow$ 高噪音失效 $\rightarrow$ 矫正恢复」四段式曲线；§8 从 ISR/NAR 归因与典型案例出发，系统解释语义混淆、局部劫持、证据淹没与长文合成放弃等噪音机制，以及 CoT 证据链「拆解--核对--综合」的恢复原理。并发现互锁效应——CoT 证据链在语义噪音下最优，简单 prompt 在反事实噪音下更稳——据此实现自适应噪音路由。系统同步提供 NS/NRS/ISR/NAR/CRR 鲁棒性指标与 Web 演示平台。
 \end{abstract}
 
 \section{研究问题与项目定位}
@@ -117,7 +117,7 @@
   \item \textbf{评测体系}：DeepSeek Judge 解决 Token-F1 对短答案/计算题的不合理低分；NS/CRR 与 Judge 曲线一致刻画噪音敏感度与矫正收益；
   \item \textbf{位置效应}：反事实文档置于末尾（back）破坏力最大，interleave 相对最稳；
   \item \textbf{工程交付}：12 种矫正方法、统一实验流水线与 Web 演示平台。
-  \item \textbf{机理分析}：语义混淆、局部劫持、证据淹没三类噪音机制；CoT「拆解--核对--综合」恢复原理（§8）。
+  \item \textbf{机理分析}：语义混淆、局部劫持、证据淹没、长文合成放弃等噪音机制；CoT「拆解--核对--综合」恢复原理（§8）。
 \end{itemize}
 
 \section{数据准备与标准格式}
@@ -549,7 +549,7 @@ Confidence 消融（RGB，$r=0.75$，$n=20$）显示英文下各消融变体均�
     MobileMem calc & smoke 四方法 & 50 & \statusdone & Judge 四段式曲线；$r=0.75$ confidence 恢复 \\
     Cmedqa & exp2 + 闭卷 & 3999/50 & \statusdone & 医学长答案；confidence CRR=5.17 \\
     RGB fact & 互锁/位置/自适应 & 50/30 & \statusdone & 互锁效应与位置效应对照验证 \\
-    BRIGHT/TEMPO/MultiHop & sanity & 100 & \statusrun & 已接入，待 $n=50$ 正式跑 \\
+    BRIGHT/TEMPO/MultiHop & sanity + BRIGHT smoke & 100/5 & \statusrun & BRIGHT smoke $n=5$ 已通（CRR=0.5）；TEMPO/MultiHop 待 $n=50$ \\
     NoiserBench hotpotqa & 机制验证 & 2 & \statusrun & 七类噪音已通，待大规模 \\
     \bottomrule
   \end{tabularx}
@@ -559,7 +559,7 @@ Confidence 消融（RGB，$r=0.75$，$n=20$）显示英文下各消融变体均�
 
 \section{噪音影响机理与矫正原理分析}
 
-本节在 §7 量化曲线之上，结合 exp3 案例深度分析与 MobileMem/RGB 典型样本，解释\textbf{噪音如何改变模型预测}、\textbf{影响背后的机制}，以及\textbf{CoT 证据链矫正为何能部分恢复}。分析以 semantic 噪音为主（主实验默认设置），counterfactual 下的互锁效应见 §7.3。
+本节在 §7 量化曲线之上，结合 exp3 案例深度分析、MobileMem/RGB 典型样本，以及 BRIGHT 长文本 smoke（$n=5$，naive/confidence，$r\in\{0,0.75\}$），解释\textbf{噪音如何改变模型预测}、\textbf{影响背后的机制}，以及\textbf{CoT 证据链矫正为何能部分恢复}。分析以 semantic 噪音为主（主实验默认设置），counterfactual 下的互锁效应见 §7.3。
 
 \subsection{总体框架：四段式曲线与证据归因}
 
@@ -573,13 +573,13 @@ Confidence 消融（RGB，$r=0.75$，$n=20$）显示英文下各消融变体均�
 
 \textbf{原理性解释：} LLM 的鲁棒性主要来自 positive 文档的\textbf{兜底作用}，而非模型自身对 distractor 的识别能力。naive RAG 将检索到的全部文档等权拼接进 prompt，模型倾向于从\textbf{高相关、高频率、靠后位置}的片段中抽取答案，当 positive 比例下降时，错误片段被采纳的概率上升。这一过程可用 \metric{ISR}（答案片段溯源至 positive 的比例）与 \metric{NAR}（答案片段来自 negative/positive\_wrong 的比例）量化：$r$ 升高时 ISR 单调下降、NAR 单调上升，与 F1/Judge 下降同步（Cmedqa $r=0.75$：ISR 0.293、NAR 0.106）。
 
-\subsection{噪音影响的三类典型机制}
+\subsection{噪音影响的典型机制}
 
-通过对 RGB exp3（$n=300$，全量分类）与 MobileMem calc（$n=50$）样本的对照，可将 naive 失败模式归纳为三类机制；表~\ref{tab:noise_mechanisms} 给出代表性案例。
+通过对 RGB exp3（$n=300$，全量分类）、MobileMem calc（$n=50$）与 BRIGHT en/main smoke（$n=5$）样本的对照，可将 naive 失败模式归纳为四类机制；表~\ref{tab:noise_mechanisms} 给出代表性案例。
 
 \begin{table}[H]
   \centering
-  \caption{噪音影响三类机制与代表性案例（semantic 噪音）}
+  \caption{噪音影响四类机制与代表性案例（semantic 噪音）}
   \label{tab:noise_mechanisms}
   \small
   \begin{tabularx}{\textwidth}{lYYY}
@@ -589,6 +589,7 @@ Confidence 消融（RGB，$r=0.75$，$n=20$）显示英文下各消融变体均�
     语义混淆 & 同主题、不同实体/事件被误选 & RGB \#129：问「克利夫兰站女单冠军」，noisy 答「康塔维特」而非「萨姆索诺娃」（NAR=1.0） \\
     局部劫持 & 局部正确数字/片段时间词覆盖全局问题 & RGB \#42：问「\textbf{首日}票房冠军」，noisy 答「满江红」（初二日冠军）；\#4：问「总议席 90」，noisy 答「30」（功能组席位数） \\
     证据淹没 & positive 仍在上下文但占比过低，任务约束未被 naive 执行 & MobileMem \#370093（$r=0.75$）：上下文仍含 2 篇 positive（含金标 18 元文档），naive 仍答无关「便当券」（NAR=1.0） \\
+    长文稀释/合成放弃 & 高比例 hard negative 后 positive 仍存，但 naive 放弃跨文档综合、过早拒答 & BRIGHT \#302（$r=0.75$）：2 positive + 8 negative，clean 下能综合外债机制，noisy 下输出「文档不足以支持」 \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -616,6 +617,18 @@ Confidence 消融（RGB，$r=0.75$，$n=20$）显示英文下各消融变体均�
 \textbf{关键事实（需与 $r=1.0$ 的 positive 消失区分）：} 核查实验落盘上下文可知，$r=0.75$ 时该样本\textbf{并非} positive 被全部替换：上下文共 10 篇文档，其中 \textbf{2 篇为 positive、8 篇为 negative}，且金标文档（五一乘意险，实际价格 18 元）仍在 positive 中。同一题在 $r=0.5$（4 positive + 5 negative）时 naive 仍答对。因此，失败原因不是「检索证据缺失」，而是\textbf{高噪音比例下 naive 未执行问题中的多步约束}（限定 4 事件 $\rightarrow$ Q2 时间过滤 $\rightarrow$ 价格比大小），在 8 篇 distractor 淹没下完全忽略现有 positive，转而从无关 OCR 记忆（如「日式简餐外卖」类条目）抽取商品名。
 
 \textbf{原理性解释：} 该机制本质是\textbf{证据淹没 + 指令遵循失败}：当 $Kr$ 足够大时，positive 虽由 \texttt{min\_positive} 保证至少保留 1 篇，但模型对长上下文的等权阅读无法维持结构化筛选；NAR=1.0 且 ISR=0 表明答案片段\textbf{完全未采用}已在上下文内的 positive。MobileMem calc 的聚合计算题对这一问题尤为敏感，故整体曲线在 $r=0.75$ 出现 Judge 断崖（0.808$\rightarrow$0.440）。\textbf{仅当 $r=1.0$} 时 positive 才由注入器显式置零（见 \S4.1 全噪音路径），彼时的失败才属于「positive 完全消失」而非本机制。
+
+\subsubsection{机制 4：长文稀释与合成放弃（BRIGHT）}
+
+BRIGHT 样本的 query 与 gold 均为\textbf{长推理式回答}（Earth Science、Economics、StackOverflow 等 12 子领域），检索上下文常达数千字符；负例优先取自 \texttt{excluded\_ids} 人工 hard negative，$r=0.75$ 时典型为 \textbf{2 篇 positive + 8 篇 negative}（10 篇上限）。与 MobileMem 的「positive 仍在但被忽略」不同，BRIGHT 上更常见的是\textbf{合成放弃}：模型在大量跨领域 distractor 面前，不再尝试从剩余 positive 中抽取并综合论点，而是输出「文档未提供足够/direct 信息」类拒答——即便 clean 条件下曾给出完整机制解释。
+
+\textbf{案例 \#302}（BRIGHT en/main，经济学子领域，$r=0.75$）：问题讨论「大规模\textbf{外债}是否比\textbf{内债}更危险、为何政府印钞难以化解外债」。clean（10/10 positive）下 naive 正确综合：外债常以外币计价、外国债权人更难被国内财政工具约束、违约声誉成本更高等要点（Judge=1.0，ISR=0.625）。$r=0.75$ 时上下文压缩为 2 篇 positive（Doc3、Doc9）与 8 篇 economics 类 hard negative；naive 虽识别 Doc3 涉及俄罗斯国内债违约，却结论「\textbf{没有任何文档}对外债 vs 内债做直接比较」，Judge=0.6——属于\textbf{过早拒答}而非 positive 消失。
+
+\textbf{原因分析：} BRIGHT 的 distractor 与 positive 共享「国债、违约、通胀、货币政策」等主题词，但\textbf{不直接回答} query 中的比较命题。naive 等权阅读 10 篇长文后，将「未找到逐字支持的比较句」误判为「证据不足」，放弃从 Doc3（国内债与反通胀偏误）、Doc9（不同国家违约范围与外币债务同义现象）做\textbf{跨文档归纳}。ISR 从 0.625 降至 0.375，NAR 仍接近 0，说明失败主因是\textbf{综合推理中断}，而非采纳 negative 实体（与 RGB 语义混淆不同）。
+
+\textbf{案例 \#192}（BRIGHT en/main，Earth Science，$r=0.75$）：问题探讨「能否通过改变海洋 albedo（染色/烟雾/表面膜）削弱或 steer 飓风」。$r=0.75$ 时 8 篇 negative 来自\textbf{完全不同子领域}（网站导航、Cookie 政策、符号表、语言学数据集等），与 2 篇 positive 交错排列。naive 输出冗长拒答（Judge=0.6）；confidence 经 Step2 逐篇标注「无文档涉及 albedo/飓风/海洋降温」后给出结构化拒答（Judge=1.0）。该例说明：在长文 + 跨域 hard negative 场景下，\textbf{拒答本身可以是正确行为}，但 naive 的泛化罗列与 confidence 的显式证据映射在 Judge 上产生差异——后者更易被判定为「已充分核对上下文」。
+
+\textbf{工程注记：} BRIGHT 长上下文曾触发 LM Studio 的 context overflow（\texttt{tokens to keep > context length}），根因是 confidence 等矫正器未走 \texttt{build\_naive\_prompt} 的长文截断。修复后 smoke $n=5$ 四条件（naive/confidence $\times$ $r=0,0.75$）全部跑通；聚合 Judge 为 naive 0.92$\rightarrow$0.84、confidence 1.0$\rightarrow$0.88，CRR=0.5。
 
 \subsection{矫正（恢复）的原理}
 
@@ -658,6 +671,8 @@ naive 方法将 $K$ 篇文档拼接后直接生成答案，等价于隐式假设
     RGB \#42 & 0.75 & 流浪地球2 & 满江红 & 流浪地球2 & 区分「首日 vs 日冠军」 \\
     RGB \#4 & 1.0 & 90 席 & 30 席 & 90 席 & 区分总议席与子结构 \\
     MobileMem \#370093 & 0.75 & 乘意险 18 元 & 便当券 & 乘意险 18 元 & Q2 过滤 + 最小价 \\
+    BRIGHT \#302 & 0.75 & 外债更危险（综合机制） & 「文档不足以支持」 & 结构化综合 Doc3/Doc9 & 跨文档归纳，避免过早拒答 \\
+    BRIGHT \#192 & 0.75 & 无 albedo 证据（拒答） & 冗长拒答（Judge 0.6） & 逐篇核对后拒答（Judge 1.0） & 跨域 hard negative 下显式证据映射 \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -671,6 +686,15 @@ naive 方法将 $K$ 篇文档拼接后直接生成答案，等价于隐式假设
 \end{quote}
 NAR 从 1.0 降至 0.059，Judge 从 0.2 恢复至 1.0——说明 CoT 在\textbf{positive 始终存在}的前提下，通过「时间过滤 $\rightarrow$ 事件匹配 $\rightarrow$ 价格比大小」重建任务约束；naive 的失败并非因证据缺失，而是未执行该约束。
 
+\textbf{案例 \#302 的 CoT 推理链（摘录，BRIGHT $r=0.75$）：} confidence 在 2 positive + 8 negative 的同一上下文中，先拆解「外债 vs 内债比较、印钞角色、违约差异」等信息需求，再逐篇映射：
+\begin{quote}
+\small
+信息需求：比较大规摸外债 vs 内债；为何外源融资更「严重」；印钞能否化解；对通胀/汇率的影响。\\
+证据匹配：Doc3$\rightarrow$俄罗斯国内债违约与反通胀偏误，暗示国内货币政策可部分管理内债；Doc9$\rightarrow$不同国家违约 instrument 范围差异，外债常与外币计价绑定；Doc1 仅间接涉及汇率，\textbf{无文档逐句给出书中比较命题}。\\
+最终答案：在现有证据下无法完全复现书中论断，但可基于 Doc3/Doc9 给出\textbf{有节制的机制性归纳}（外债约束更强、国内政策空间更大），而非 naive 的「完全不足以支持」。
+\end{quote}
+Judge 从 0.6（naive 拒答）恢复至 1.0；ISR 0.375$\rightarrow$0.338，NAR 仍 $\approx 0$——恢复来自\textbf{恢复综合推理}而非单纯降低 NAR。
+
 \textbf{案例 \#42 的恢复：} $r=0.75$ 下 naive 被「满江红日冠军」劫持；confidence 通过拆解「\textbf{首日}票房冠军」，排除仅支持「初二日冠军」的文档，输出「流浪地球2」，NAR=0。
 
 \subsection{局限与互锁效应}
@@ -679,10 +703,11 @@ CoT 证据链的恢复能力\textbf{有边界}：
 \begin{itemize}
   \item \textbf{$r=1.0$ positive 完全消失：} RGB exp3（$n=300$）在 $r=1.0$ 时 Type1「矫正生效」仅 20 例、「矫正未生效」194 例——无 positive 时 CoT 缺乏可靠证据，多数仍失败；
   \item \textbf{counterfactual 互锁：} 反事实文档提供\textbf{看似完整}的错误证据链，CoT 的「逐篇核对」反而强化对假证据的信任（RGB fact $r=0.75$：confidence CF F1 低于 naive）；此时 prompt 的「识别矛盾、标注来源」更稳（§7.3）；
-  \item \textbf{高 NAR 样本难恢复：} 噪音采纳率越高，矫正越难——与 exp3 根因分析一致。
+  \item \textbf{高 NAR 样本难恢复：} 噪音采纳率越高，矫正越难——与 exp3 根因分析一致；
+  \item \textbf{长文过度审计（BRIGHT \#602）：} StackOverflow 子领域问题「uint16$\rightarrow$uint8 有损压缩且大值损失更大」；$r=0.75$ 时 naive 正确拒答「文档无压缩方法」（Judge=1.0），confidence 经 Step2 逐篇排除 Pol/SQL、Polars API 等无关文档后亦给出拒答，但 Judge=0.4——说明当 gold 本身期望给出 \texttt{sqrt}/幂函数等\textbf{构造性方案}而检索上下文未命中时，CoT 的严格「仅基于文档」约束可能与 Judge 对「应给出技术建议」的期望冲突，CRR 并非恒为正。
 \end{itemize}
 
-\textbf{小结：} 噪音通过\textbf{稀释 positive、语义混淆、局部劫持、证据淹没}四条路径降低 RAG 质量；CoT 证据链通过\textbf{显式拆解--核对--综合}重建任务约束与证据依赖，在 semantic 高噪音区间实现可量化的 CRR 恢复，但需结合 adaptive 路由以应对 counterfactual 互锁。
+\textbf{小结：} 噪音通过\textbf{稀释 positive、语义混淆、局部劫持、证据淹没、长文合成放弃}等路径降低 RAG 质量；CoT 证据链通过\textbf{显式拆解--核对--综合}重建任务约束与证据依赖，在 semantic 高噪音区间实现可量化的 CRR 恢复，但需结合 adaptive 路由以应对 counterfactual 互锁，并注意长文本场景下的过早拒答与过度审计两类边界。
 
 \section{系统实现与前端演示}
 
@@ -691,6 +716,8 @@ CoT 证据链的恢复能力\textbf{有边界}：
 
 \subsection{前端界面}
 前端使用 Vue 3 + Vite，采用四阶段界面（Stage A：选择数据集和样本 → Stage B：设置噪音参数 → Stage C：查看 Prompt → Stage D：答案与指标展示），可在教师面前现场演示完整的“选择问题 → 注入噪音 → 矫正推理 → 对比答案”流程。同时提供 Gradio Demo 作为备用演示入口。
+
+\textbf{BRIGHT 演示推荐参数（与 §8 案例一致）：} 数据集 \texttt{bright/en/main}，\texttt{noise\_type=semantic}，\texttt{noise\_position=interleave}，对比 naive 与 confidence；样本 \textbf{\#302}（外债 vs 内债，$r=0.75$ 下 naive 合成放弃、confidence 恢复综合）或 \textbf{\#192}（跨域 hard negative 下结构化拒答）。上述 \texttt{sample\_id} 均位于 demo 池（$n\le 500$）内，可直接在前端 Stage A 检索加载。
 
 \begin{figure}[H]
   \centering
@@ -722,7 +749,7 @@ CoT 证据链的恢复能力\textbf{有边界}：
     MobileMem 主实验 & smoke 四方法，$n=50$ & \statusdone \\
     Cmedqa 主实验 & exp2 全量 + 闭卷基线 & \statusdone \\
     图表渲染 & \texttt{render\_late\_stage\_figures.py} & \statusdone \\
-    BRIGHT/TEMPO 正式实验 & $n=50$ 批量 & \statusplan \\
+    BRIGHT 正式实验 & smoke naive/confidence $n=5$ 完成；$n=50$ 批量 & \statusrun \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -774,6 +801,6 @@ CoT 证据链的恢复能力\textbf{有边界}：
 
 本项目围绕 RAG 检索噪音对推理的影响，构建了统一实验框架：在 2WikiMultihopQA、MobileMem 与 CmedqaRetrieval 上实现可控噪音注入、12 种矫正方法与 Judge/Token-F1 双轨评估。主实验清晰呈现\textbf{无噪音可答、中高噪音难答、高噪音失效、矫正恢复}四段式曲线——2Wiki naive F1 从 0.619 经 0.422 跌至 0.067；MobileMem Judge 从 0.808 经 0.764 跌至 0.440，confidence 在 $r=0.75$ 回升至 0.536；Cmedqa confidence CRR=5.17。
 
-互锁效应（semantic 下 confidence 最优、counterfactual 下 prompt 更稳）在 2Wiki 与 RGB fact 对照上得到验证，自适应路由可避开最差策略。§8 进一步从典型案例阐明噪音的三类影响机制与 CoT 证据链的恢复逻辑。DeepSeek Judge 解决了 Token-F1 对短答案/计算题的不合理低分；NS/CRR 与曲线形态一致刻画鲁棒性。Web 演示平台与统一实验流水线为后续扩展 BRIGHT、NoiserBench 等语料提供了工程基线。
+互锁效应（semantic 下 confidence 最优、counterfactual 下 prompt 更稳）在 2Wiki 与 RGB fact 对照上得到验证，自适应路由可避开最差策略。§8 进一步从 RGB、MobileMem 与 BRIGHT 典型案例阐明噪音的多类影响机制与 CoT 证据链的恢复逻辑及边界。DeepSeek Judge 解决了 Token-F1 对短答案/计算题的不合理低分；NS/CRR 与曲线形态一致刻画鲁棒性。Web 演示平台与统一实验流水线为后续扩展 BRIGHT、NoiserBench 等语料提供了工程基线。
 
 \end{document}

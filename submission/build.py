@@ -4,10 +4,9 @@
 Usage (from repository root or submission/):
 
     python submission/build.py
-    python submission/build.py --zip
     python submission/build.py --dry-run
 
-Output: submission/dist/nlpexp4_final/  (+ optional .zip)
+Output: submission/dist/nlpexp4_final/
 The output tree is fully self-contained and does not reference the dev repo.
 """
 from __future__ import annotations
@@ -18,7 +17,6 @@ import hashlib
 import json
 import shutil
 import sys
-import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -181,21 +179,10 @@ def _write_package_gitignore(out_root: Path) -> None:
         shutil.copy2(PACKAGE_GITIGNORE, out_root / ".gitignore")
 
 
-def _make_zip(out_root: Path, zip_path: Path) -> None:
-    if zip_path.exists():
-        zip_path.unlink()
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        for path in sorted(out_root.rglob("*")):
-            if path.is_file():
-                arc = path.relative_to(out_root.parent).as_posix()
-                zf.write(path, arc)
-
-
 def build(
     *,
     manifest_path: Path = DEFAULT_MANIFEST,
     output_dir: Path | None = None,
-    make_zip: bool = False,
     dry_run: bool = False,
 ) -> Path:
     cfg = _load_manifest(manifest_path)
@@ -232,12 +219,6 @@ def build(
     print(f"README -> {out_root / 'README.md'}")
     print(f"Manifest -> {out_root / 'SUBMISSION_MANIFEST.json'}")
 
-    if make_zip:
-        zip_path = dist_dir / f"{package_name}.zip"
-        _make_zip(out_root, zip_path)
-        zip_mb = zip_path.stat().st_size / (1024 * 1024)
-        print(f"Zip archive -> {zip_path} ({zip_mb:.1f} MiB)")
-
     return out_root
 
 
@@ -245,7 +226,6 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build standalone nlpexp4 submission package")
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST, help="Path to manifest.yaml")
     parser.add_argument("--output-dir", type=Path, default=None, help="Override dist/ parent directory")
-    parser.add_argument("--zip", action="store_true", help="Also create a .zip next to the output folder")
     parser.add_argument("--dry-run", action="store_true", help="Count files without copying")
     args = parser.parse_args(argv)
 
@@ -253,7 +233,6 @@ def main(argv: list[str] | None = None) -> int:
         build(
             manifest_path=args.manifest.resolve(),
             output_dir=args.output_dir,
-            make_zip=args.zip,
             dry_run=args.dry_run,
         )
     except Exception as exc:

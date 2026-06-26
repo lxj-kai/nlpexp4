@@ -3,22 +3,15 @@
 
 package_name: nlpexp4_final
 
-# 从仓库根目录复制的路径（目录会递归复制，文件只复制自身）
 include:
   - src
   - backend
   - tests
   - requirements.txt
   - .env.example
-
-  # 实验代码（不含 __pycache__）
   - experiments/*.py
   - experiments/results
-
-  # 前端（不含 node_modules / dist）
   - frontend
-
-  # 数据集：RGB 主集 + 扩展集 JSON（不含 raw / parquet 大文件）
   - data/rgb
   - data/2wiki/en.json
   - data/2wiki/en_fact.json
@@ -28,15 +21,11 @@ include:
   - data/cmedqa/metadata.json
   - data/mobilemem
   - data/processed
-
-  # 图表与报告
   - figures
   - report_final/main.tex
   - report_final/main.pdf
   - report_final/figures
   - report_final/README.md
-
-  # 常用脚本
   - scripts/run_all_full.py
   - scripts/render_all_figures.py
   - scripts/render_demo_figures.py
@@ -48,7 +37,6 @@ include:
   - scripts/export_standard_io.py
   - scripts/organize_results.py
 
-# 全局排除（匹配路径任意部分）
 exclude_globs:
   - "**/__pycache__/**"
   - "**/*.py[cod]"

@@ -6,7 +6,10 @@
 
 ## 1. 目录结构
 
+本目录即完整项目根，可直接在此配置环境并运行：
+
 ```text
+├── README.md
 ├── src/                 # 核心模块（数据加载、噪音注入、RAG、评测、矫正方法）
 ├── experiments/         # 实验脚本与 results/ 运行结果
 ├── backend/             # FastAPI 后端
@@ -15,7 +18,7 @@
 ├── figures/             # 实验图表
 ├── report_final/        # 终期报告（main.pdf + LaTeX 源文件）
 ├── scripts/             # 出图与结果查看脚本
-├── tests/               # pytest 测试
+├── tests/
 ├── requirements.txt
 └── .env.example
 ```

@@ -1,16 +1,25 @@
 #!/usr/bin/env bash
-# 构建提交副本到 submission/nlpexp4_final/（不修改项目根目录的开发代码）
+# 将 staging 同步到 submission/ 根目录（保留 build.py 等工具文件）
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$ROOT"
+cd "$ROOT/submission"
 
-python submission/build.py
-rm -rf submission/nlpexp4_final
-mkdir -p submission/nlpexp4_final
-rsync -a submission/dist/nlpexp4_final/ submission/nlpexp4_final/
+python build.py
+STAGING="dist/staging"
 
-if compgen -G "submission/待填写*" > /dev/null; then
-  cp submission/待填写* submission/nlpexp4_final/
+# 同步交付物到 submission/ 根，不碰构建工具
+rsync -a --delete \
+  --exclude 'build.py' \
+  --exclude 'manifest.yaml' \
+  --exclude 'sync_to_branch.sh' \
+  --exclude 'BUILD.md' \
+  --exclude 'templates/' \
+  --exclude 'dist/' \
+  --exclude 'nlpexp4_final/' \
+  "$STAGING/" ./
+
+if compgen -G "待填写*" > /dev/null; then
+  cp 待填写* ./ 2>/dev/null || true
 fi
 
-echo "Done: submission/nlpexp4_final/"
+echo "Done. Deliverable at submission/ (src/, report_final/, experiments/, ...)"

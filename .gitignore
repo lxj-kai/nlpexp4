@@ -57,5 +57,5 @@ data/2wiki/en_fact.json
 # Claude
 .claude/
 
-# 提交包构建缓存（正式副本在 submission/nlpexp4_final/）
+# 提交包构建缓存
 submission/dist/

@@ -1,23 +1,11 @@
 #!/usr/bin/env python3
-"""Build a standalone submission package for course delivery.
-
-Usage (from repository root or submission/):
-
-    python submission/build.py
-    python submission/build.py --dry-run
-
-Output: submission/dist/nlpexp4_final/
-The output tree is fully self-contained and does not reference the dev repo.
-"""
+"""Build course deliverable into submission/dist/staging/, then sync_to_branch.sh copies to submission/."""
 from __future__ import annotations
 
 import argparse
 import fnmatch
-import hashlib
-import json
 import shutil
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 try:
@@ -31,31 +19,14 @@ REPO_ROOT = SUBMISSION_DIR.parent
 DEFAULT_MANIFEST = SUBMISSION_DIR / "manifest.yaml"
 TEMPLATE_README = SUBMISSION_DIR / "templates" / "README.md"
 PACKAGE_GITIGNORE = SUBMISSION_DIR / "templates" / "package.gitignore"
+STAGING_DIR = SUBMISSION_DIR / "dist" / "staging"
 
 
 def _load_manifest(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
     if yaml is not None:
         return yaml.safe_load(text)
-    data: dict = {"package_name": "nlpexp4_final", "include": [], "exclude_globs": []}
-    section = None
-    for raw in text.splitlines():
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        if line.endswith(":") and not line.startswith("- "):
-            key = line[:-1]
-            if key in ("include", "exclude_globs"):
-                section = key
-                data.setdefault(section, [])
-            elif key == "package_name":
-                section = "package_name"
-            continue
-        if line.startswith("- ") and section in ("include", "exclude_globs"):
-            data[section].append(line[2:].strip())
-        elif section == "package_name" and not line.startswith("-"):
-            data["package_name"] = line
-    return data
+    raise RuntimeError("PyYAML required: pip install pyyaml")
 
 
 def _matches_exclude(rel_posix: str, patterns: list[str]) -> bool:
@@ -130,111 +101,45 @@ def _copy_includes(
     return stats
 
 
-def _sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
-def _write_manifest(out_root: Path, stats: dict, built_at: str) -> None:
-    files: list[dict] = []
-    for path in sorted(out_root.rglob("*")):
-        if path.is_dir():
-            continue
-        rel = path.relative_to(out_root).as_posix()
-        files.append(
-            {
-                "path": rel,
-                "size": path.stat().st_size,
-                "sha256": _sha256(path),
-            }
-        )
-    meta = {
-        "package": out_root.name,
-        "built_at": built_at,
-        "file_count": len(files),
-        "total_bytes": stats["bytes"],
-        "files": files,
-    }
-    (out_root / "SUBMISSION_MANIFEST.json").write_text(
-        json.dumps(meta, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-
-
-def _render_readme(out_root: Path, built_at: str) -> None:
-    if TEMPLATE_README.exists():
-        text = TEMPLATE_README.read_text(encoding="utf-8")
-        text = text.replace("{{BUILD_DATE}}", built_at[:10])
-        text = text.replace("{{PACKAGE_NAME}}", out_root.name)
-    else:
-        text = f"# {out_root.name}\n\nBuilt at {built_at}\n"
-    (out_root / "README.md").write_text(text, encoding="utf-8")
-
-
-def _write_package_gitignore(out_root: Path) -> None:
-    if PACKAGE_GITIGNORE.exists():
-        shutil.copy2(PACKAGE_GITIGNORE, out_root / ".gitignore")
-
-
-def build(
-    *,
-    manifest_path: Path = DEFAULT_MANIFEST,
-    output_dir: Path | None = None,
-    dry_run: bool = False,
-) -> Path:
+def build(*, manifest_path: Path = DEFAULT_MANIFEST, dry_run: bool = False) -> Path:
     cfg = _load_manifest(manifest_path)
-    package_name = cfg.get("package_name", "nlpexp4_final")
     include = cfg.get("include", [])
     exclude_globs = cfg.get("exclude_globs", [])
 
-    built_at = datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
-    dist_dir = output_dir or (SUBMISSION_DIR / "dist")
-    out_root = dist_dir / package_name
-
     print(f"Repository root : {REPO_ROOT}")
-    print(f"Output directory: {out_root}")
+    print(f"Staging directory: {STAGING_DIR}")
     print(f"Dry run         : {dry_run}")
     print()
 
     if not dry_run:
-        if out_root.exists():
-            shutil.rmtree(out_root)
-        out_root.mkdir(parents=True, exist_ok=True)
+        if STAGING_DIR.exists():
+            shutil.rmtree(STAGING_DIR)
+        STAGING_DIR.mkdir(parents=True, exist_ok=True)
 
-    stats = _copy_includes(REPO_ROOT, out_root, include, exclude_globs, dry_run)
+    stats = _copy_includes(REPO_ROOT, STAGING_DIR, include, exclude_globs, dry_run)
 
     if dry_run:
         print(f"Would copy {stats['files']} files (excluded {stats['excluded']} paths)")
-        return out_root
+        return STAGING_DIR
 
-    _render_readme(out_root, built_at)
-    _write_package_gitignore(out_root)
-    _write_manifest(out_root, stats, built_at)
+    if TEMPLATE_README.exists():
+        shutil.copy2(TEMPLATE_README, STAGING_DIR / "README.md")
+    if PACKAGE_GITIGNORE.exists():
+        shutil.copy2(PACKAGE_GITIGNORE, STAGING_DIR / ".gitignore")
 
     mb = stats["bytes"] / (1024 * 1024)
     print(f"Copied {stats['files']} files ({mb:.1f} MiB), excluded {stats['excluded']} paths")
-    print(f"README -> {out_root / 'README.md'}")
-    print(f"Manifest -> {out_root / 'SUBMISSION_MANIFEST.json'}")
-
-    return out_root
+    print(f"Next: bash submission/sync_to_branch.sh")
+    return STAGING_DIR
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build standalone nlpexp4 submission package")
-    parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST, help="Path to manifest.yaml")
-    parser.add_argument("--output-dir", type=Path, default=None, help="Override dist/ parent directory")
-    parser.add_argument("--dry-run", action="store_true", help="Count files without copying")
+    parser = argparse.ArgumentParser(description="Build submission/ deliverable staging tree")
+    parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
-
     try:
-        build(
-            manifest_path=args.manifest.resolve(),
-            output_dir=args.output_dir,
-            dry_run=args.dry_run,
-        )
+        build(manifest_path=args.manifest.resolve(), dry_run=args.dry_run)
     except Exception as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

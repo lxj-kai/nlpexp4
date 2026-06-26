@@ -1,2 +1,11 @@
-dist/
-.build_meta.json
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.cache/
+.cache_llm/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+.DS_Store

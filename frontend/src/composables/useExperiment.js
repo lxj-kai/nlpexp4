@@ -65,6 +65,14 @@ const FALLBACK_DATASETS = [
     default_language: "en",
     default_subset: "main",
   },
+  {
+    id: "noiser_bench",
+    label: "NoiserBench（ACL'25 · 7类噪音 RAG）",
+    languages: ["en"],
+    subsets: ["hotpotqa", "rgb_nb", "bamboogle", "strategyqa", "tempqa", "priorqa", "nq", "2wikimqa"],
+    default_language: "en",
+    default_subset: "hotpotqa",
+  },
 ];
 
 export function useExperiment() {

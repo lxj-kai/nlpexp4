@@ -13,12 +13,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "experiments" / "results"
+sys.path.insert(0, str(ROOT))
+from src.results_paths import glob_results
+
 EXP2_METHODS = ("naive", "confidence")
 EXP2_RATIOS = (0.0, 0.5, 0.75)
 
 
 def _latest(pattern: str, *, min_n: int | None = None) -> Path | None:
-    files = sorted(RESULTS.glob(pattern))
+    files = sorted(glob_results(pattern))
     if min_n is not None:
         candidates = []
         for f in files:
@@ -163,7 +166,7 @@ def _scale_comparison_table(
 
 def _pilot(pattern: str, full_n: int) -> dict | None:
     """Find the latest result file with n strictly less than full_n."""
-    for f in reversed(sorted(RESULTS.glob(pattern))):
+    for f in reversed(sorted(glob_results(pattern))):
         data = json.loads(f.read_text(encoding="utf-8"))
         if int(data.get("args", {}).get("n") or 0) < full_n:
             return data

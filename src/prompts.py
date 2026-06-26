@@ -181,6 +181,12 @@ NAIVE_PROFILES: dict[str, NaivePromptProfile] = {
         user_zh=NAIVE_USER_TMPL,
         user_en=NAIVE_TEMPO_USER_TMPL_EN,
     ),
+    "noiser_bench": NaivePromptProfile(
+        system_zh=NAIVE_SYSTEM_ZH,
+        system_en=NAIVE_MULTIHOP_RAG_SYSTEM_EN,
+        user_zh=NAIVE_USER_TMPL,
+        user_en=NAIVE_MULTIHOP_RAG_USER_TMPL_EN,
+    ),
 }
 
 
@@ -480,6 +486,12 @@ JUDGE_PROFILES: dict[str, JudgePromptProfile] = {
     "tempo": JudgePromptProfile(
         system_zh=JUDGE_SYSTEM_ZH,
         system_en=JUDGE_TEMPO_SYSTEM_EN,
+        user_zh=JUDGE_USER_TMPL_ZH,
+        user_en=JUDGE_USER_TMPL_EN,
+    ),
+    "noiser_bench": JudgePromptProfile(
+        system_zh=JUDGE_SYSTEM_ZH,
+        system_en=JUDGE_MULTIHOP_RAG_SYSTEM_EN,
         user_zh=JUDGE_USER_TMPL_ZH,
         user_en=JUDGE_USER_TMPL_EN,
     ),

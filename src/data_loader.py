@@ -39,7 +39,14 @@ logger = get_logger(__name__)
 Language = Literal["zh", "en"]
 Subset = Literal["main", "refine", "fact", "int"]
 DatasetName = Literal[
-    "rgb", "miriad", "cmedqa", "2wiki", "bright", "multihop_rag", "tempo"
+    "rgb",
+    "miriad",
+    "cmedqa",
+    "2wiki",
+    "bright",
+    "multihop_rag",
+    "tempo",
+    "noiser_bench",
 ]
 
 
@@ -134,6 +141,7 @@ def _resolve_dataset(dataset: DatasetName | None) -> DatasetName:
         "bright",
         "multihop_rag",
         "tempo",
+        "noiser_bench",
     ):
         raise ValueError(f"unknown dataset: {name!r}")
     return name  # type: ignore[return-value]
@@ -168,6 +176,15 @@ def iter_records(
             limit=limit,
         )
         return
+    if ds == "noiser_bench":
+        if language != "en":
+            raise ValueError(f"NoiserBench only supports en, got {language!r}")
+        from .noiser_loader import iter_noiser_records
+
+        nb_subset = str(subset)
+        for rec in iter_noiser_records(nb_subset):
+            yield rec
+        return
     if ds == "cmedqa":
         if (language, subset) not in _CMEDQA_SUPPORTED:
             raise ValueError(
@@ -192,6 +209,7 @@ def iter_records(
             "bright": "python scripts/prepare_bright.py",
             "multihop_rag": "python scripts/prepare_multihop_rag.py",
             "tempo": "python scripts/prepare_tempo.py",
+            "noiser_bench": "python scripts/prepare_noiser_bench.py",
         }
         hint = _PREPARE_HINTS.get(ds)
         if hint:
@@ -256,7 +274,7 @@ def load_all_subsets(
     language: Language = "zh", *, dataset: DatasetName | None = None
 ) -> dict[Subset, list[RGBRecord]]:
     ds = _resolve_dataset(dataset)
-    if ds in ("miriad", "cmedqa", "2wiki", "bright", "multihop_rag", "tempo"):
+    if ds in ("miriad", "cmedqa", "2wiki", "bright", "multihop_rag", "tempo", "noiser_bench"):
         raise ValueError(
             f"{ds} only supports main/fact via explicit load_dataset(..., subset=...); "
             "load_all_subsets is not supported"

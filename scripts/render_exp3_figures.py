@@ -15,6 +15,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+from src.results_paths import glob_results
 from src.config import CONFIG
 from src.visualize import _setup_style, _save
 from src.utils import get_logger
@@ -154,7 +155,7 @@ def main():
     ]
 
     for pattern, label, fname in pairs:
-        files = sorted(RESULTS.glob(pattern))
+        files = sorted(glob_results(pattern))
         if not files:
             print(f"  no files for {pattern}")
             continue

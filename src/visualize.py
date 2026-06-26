@@ -17,6 +17,56 @@ logger = get_logger(__name__)
 
 _PALETTE = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899"]
 
+_SCORE_CANDIDATES: tuple[tuple[str, str], ...] = (
+    ("judge_score", "Judge Score"),
+    ("judge_correct", "Judge Accuracy"),
+    ("token_f1", "Token-F1"),
+    ("contains", "Contains Match"),
+    ("em", "Exact Match"),
+)
+
+
+def _summary_score(summary: dict, *, key: str | None = None) -> float:
+    if key:
+        v = summary.get(key)
+        if v is not None:
+            return float(v)
+    for k, _ in _SCORE_CANDIDATES:
+        v = summary.get(k)
+        if v is not None:
+            return float(v)
+    return 0.0
+
+
+def _detect_score_key(payload: dict) -> tuple[str, str]:
+    for block in payload.get("results", []):
+        summary = block.get("summary") or {}
+        for key, label in _SCORE_CANDIDATES:
+            if summary.get(key) is not None:
+                return key, label
+    return "token_f1", "Token-F1"
+
+
+def _result_summary_rows(payload: dict, *, score_key: str | None = None) -> list[dict]:
+    key = score_key or _detect_score_key(payload)[0]
+    rows: list[dict] = []
+    for block in payload.get("results", []):
+        summary = block.get("summary") or {}
+        cond = block.get("condition") or {}
+        rows.append(
+            {
+                "method": cond.get("method", "?"),
+                "ratio": float(cond.get("noise_ratio", 0.0)),
+                "ntype": cond.get("noise_type", "semantic"),
+                "position": cond.get("noise_position", "interleave"),
+                "score": _summary_score(summary, key=key),
+                "isr": float(summary.get("isr") or 0.0),
+                "nar": float(summary.get("nar") or 0.0),
+                "n": int(summary.get("n") or block.get("n") or 0),
+            }
+        )
+    return rows
+
 
 def _setup_style() -> None:
     import platform
@@ -47,21 +97,23 @@ def _save(fig: plt.Figure, out_path: Path | str) -> str:
 
 
 def plot_noise_impact(result_json: Path | str, *, out_dir: Path | str | None = None) -> str:
-    """实验一图：噪音比例-F1 折线（按噪音类型分组）。"""
+    """实验一图：噪音比例-性能折线（按噪音类型分组，默认 naive）。"""
     _setup_style()
     out_dir = Path(out_dir or CONFIG.figures_dir)
     payload = read_json(result_json)
+    score_key, score_label = _detect_score_key(payload)
     rows: list[dict] = []
     for r in payload["results"]:
         s = r["summary"]
         c = r["condition"]
+        if c.get("method") not in (None, "naive"):
+            continue
         rows.append(
             {
                 "method": c["method"],
                 "ratio": c["noise_ratio"],
                 "ntype": c["noise_type"],
-                "f1": s.get("token_f1") or 0.0,
-                "rouge": s.get("rouge_l") or 0.0,
+                "score": _summary_score(s, key=score_key),
                 "isr": s.get("isr") or 0.0,
                 "nar": s.get("nar") or 0.0,
             }
@@ -73,44 +125,35 @@ def plot_noise_impact(result_json: Path | str, *, out_dir: Path | str | None = N
         sub = sorted([r for r in rows if r["ntype"] == t], key=lambda x: x["ratio"])
         ax.plot(
             [r["ratio"] for r in sub],
-            [r["f1"] for r in sub],
+            [r["score"] for r in sub],
             "-o",
             color=_PALETTE[i % len(_PALETTE)],
             label=t,
             linewidth=2,
         )
     ax.set_xlabel("Noise Ratio")
-    ax.set_ylabel("Token-F1")
+    ax.set_ylabel(score_label)
     ax.set_title("Exp1: Noise Impact on QA Performance")
     ax.legend(title="Noise Type")
     return _save(fig, out_dir / "exp1_noise_impact.png")
 
 
 def plot_correction_compare(result_json: Path | str, *, out_dir: Path | str | None = None) -> str:
-    """实验二图：5 方法在 4 比例下的 F1 分组柱状图。"""
+    """实验二图：多方法 × 多噪音比例 分组柱状图。"""
     _setup_style()
     out_dir = Path(out_dir or CONFIG.figures_dir)
     payload = read_json(result_json)
-    rows: list[dict] = []
-    for r in payload["results"]:
-        s = r["summary"]
-        c = r["condition"]
-        rows.append(
-            {
-                "method": c["method"],
-                "ratio": c["noise_ratio"],
-                "f1": s.get("token_f1") or 0.0,
-            }
-        )
+    score_key, score_label = _detect_score_key(payload)
+    rows = _result_summary_rows(payload, score_key=score_key)
     methods = sorted({r["method"] for r in rows})
     ratios = sorted({r["ratio"] for r in rows})
     matrix = np.zeros((len(methods), len(ratios)))
     for r in rows:
         i = methods.index(r["method"])
         j = ratios.index(r["ratio"])
-        matrix[i, j] = r["f1"]
+        matrix[i, j] = r["score"]
 
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(max(10, len(methods) * 1.2), 5))
     x = np.arange(len(ratios))
     width = 0.8 / max(1, len(methods))
     for i, m in enumerate(methods):
@@ -124,10 +167,238 @@ def plot_correction_compare(result_json: Path | str, *, out_dir: Path | str | No
     ax.set_xticks(x)
     ax.set_xticklabels([f"{r:.0%}" for r in ratios])
     ax.set_xlabel("Noise Ratio")
-    ax.set_ylabel("Token-F1")
+    ax.set_ylabel(score_label)
     ax.set_title("Exp2: Correction Methods vs Naive")
     ax.legend(ncol=min(len(methods), 5))
     return _save(fig, out_dir / "exp2_correction.png")
+
+
+def plot_noiser_type_compare(
+    result_json: Path | str,
+    *,
+    ratio: float | None = None,
+    out_dir: Path | str | None = None,
+    title: str | None = None,
+) -> str:
+    """NoiserBench：固定噪音比例下，各方法在七类噪音上的分组柱状图。"""
+    _setup_style()
+    out_dir = Path(out_dir or CONFIG.figures_dir)
+    payload = read_json(result_json)
+    score_key, score_label = _detect_score_key(payload)
+    rows = _result_summary_rows(payload, score_key=score_key)
+
+    positive = [r for r in rows if r["ratio"] > 0]
+    if not positive:
+        raise ValueError("no noisy conditions found for noiser type compare plot")
+
+    target_ratio = ratio
+    if target_ratio is None:
+        target_ratio = max(r["ratio"] for r in positive)
+    at_ratio = [r for r in rows if abs(r["ratio"] - target_ratio) < 1e-9]
+    if not at_ratio:
+        raise ValueError(f"no rows at ratio={target_ratio}")
+
+    types = sorted({r["ntype"] for r in at_ratio})
+    methods = sorted({r["method"] for r in at_ratio})
+    matrix = np.zeros((len(methods), len(types)))
+    for r in at_ratio:
+        i = methods.index(r["method"])
+        j = types.index(r["ntype"])
+        matrix[i, j] = r["score"]
+
+    fig, ax = plt.subplots(figsize=(max(12, len(types) * 1.4), 5))
+    x = np.arange(len(types))
+    width = 0.8 / max(1, len(methods))
+    for i, method in enumerate(methods):
+        ax.bar(
+            x + i * width - 0.4 + width / 2,
+            matrix[i],
+            width=width,
+            label=method,
+            color=_PALETTE[i % len(_PALETTE)],
+        )
+    ax.set_xticks(x)
+    ax.set_xticklabels(types, rotation=25, ha="right")
+    ax.set_xlabel("NoiserBench Noise Type")
+    ax.set_ylabel(score_label)
+    ax.set_title(
+        title or f"NoiserBench: Methods × 7 Noise Types @ r={target_ratio:.0%}"
+    )
+    ax.legend(ncol=min(len(methods), 4))
+    return _save(fig, out_dir / "noiser_type_compare.png")
+
+
+def plot_noiser_method_heatmap(
+    result_json: Path | str,
+    *,
+    ratio: float | None = None,
+    out_dir: Path | str | None = None,
+    title: str | None = None,
+) -> str:
+    """NoiserBench：方法 × 噪音类型 热力图（固定 ratio）。"""
+    _setup_style()
+    out_dir = Path(out_dir or CONFIG.figures_dir)
+    payload = read_json(result_json)
+    score_key, score_label = _detect_score_key(payload)
+    rows = _result_summary_rows(payload, score_key=score_key)
+
+    positive = [r for r in rows if r["ratio"] > 0]
+    if not positive:
+        raise ValueError("no noisy conditions found for noiser heatmap")
+
+    target_ratio = ratio
+    if target_ratio is None:
+        target_ratio = max(r["ratio"] for r in positive)
+    at_ratio = [r for r in rows if abs(r["ratio"] - target_ratio) < 1e-9]
+    types = sorted({r["ntype"] for r in at_ratio})
+    methods = sorted({r["method"] for r in at_ratio})
+    matrix = np.full((len(methods), len(types)), np.nan)
+    for r in at_ratio:
+        i = methods.index(r["method"])
+        j = types.index(r["ntype"])
+        matrix[i, j] = r["score"]
+
+    fig, ax = plt.subplots(figsize=(max(10, len(types) * 1.1), max(4, len(methods) * 0.8)))
+    im = ax.imshow(matrix, aspect="auto", cmap="YlGnBu", vmin=0.0, vmax=1.0)
+    ax.set_xticks(range(len(types)))
+    ax.set_xticklabels(types, rotation=30, ha="right")
+    ax.set_yticks(range(len(methods)))
+    ax.set_yticklabels(methods)
+    for i in range(len(methods)):
+        for j in range(len(types)):
+            val = matrix[i, j]
+            if not np.isnan(val):
+                ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=9)
+    fig.colorbar(im, ax=ax, label=score_label, shrink=0.8)
+    ax.set_title(title or f"NoiserBench Heatmap @ r={target_ratio:.0%}")
+    return _save(fig, out_dir / "noiser_method_heatmap.png")
+
+
+def render_noiser_bench_figures(
+    result_json: Path | str,
+    *,
+    phase: str = "exp2",
+    out_dir: Path | str | None = None,
+    tag: str | None = None,
+    ratio: float | None = None,
+) -> list[str]:
+    """NoiserBench 实验结果一键出图。"""
+    result_json = Path(result_json)
+    payload = read_json(result_json)
+    stem = tag or result_json.stem
+    out_dir = Path(out_dir or CONFIG.figures_dir / stem)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    paths: list[str] = []
+    if phase == "exp1":
+        paths.append(plot_noise_impact(result_json, out_dir=out_dir))
+    else:
+        target_ratio = ratio
+        if target_ratio is None:
+            extras = payload.get("args") or {}
+            target_ratio = float(extras.get("ratio") or 0.75)
+        paths.append(
+            plot_noiser_type_compare(
+                result_json,
+                ratio=target_ratio,
+                out_dir=out_dir,
+                title=f"NoiserBench Correction @ r={target_ratio:.0%} ({stem})",
+            )
+        )
+        paths.append(
+            plot_noiser_method_heatmap(
+                result_json,
+                ratio=target_ratio,
+                out_dir=out_dir,
+                title=f"NoiserBench Heatmap ({stem})",
+            )
+        )
+        robustness = payload.get("robustness_table") or []
+        if robustness:
+            paths.append(
+                plot_robustness_radar(robustness, out_path=out_dir / "robustness_radar.png")
+            )
+            paths.append(
+                plot_crr_bar(
+                    robustness,
+                    out_path=out_dir / "crr_bar.png",
+                    title=f"Correction Recovery ({stem})",
+                )
+            )
+
+    manifest = out_dir / "figures_manifest.json"
+    from .utils import write_json
+
+    write_json({"result_json": str(result_json), "figures": paths, "phase": phase}, manifest)
+    logger.info(f"noiser figures ({len(paths)}) -> {out_dir}")
+    return paths
+
+
+def plot_method_noise_curves(
+    result_json: Path | str,
+    *,
+    out_path: Path | str,
+    title: str | None = None,
+) -> str:
+    """各矫正方法在不同噪音比例下的性能折线。"""
+    _setup_style()
+    payload = read_json(result_json)
+    score_key, score_label = _detect_score_key(payload)
+    rows = _result_summary_rows(payload, score_key=score_key)
+    methods = sorted({r["method"] for r in rows})
+    fig, ax = plt.subplots(figsize=(8, 5))
+    for i, method in enumerate(methods):
+        sub = sorted([r for r in rows if r["method"] == method], key=lambda x: x["ratio"])
+        ax.plot(
+            [r["ratio"] for r in sub],
+            [r["score"] for r in sub],
+            "-o",
+            color=_PALETTE[i % len(_PALETTE)],
+            label=method,
+            linewidth=2,
+        )
+    ax.set_xlabel("Noise Ratio")
+    ax.set_ylabel(score_label)
+    ax.set_title(title or "Method Performance vs Noise Ratio")
+    ax.legend(title="Method", ncol=min(len(methods), 4))
+    return _save(fig, out_path)
+
+
+def plot_crr_bar(
+    robustness_table: list[dict],
+    *,
+    out_path: Path | str,
+    title: str | None = None,
+) -> str:
+    """矫正恢复率 CRR 条形图（相对 naive baseline）。"""
+    _setup_style()
+    rows = [r for r in robustness_table if r.get("method") != "naive" and r.get("CRR") is not None]
+    if not rows:
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.text(0.5, 0.5, "No CRR data", ha="center", va="center")
+        ax.axis("off")
+        return _save(fig, out_path)
+
+    labels = [f"{r['method']}\n({r.get('noise_type', '?')})" for r in rows]
+    vals = [float(r["CRR"]) for r in rows]
+    fig, ax = plt.subplots(figsize=(max(7, len(rows) * 0.9), 5))
+    colors = [_PALETTE[i % len(_PALETTE)] for i in range(len(rows))]
+    bars = ax.bar(range(len(rows)), vals, color=colors)
+    ax.axhline(0, color="#0f172a", linewidth=0.8)
+    ax.set_xticks(range(len(rows)))
+    ax.set_xticklabels(labels, rotation=25, ha="right")
+    ax.set_ylabel("CRR (Correction Recovery Rate)")
+    ax.set_title(title or "Correction Recovery vs Naive")
+    for bar, val in zip(bars, vals):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + (0.01 if val >= 0 else -0.03),
+            f"{val:+.3f}",
+            ha="center",
+            va="bottom" if val >= 0 else "top",
+            fontsize=9,
+        )
+    return _save(fig, out_path)
 
 
 def _aggregate_radar_by_method(robustness_table: list[dict]) -> list[dict]:
@@ -714,10 +985,84 @@ def extract_iterative_round_logs(result_json: Path | str) -> list[list[dict]]:
     return logs
 
 
+def render_batch_run_figures(
+    result_json: Path | str,
+    *,
+    out_dir: Path | str | None = None,
+    tag: str | None = None,
+) -> list[str]:
+    """批量评测结果一键出图（矫正对比 / 噪音梯度 / 鲁棒性 / ISR-NAR / CRR）。"""
+    result_json = Path(result_json)
+    payload = read_json(result_json)
+    stem = tag or result_json.stem
+    out_dir = Path(out_dir or CONFIG.figures_dir / stem)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    paths: list[str] = []
+    paths.append(plot_correction_compare(result_json, out_dir=out_dir))
+    paths.append(
+        plot_method_noise_curves(
+            result_json,
+            out_path=out_dir / "method_noise_curves.png",
+            title=f"Methods vs Noise ({stem})",
+        )
+    )
+    paths.append(plot_noise_impact(result_json, out_dir=out_dir))
+
+    robustness = payload.get("robustness_table") or []
+    if robustness:
+        paths.append(plot_robustness_radar(robustness, out_path=out_dir / "robustness_radar.png"))
+        paths.append(
+            plot_nrs_grouped_bar(
+                robustness,
+                out_path=out_dir / "nrs_grouped_bar.png",
+                title=f"NRS by Method ({stem})",
+            )
+        )
+        paths.append(
+            plot_crr_bar(
+                robustness,
+                out_path=out_dir / "crr_bar.png",
+                title=f"Correction Recovery ({stem})",
+            )
+        )
+
+    scatter_rows = _result_summary_rows(payload)
+    positive = [r for r in scatter_rows if r["ratio"] > 0]
+    if positive:
+        max_ratio = max(r["ratio"] for r in positive)
+        at_ratio = [r for r in positive if abs(r["ratio"] - max_ratio) < 1e-9]
+        paths.append(
+            plot_isr_nar_scatter(
+                at_ratio,
+                out_path=out_dir / "isr_nar_scatter.png",
+                title=f"ISR vs NAR @ r={max_ratio:.0%} ({stem})",
+            )
+        )
+
+    sc_logs = extract_iterative_round_logs(result_json)
+    if sc_logs:
+        paths.append(
+            plot_iterative_convergence(
+                sc_logs,
+                out_dir=out_dir,
+            )
+        )
+
+    manifest = out_dir / "figures_manifest.json"
+    from .utils import write_json
+
+    write_json({"result_json": str(result_json), "figures": paths}, manifest)
+    logger.info(f"batch figures ({len(paths)}) -> {out_dir}")
+    return paths
+
+
 def render_all_from_results_dir(results_dir: Path | str | None = None) -> list[str]:
     results_dir = Path(results_dir or CONFIG.results_dir)
     out_paths: list[str] = []
-    for jf in sorted(results_dir.glob("*.json")):
+    for jf in sorted(results_dir.rglob("*.json")):
+        if jf.name == "INDEX.json":
+            continue
         name = jf.stem
         if name.startswith("exp1_"):
             out_paths.append(plot_noise_impact(jf))
@@ -730,4 +1075,11 @@ def render_all_from_results_dir(results_dir: Path | str | None = None) -> list[s
                 out_paths.append(
                     plot_robustness_radar(tbl, out_path=CONFIG.figures_dir / f"{name}_radar.png")
                 )
+        elif name.startswith("smoke_"):
+            out_paths.extend(render_batch_run_figures(jf))
+        elif name.startswith("exp_correction_"):
+            out_paths.extend(render_batch_run_figures(jf))
+        elif name.startswith("exp_noiser_"):
+            phase = "exp1" if "_exp1_" in name else "exp2"
+            out_paths.extend(render_noiser_bench_figures(jf, phase=phase))
     return out_paths

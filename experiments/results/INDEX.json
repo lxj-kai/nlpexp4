@@ -1,0 +1,134 @@
+{
+  "organized_at": "2026-06-26T14:17:19+08:00",
+  "total_json": 102,
+  "categories": {
+    "dataset_2wiki": [
+      "dataset_2wiki/exp_2wiki_exp1_en_main_20260624_012520.json",
+      "dataset_2wiki/exp_2wiki_exp1_en_main_20260624_101946.json",
+      "dataset_2wiki/exp_2wiki_exp1_en_main_20260624_121427.json",
+      "dataset_2wiki/exp_2wiki_exp1_fact_en_fact_20260624_012548.json",
+      "dataset_2wiki/exp_2wiki_exp1_fact_en_fact_20260624_102009.json",
+      "dataset_2wiki/exp_2wiki_exp1_fact_en_fact_20260624_115635.json",
+      "dataset_2wiki/exp_2wiki_exp2_en_main_20260624_014224.json",
+      "dataset_2wiki/exp_2wiki_exp2_en_main_20260624_103400.json",
+      "dataset_2wiki/exp_2wiki_exp2_en_main_20260624_174033.json",
+      "dataset_2wiki/exp_2wiki_exp4_en_main_20260624_014225.json",
+      "dataset_2wiki/exp_2wiki_exp4_en_main_20260624_103400.json",
+      "dataset_2wiki/exp_2wiki_exp4_en_main_20260624_154541.json"
+    ],
+    "dataset_new/exp1_noise_impact": [
+      "dataset_new/exp1_noise_impact/exp_new_exp1_cmedqa_zh_main_20260623_020352.json",
+      "dataset_new/exp1_noise_impact/exp_new_exp1_cmedqa_zh_main_20260623_220723.json",
+      "dataset_new/exp1_noise_impact/exp_new_exp1_cmedqa_zh_main_20260624_062524.json",
+      "dataset_new/exp1_noise_impact/exp_new_exp1_cmedqa_zh_main_20260624_154626.json",
+      "dataset_new/exp1_noise_impact/exp_new_exp1_miriad_en_main_20260623_015931.json",
+      "dataset_new/exp1_noise_impact/exp_new_exp1_miriad_en_main_20260623_215557.json"
+    ],
+    "dataset_new/exp2_correction": [
+      "dataset_new/exp2_correction/exp_new_exp2_cmedqa_zh_main_20260623_020551.json",
+      "dataset_new/exp2_correction/exp_new_exp2_cmedqa_zh_main_20260623_221315.json",
+      "dataset_new/exp2_correction/exp_new_exp2_cmedqa_zh_main_20260624_203528.json",
+      "dataset_new/exp2_correction/exp_new_exp2_miriad_en_main_20260623_020156.json",
+      "dataset_new/exp2_correction/exp_new_exp2_miriad_en_main_20260623_220147.json"
+    ],
+    "exp_closed_book": [
+      "exp_closed_book/exp_closed_book_2wiki_en_main_20260624_204137.json",
+      "exp_closed_book/exp_closed_book_cmedqa_zh_main_20260624_204104.json",
+      "exp_closed_book/exp_closed_book_miriad_en_main_20260624_204131.json"
+    ],
+    "exp_noise_gradient": [
+      "exp_noise_gradient/exp_noise_gradient_2wiki_n500_20260625_033532.json",
+      "exp_noise_gradient/exp_noise_gradient_2wiki_n50_20260625_140347.json",
+      "exp_noise_gradient/exp_noise_gradient_2wiki_n50_20260625_141251.json",
+      "exp_noise_gradient/exp_noise_gradient_2wiki_n50_20260625_153102.json",
+      "exp_noise_gradient/exp_noise_gradient_2wiki_n50_20260625_153607.json",
+      "exp_noise_gradient/exp_noise_gradient_cmedqa_n500_20260625_031902.json",
+      "exp_noise_gradient/exp_noise_gradient_cmedqa_n50_20260625_140211.json",
+      "exp_noise_gradient/exp_noise_gradient_cmedqa_n50_20260625_141100.json",
+      "exp_noise_gradient/exp_noise_gradient_rgb_n300_20260625_024736.json",
+      "exp_noise_gradient/exp_noise_gradient_rgb_n30_20260625_023306.json",
+      "exp_noise_gradient/exp_noise_gradient_rgb_n50_20260625_140026.json",
+      "exp_noise_gradient/exp_noise_gradient_rgb_n50_20260625_140738.json"
+    ],
+    "midterm/exp1_noise_impact": [
+      "midterm/exp1_noise_impact/exp1_noise_impact_en_main_20260524_234852.json",
+      "midterm/exp1_noise_impact/exp1_noise_impact_zh_fact_20260516_063507.json",
+      "midterm/exp1_noise_impact/exp1_noise_impact_zh_fact_20260525_163854.json",
+      "midterm/exp1_noise_impact/exp1_noise_impact_zh_fact_position_20260516_063645.json",
+      "midterm/exp1_noise_impact/exp1_noise_impact_zh_fact_position_counterfactual_r0.75_20260524_235019.json",
+      "midterm/exp1_noise_impact/exp1_noise_impact_zh_main_20260516_060720.json",
+      "midterm/exp1_noise_impact/exp1_noise_impact_zh_main_20260517_014235.json",
+      "midterm/exp1_noise_impact/exp1_noise_impact_zh_main_20260523_212441.json",
+      "midterm/exp1_noise_impact/exp1_noise_impact_zh_main_position_20260523_212649.json"
+    ],
+    "midterm/exp2_correction": [
+      "midterm/exp2_correction/exp2_correction_en_20260518_194023.json",
+      "midterm/exp2_correction/exp2_correction_en_main_semantic_20260526_083810.json",
+      "midterm/exp2_correction/exp2_correction_zh_20260516_060917.json",
+      "midterm/exp2_correction/exp2_correction_zh_20260518_173820.json",
+      "midterm/exp2_correction/exp2_correction_zh_20260523_212925.json",
+      "midterm/exp2_correction/exp2_correction_zh_fact_counterfactual_20260525_204514.json",
+      "midterm/exp2_correction/exp2_correction_zh_main_semantic_20260526_083753.json"
+    ],
+    "midterm/exp3_case_study": [
+      "midterm/exp3_case_study/exp3_case_study_en_20260524_234955.json",
+      "midterm/exp3_case_study/exp3_case_study_en_fact_20260525_222723.json",
+      "midterm/exp3_case_study/exp3_case_study_en_main_20260525_225153.json",
+      "midterm/exp3_case_study/exp3_case_study_zh_20260519_233132.json",
+      "midterm/exp3_case_study/exp3_case_study_zh_20260519_235107.json",
+      "midterm/exp3_case_study/exp3_case_study_zh_20260523_212935.json",
+      "midterm/exp3_case_study/exp3_case_study_zh_20260524_194830.json",
+      "midterm/exp3_case_study/exp3_case_study_zh_fact_20260525_203700.json",
+      "midterm/exp3_case_study/exp3_case_study_zh_fact_20260525_222636.json",
+      "midterm/exp3_case_study/exp3_case_study_zh_main_20260525_225028.json"
+    ],
+    "midterm/exp4_existing_methods": [
+      "midterm/exp4_existing_methods/exp4_existing_methods_en_main_semantic_20260525_204917.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_20260516_061209.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_20260516_063753.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_fact_counterfactual_20260516_063900.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_fact_counterfactual_20260524_235950.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_fact_counterfactual_20260525_000626.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_main_mixed_20260524_234959.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_main_mixed_20260525_000327.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_main_semantic_20260524_200425.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_main_semantic_20260524_234958.json",
+      "midterm/exp4_existing_methods/exp4_existing_methods_zh_main_semantic_20260525_000326.json"
+    ],
+    "midterm/exp5_deep": [
+      "midterm/exp5_deep/exp5_deep_ablation_en_20260525_203829.json",
+      "midterm/exp5_deep/exp5_deep_ablation_zh_20260525_004739.json",
+      "midterm/exp5_deep/exp5_deep_ablation_zh_20260525_163457.json",
+      "midterm/exp5_deep/exp5_deep_adaptive_en_20260525_203650.json",
+      "midterm/exp5_deep/exp5_deep_adaptive_zh_20260525_004725.json",
+      "midterm/exp5_deep/exp5_deep_adaptive_zh_20260525_163344.json",
+      "midterm/exp5_deep/exp5_deep_attribution_en_20260525_203654.json",
+      "midterm/exp5_deep/exp5_deep_attribution_zh_20260525_004725.json",
+      "midterm/exp5_deep/exp5_deep_attribution_zh_20260525_163349.json",
+      "midterm/exp5_deep/exp5_deep_selfcorrect_en_20260525_203844.json",
+      "midterm/exp5_deep/exp5_deep_selfcorrect_zh_20260525_004745.json",
+      "midterm/exp5_deep/exp5_deep_selfcorrect_zh_20260525_163514.json"
+    ],
+    "misc": [
+      "misc/dryrun_20260516_055702.json"
+    ],
+    "sanity": [
+      "sanity/sanity_bright_n100_20260626_020958.json",
+      "sanity/sanity_multihop_rag_n100_20260626_021232.json",
+      "sanity/sanity_new_datasets_n100_summary.json",
+      "sanity/sanity_tempo_n100_20260626_022745.json"
+    ],
+    "smoke": [
+      "smoke/smoke_20260516_054530.json",
+      "smoke/smoke_20260516_060607.json",
+      "smoke/smoke_20260516_192057.json",
+      "smoke/smoke_20260623_011849.json",
+      "smoke/smoke_20260623_013225.json",
+      "smoke/smoke_20260623_014432.json",
+      "smoke/smoke_20260626_130233.json",
+      "smoke/smoke_mobilemem_zh_calc_n1_20260626_132800.json",
+      "smoke/smoke_mobilemem_zh_calc_n50_20260626_141226.json",
+      "smoke/smoke_rgb_zh_mobilemem_calc_n2_20260626_130608.json"
+    ]
+  }
+}

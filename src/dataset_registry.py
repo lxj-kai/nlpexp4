@@ -7,6 +7,25 @@ from .data_loader import Language, Subset
 
 DatasetSpec = dict[str, Any]
 
+NOISER_BENCH_SUBSETS = (
+    "nq",
+    "rgb_nb",
+    "hotpotqa",
+    "2wikimqa",
+    "bamboogle",
+    "strategyqa",
+    "tempqa",
+    "priorqa",
+)
+
+
+def noiser_bench_subsets_available() -> list[str]:
+    from .noiser_loader import list_noiser_subsets
+
+    found = list_noiser_subsets()
+    return found if found else list(NOISER_BENCH_SUBSETS)
+
+
 DATASETS: dict[str, DatasetSpec] = {
     "rgb": {
         "id": "rgb",
@@ -76,6 +95,16 @@ DATASETS: dict[str, DatasetSpec] = {
         "default_subset": "main",
         "demo_limit": 500,
         "prepare": "python scripts/prepare_tempo.py",
+    },
+    "noiser_bench": {
+        "id": "noiser_bench",
+        "label": "NoiserBench（ACL'25 · 7类噪音 RAG）",
+        "languages": ["en"],
+        "subsets": list(NOISER_BENCH_SUBSETS),
+        "default_language": "en",
+        "default_subset": "hotpotqa",
+        "demo_limit": 300,
+        "prepare": "python scripts/prepare_noiser_bench.py",
     },
 }
 

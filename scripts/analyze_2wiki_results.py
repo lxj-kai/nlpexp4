@@ -14,6 +14,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "experiments" / "results"
 
+sys.path.insert(0, str(ROOT))
+from src.results_paths import glob_results  # noqa: E402
+
 
 def _latest(
     pattern: str,
@@ -22,7 +25,7 @@ def _latest(
     min_n: int = 0,
     max_n: int | None = None,
 ) -> Path | None:
-    files = sorted(RESULTS.glob(pattern))
+    files = sorted(glob_results(pattern))
     picked: list[Path] = []
     for f in files:
         data = json.loads(f.read_text(encoding="utf-8"))

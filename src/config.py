@@ -33,6 +33,7 @@ _DATASET_DIRS: dict[str, Path] = {
     "bright": PROJECT_ROOT / "data" / "bright",
     "multihop_rag": PROJECT_ROOT / "data" / "multihop_rag",
     "tempo": PROJECT_ROOT / "data" / "tempo",
+    "noiser_bench": PROJECT_ROOT / "data" / "noiser_bench",
 }
 
 

@@ -15,6 +15,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+from src.results_paths import glob_results
 from src.config import CONFIG
 from src.utils import read_json, get_logger
 from src.visualize import (
@@ -36,7 +37,7 @@ FIG.mkdir(exist_ok=True)
 
 
 def _latest(pattern: str) -> Path | None:
-    files = sorted(RESULTS.glob(pattern))
+    files = sorted(glob_results(pattern))
     return files[-1] if files else None
 
 

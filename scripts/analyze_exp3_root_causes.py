@@ -13,6 +13,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.results_paths import glob_results
+
 RESULTS = ROOT / "experiments" / "results"
 
 EXP3_FILES = {
@@ -30,7 +32,7 @@ def load_exp3(label: str) -> dict:
     path = RESULTS / fname
     if not path.exists():
         # try glob
-        files = sorted(RESULTS.glob(f"exp3_case_study_{label.replace('_', '_')}_*.json"))
+        files = sorted(glob_results(f"exp3_case_study_{label.replace('_', '_')}_*.json"))
         if not files:
             raise FileNotFoundError(f"No exp3 result for {label}")
         path = files[-1]

@@ -1,0 +1,11 @@
+{
+  "source": "MobileMem shopping screenshot OCR memory graph (project internal)",
+  "layout": {
+    "calc": "zh_calc.json",
+    "noncalc": "zh_noncalc.json"
+  },
+  "calc_size": 120,
+  "noncalc_size": 120,
+  "language": "zh",
+  "evidence_type": "shopping_screenshot_ocr_text"
+}

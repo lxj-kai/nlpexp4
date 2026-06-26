@@ -23,13 +23,32 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.config import CONFIG  # noqa: E402
+from src.data_loader import is_usable_gold_answer  # noqa: E402
 from src.utils import get_logger  # noqa: E402
 
 logger = get_logger(__name__)
 
 DEFAULT_OUT_DIR = ROOT / "data" / "bright"
 DEFAULT_RAW_DIR = DEFAULT_OUT_DIR / "raw"
+GOLD_FILL_CACHE = DEFAULT_OUT_DIR / "gold_fill_cache.json"
 HF_REPO = "xlangai/BRIGHT"
+
+
+def _load_gold_fill_cache() -> dict[str, str]:
+    if not GOLD_FILL_CACHE.exists():
+        return {}
+    return json.loads(GOLD_FILL_CACHE.read_text(encoding="utf-8"))
+
+
+def _resolve_gold_answer(row: dict, cache: dict[str, str]) -> str | None:
+    answer = str(row.get("gold_answer", "")).strip()
+    if is_usable_gold_answer(answer):
+        return answer
+    subdomain = str(row.get("_subdomain", ""))
+    example_id = row.get("id")
+    key = f"{subdomain}:{example_id}"
+    filled = cache.get(key, "").strip()
+    return filled if is_usable_gold_answer(filled) else None
 
 
 def _flip_answer(answer: str) -> str:
@@ -147,7 +166,9 @@ def build_main_records(
     size: int | None,
     n_neg: int,
     seed: int,
+    gold_fill: dict[str, str] | None = None,
 ) -> list[dict]:
+    cache = gold_fill or {}
     rng = random.Random(seed)
     if size is not None and size < len(rows):
         rows = rng.sample(rows, size)
@@ -169,9 +190,16 @@ def build_main_records(
         )
         if not negatives:
             continue
-        answer = str(row.get("gold_answer", "")).strip()
+        answer = _resolve_gold_answer(row, cache)
         if not answer:
             continue
+        meta = {
+            "subdomain": subdomain,
+            "example_id": row.get("id"),
+            "source": HF_REPO,
+        }
+        if str(row.get("gold_answer", "")).strip().upper() in ("N/A", "NA"):
+            meta["gold_synthetic"] = True
         out.append(
             {
                 "id": rec_id,
@@ -179,11 +207,7 @@ def build_main_records(
                 "answer": [answer],
                 "positive": positives,
                 "negative": negatives,
-                "meta": {
-                    "subdomain": subdomain,
-                    "example_id": row.get("id"),
-                    "source": HF_REPO,
-                },
+                "meta": meta,
             }
         )
     return out
@@ -196,7 +220,9 @@ def build_fact_records(
     size: int | None,
     n_neg: int,
     seed: int,
+    gold_fill: dict[str, str] | None = None,
 ) -> list[dict]:
+    cache = gold_fill or {}
     rng = random.Random(seed + 1)
     if size is not None and size < len(rows):
         rows = rng.sample(rows, size)
@@ -222,9 +248,16 @@ def build_fact_records(
         negatives = [d for d in negatives if d != wrong_doc]
         if not negatives:
             continue
-        answer = str(row.get("gold_answer", "")).strip()
+        answer = _resolve_gold_answer(row, cache)
         if not answer:
             continue
+        meta = {
+            "subdomain": subdomain,
+            "example_id": row.get("id"),
+            "source": HF_REPO,
+        }
+        if str(row.get("gold_answer", "")).strip().upper() in ("N/A", "NA"):
+            meta["gold_synthetic"] = True
         out.append(
             {
                 "id": rec_id,
@@ -234,11 +267,7 @@ def build_fact_records(
                 "positive": positives[:1],
                 "positive_wrong": [wrong_doc],
                 "negative": negatives[:n_neg],
-                "meta": {
-                    "subdomain": subdomain,
-                    "example_id": row.get("id"),
-                    "source": HF_REPO,
-                },
+                "meta": meta,
             }
         )
     return out
@@ -264,11 +293,15 @@ def prepare(
         rows.extend(_load_examples(sp))
     logger.info(f"total BRIGHT examples: {len(rows)}")
 
+    gold_fill = _load_gold_fill_cache()
+    if gold_fill:
+        logger.info(f"loaded {len(gold_fill)} synthetic gold entries from cache")
+
     main_records = build_main_records(
-        rows, doc_maps, size=main_size, n_neg=n_neg, seed=seed
+        rows, doc_maps, size=main_size, n_neg=n_neg, seed=seed, gold_fill=gold_fill
     )
     fact_records = build_fact_records(
-        rows, doc_maps, size=fact_size, n_neg=n_neg, seed=seed
+        rows, doc_maps, size=fact_size, n_neg=n_neg, seed=seed, gold_fill=gold_fill
     )
 
     main_path = out_dir / "en.json"

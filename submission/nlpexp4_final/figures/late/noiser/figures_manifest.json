@@ -1,0 +1,10 @@
+{
+  "result_json": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/experiments/results/exp_noiser/exp_noiser_exp2_hotpotqa_n50_20260626_judge.json",
+  "figures": [
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/noiser/noiser_type_compare.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/noiser/noiser_method_heatmap.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/noiser/robustness_radar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/noiser/crr_bar.png"
+  ],
+  "phase": "exp2"
+}

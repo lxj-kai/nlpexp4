@@ -1,0 +1,12 @@
+{
+  "result_json": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/experiments/results/dataset_2wiki/exp_2wiki_exp2_en_main_20260624_174033.json",
+  "figures": [
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/2wiki/exp2_correction.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/2wiki/method_noise_curves.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/2wiki/exp1_noise_impact.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/2wiki/robustness_radar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/2wiki/nrs_grouped_bar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/2wiki/crr_bar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/2wiki/isr_nar_scatter.png"
+  ]
+}

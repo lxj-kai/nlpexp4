@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>数据引擎生成案例</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #fff; font-family: "Microsoft YaHei", "PingFang SC", sans-serif; color: #1e293b; }
+    .page { width: 1050px; padding: 0; }
+
+    .header {
+      background: linear-gradient(135deg, #005bac, #0284c7);
+      color: #fff;
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h1 { font-size: 16px; font-weight: 700; }
+    .header .kw { background: rgba(255,255,255,0.2); border-radius: 12px; padding: 3px 14px; font-size: 12px; }
+
+    .body { padding: 18px 28px 14px; }
+
+    /* Q&A card */
+    .qa-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .qa-block { border-radius: 8px; padding: 12px 14px; position: relative; }
+    .qa-block::before {
+      content: attr(data-label);
+      position: absolute; top: -8px; left: 12px;
+      background: #fff; padding: 0 6px;
+      font-size: 10px; font-weight: 700;
+    }
+    .q-block { background: #f0f9ff; border: 1.5px solid #93c5fd; }
+    .q-block::before { color: #2563eb; }
+    .a-block { background: #f0fdf4; border: 1.5px solid #86efac; }
+    .a-block::before { color: #16a34a; }
+    .qa-text { font-size: 12px; line-height: 1.7; }
+
+    /* Three document categories */
+    .doc-row {
+      display: grid;
+      grid-template-columns: 5fr 5fr 4fr;
+      gap: 12px;
+    }
+    .cat { border-radius: 8px; padding: 10px 12px; }
+    .cat-header {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 700;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1.5px dashed;
+    }
+    .cat-count {
+      font-size: 10px; font-weight: 400;
+      opacity: 0.7;
+      margin-left: auto;
+    }
+    .cat-pos { background: #f7fdf9; }
+    .cat-pos .cat-header { color: #15803d; border-color: #bbf7d0; }
+    .cat-neg { background: #f8fafc; }
+    .cat-neg .cat-header { color: #475569; border-color: #e2e8f0; }
+    .cat-cf { background: #fff5f5; }
+    .cat-cf .cat-header { color: #dc2626; border-color: #fecaca; }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-pos { background: #22c55e; }
+    .dot-neg { background: #94a3b8; }
+    .dot-cf { background: #ef4444; }
+
+    .snippet {
+      font-size: 10px; line-height: 1.5; padding: 5px 8px;
+      border-radius: 4px; margin-bottom: 4px;
+      position: relative;
+      padding-left: 26px;
+    }
+    .snippet-idx {
+      position: absolute; left: 6px; top: 5px;
+      font-size: 9px; font-weight: 700; color: #fff;
+      width: 15px; height: 15px; border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .s-pos { background: #ecfdf5; }
+    .s-pos .snippet-idx { background: #22c55e; }
+    .s-neg { background: #f1f5f9; }
+    .s-neg .snippet-idx { background: #94a3b8; }
+    .s-cf { background: #fef2f2; }
+    .s-cf .snippet-idx { background: #ef4444; }
+
+    .tamper { color: #dc2626; font-weight: 700; background: #fef2f2; padding: 0 2px; border-bottom: 2px solid #fca5a5; }
+
+    .footer {
+      margin-top: 10px; padding-top: 8px;
+      border-top: 1px solid #e2e8f0;
+      display: flex; gap: 20px; font-size: 10px; color: #94a3b8;
+    }
+    .footer b { color: #64748b; }
+    .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 9px; font-weight: 600; }
+    .badge-wiki { background: #dbeafe; color: #1d4ed8; }
+    .badge-llm { background: #fef3c7; color: #a16207; }
+    .badge-rgb { background: #ede9fe; color: #6d28d9; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>数据构建引擎 · 生成样例</h1>
+    <span class="kw">关键词：黑洞</span>
+  </div>
+
+  <div class="body">
+    <div class="qa-card">
+      <div class="qa-block q-block" data-label="Question">
+        <div class="qa-text">基于黑洞的形成、观测和理论发展，请分析为什么黑洞长期以来被认为是数学上的好奇，直到20世纪60年代后才被接受为天体物理实体？</div>
+      </div>
+      <div class="qa-block a-block" data-label="Answer">
+        <div class="qa-text">黑洞长期被视为数学好奇，因为史瓦西解（1916）缺乏物理解释，芬克尔斯坦1958年才解释为不可逃逸区域。20世纪60年代后，中子星发现（1967）激发兴趣，理论工作显示黑洞是广义相对论的一般预测，随后通过X射线、恒星轨道和引力波观测证实。</div>
+      </div>
+    </div>
+
+    <div class="doc-row">
+      <div class="cat cat-pos">
+        <div class="cat-header"><span class="dot dot-pos"></span>支撑文档 Positive<span class="cat-count">4 篇</span></div>
+        <div class="snippet s-pos"><span class="snippet-idx">P0</span>黑洞是一种天体，因极高密度产生极大引力，所有粒子与光无法逃逸。广义相对论预测足够紧密的质量可扭曲时空形成黑洞…</div>
+        <div class="snippet s-pos"><span class="snippet-idx">P1</span>1916年史瓦西发现第一个广义相对论精确解，1958年芬克尔斯坦首次将其解释为无法逃脱的空间区域…</div>
+        <div class="snippet s-pos"><span class="snippet-idx">P2</span>20世纪60年代理论工作显示黑洞是广义相对论一般预测。1967年贝尔发现中子星，激发了人们对引力坍缩致密天体的兴趣…</div>
+        <div class="snippet s-pos"><span class="snippet-idx">P3</span>观测证据在20世纪后期逐步积累：X射线喷流、恒星轨道确定质量、2016年LIGO直接探测到引力波…</div>
+      </div>
+
+      <div class="cat cat-neg">
+        <div class="cat-header"><span class="dot dot-neg"></span>噪音文档 Negative<span class="cat-count">5 篇</span></div>
+        <div class="snippet s-neg"><span class="snippet-idx">N0</span>黑洞信息佯谬是量子力学与广义相对论结合时的难题。1970年代霍金发现黑洞会发出霍金辐射…</div>
+        <div class="snippet s-neg"><span class="snippet-idx">N1</span>恒星黑洞是大质量恒星引力坍塌后形成的黑洞，质量五至数十倍太阳。目前已知最大质量恒星黑洞15.65±1.45倍…</div>
+        <div class="snippet s-neg"><span class="snippet-idx">N2</span>超大质量黑洞质量是太阳的10⁵至10⁹倍。一般相信所有大型星系中心都存在超大质量黑洞…</div>
+        <div class="snippet s-neg"><span class="snippet-idx">N3</span>霍金（1942—2018），英国理论物理学家，贡献包括彭罗斯-霍金奇点定理及霍金辐射理论预测…</div>
+        <div class="snippet s-neg"><span class="snippet-idx">N4</span>黑洞热力学发展于1970年代，将热力学定律应用于黑洞研究，暗示广义相对论与量子理论的深刻联系…</div>
+      </div>
+
+      <div class="cat cat-cf">
+        <div class="cat-header"><span class="dot dot-cf"></span>反事实文档<span class="cat-count">2 篇</span></div>
+        <div class="snippet s-cf"><span class="snippet-idx">CF0</span>…史瓦西1916年发现解，1958年芬克尔斯坦解释。直到<span class="tamper">20世纪80年代</span>，贝尔·伯奈尔发现中子星才激发兴趣…</div>
+        <div class="snippet s-cf"><span class="snippet-idx">CF1</span>…20世纪60年代理论工作显示黑洞是一般预测。1967年，<span class="tamper">约翰·米歇尔</span>发现中子星，激发了引力坍缩致密天体兴趣…</div>
+        <div style="margin-top: 6px; font-size: 9px; color: #b91c1c; padding: 4px 8px; background: #fff5f5; border-radius: 4px; border: 1px dashed #fca5a5;">
+          <b>篡改策略：</b>CF0 将年份 60年代→80年代；CF1 将人物 贝尔·伯奈尔→约翰·米歇尔
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span><span class="badge badge-wiki">Wikipedia</span> 中文维基百科「黑洞」词条</span>
+      <span><span class="badge badge-llm">DeepSeek</span> DeepSeek-chat 生成</span>
+      <span><span class="badge badge-rgb">RGB</span> 与 RGB 数据集格式兼容</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

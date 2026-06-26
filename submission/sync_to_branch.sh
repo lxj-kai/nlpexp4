@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 在 develop 上：构建提交包并复制到 submission/nlpexp4_final/，供 submission 分支推送。
+# 构建提交副本到 submission/nlpexp4_final/（不修改项目根目录的开发代码）
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -9,5 +9,8 @@ rm -rf submission/nlpexp4_final
 mkdir -p submission/nlpexp4_final
 rsync -a submission/dist/nlpexp4_final/ submission/nlpexp4_final/
 
+if compgen -G "submission/待填写*" > /dev/null; then
+  cp submission/待填写* submission/nlpexp4_final/
+fi
+
 echo "Done: submission/nlpexp4_final/"
-echo "Next: git checkout submission && git checkout mhr_develop -- . ':!submission/nlpexp4_final' && ..."

@@ -1,0 +1,9 @@
+{
+  "source": "xanhho/2WikiMultihopQA",
+  "split": "dev",
+  "main_size": 5000,
+  "fact_size": 800,
+  "n_neg": 8,
+  "seed": 42,
+  "neg_strategy": "same-context distractor articles/sentences"
+}

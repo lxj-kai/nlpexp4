@@ -1,13 +1,16 @@
-# 开发用：同步到 submission 分支
+# submission 目录
 
-老师看到的说明在 **`templates/README.md`**（构建后写入 `nlpexp4_final/README.md`）。
+- **`nlpexp4_final/`** — 终期提交副本（给老师），README 在其中的根目录
+- **`build.py` / `manifest.yaml`** — 从项目根目录复制文件重建副本
+- **`dist/`** — 构建缓存（gitignore）
 
 ```bash
-# 构建副本并 push 到 submission 分支
-bash submission/push_to_branch.sh
-
-# 仅本地构建（不 push）
+# 重建提交副本（不修改 src/、experiments/ 等开发目录）
 bash submission/sync_to_branch.sh
+
+# 或分步
+python submission/build.py
+rsync -a submission/dist/nlpexp4_final/ submission/nlpexp4_final/
 ```
 
-提交副本路径：`submission/nlpexp4_final/`（`submission` 分支跟踪，develop 上 gitignore）。
+zip 压缩请本地人工完成。老师使用 `submission/nlpexp4_final/` 即可，与仓库其余部分无依赖。

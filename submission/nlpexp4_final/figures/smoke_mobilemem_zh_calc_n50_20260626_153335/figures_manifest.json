@@ -1,0 +1,12 @@
+{
+  "result_json": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/experiments/results/smoke/smoke_mobilemem_zh_calc_n50_20260626_141226.json",
+  "figures": [
+    "figures/smoke_mobilemem_zh_calc_n50_20260626_153335/exp2_correction.png",
+    "figures/smoke_mobilemem_zh_calc_n50_20260626_153335/method_noise_curves.png",
+    "figures/smoke_mobilemem_zh_calc_n50_20260626_153335/exp1_noise_impact.png",
+    "figures/smoke_mobilemem_zh_calc_n50_20260626_153335/robustness_radar.png",
+    "figures/smoke_mobilemem_zh_calc_n50_20260626_153335/nrs_grouped_bar.png",
+    "figures/smoke_mobilemem_zh_calc_n50_20260626_153335/crr_bar.png",
+    "figures/smoke_mobilemem_zh_calc_n50_20260626_153335/isr_nar_scatter.png"
+  ]
+}

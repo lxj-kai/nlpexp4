@@ -1,0 +1,12 @@
+{
+  "result_json": "experiments/results/exp_correction_tempo_en_main_n2_20260626_142705.json",
+  "figures": [
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/exp_correction_tempo_en_main_n2_20260626_142705/exp2_correction.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/exp_correction_tempo_en_main_n2_20260626_142705/method_noise_curves.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/exp_correction_tempo_en_main_n2_20260626_142705/exp1_noise_impact.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/exp_correction_tempo_en_main_n2_20260626_142705/robustness_radar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/exp_correction_tempo_en_main_n2_20260626_142705/nrs_grouped_bar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/exp_correction_tempo_en_main_n2_20260626_142705/crr_bar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/exp_correction_tempo_en_main_n2_20260626_142705/isr_nar_scatter.png"
+  ]
+}

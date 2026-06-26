@@ -1,0 +1,12 @@
+{
+  "result_json": "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/experiments/results/exp_correction/exp_correction_multihop_rag_en_main_n50_20260626_judge.json",
+  "figures": [
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/multihop_rag/exp2_correction.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/multihop_rag/method_noise_curves.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/multihop_rag/exp1_noise_impact.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/multihop_rag/robustness_radar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/multihop_rag/nrs_grouped_bar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/multihop_rag/crr_bar.png",
+    "/Users/miaohuairui/PyCharmMiscProject/nlpexp4-main/figures/late/multihop_rag/isr_nar_scatter.png"
+  ]
+}

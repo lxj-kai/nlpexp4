@@ -1,0 +1,1502 @@
+[
+  {
+    "id": 1,
+    "answer": "东盟10国、中国、日本、韩国、澳大利亚、新西兰",
+    "method": "confidence"
+  },
+  {
+    "id": 1,
+    "answer": "RCEP包括东盟10国以及中国、日本、韩国、澳大利亚、新西兰。",
+    "method": "iterative"
+  },
+  {
+    "id": 1,
+    "answer": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+    "method": "naive"
+  },
+  {
+    "id": 1,
+    "answer": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+    "method": "prompt"
+  },
+  {
+    "id": 1,
+    "answer": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+    "method": "selfrag"
+  },
+  {
+    "id": 1,
+    "answer": "东盟10国、中国、日本、韩国、澳大利亚、新西兰。",
+    "method": "voting"
+  },
+  {
+    "id": 5,
+    "answer": "6.4%",
+    "method": "confidence"
+  },
+  {
+    "id": 5,
+    "answer": "6.4%",
+    "method": "iterative"
+  },
+  {
+    "id": 5,
+    "answer": "6.4%",
+    "method": "naive"
+  },
+  {
+    "id": 5,
+    "answer": "6.4%",
+    "method": "prompt"
+  },
+  {
+    "id": 5,
+    "answer": "6.4%",
+    "method": "selfrag"
+  },
+  {
+    "id": 5,
+    "answer": "6.4%",
+    "method": "voting"
+  },
+  {
+    "id": 19,
+    "answer": "未找到相关数据",
+    "method": "confidence"
+  },
+  {
+    "id": 19,
+    "answer": "无法回答",
+    "method": "iterative"
+  },
+  {
+    "id": 19,
+    "answer": "无法回答",
+    "method": "naive"
+  },
+  {
+    "id": 19,
+    "answer": "无法回答",
+    "method": "prompt"
+  },
+  {
+    "id": 19,
+    "answer": "无法回答",
+    "method": "selfrag"
+  },
+  {
+    "id": 19,
+    "answer": "无法回答。",
+    "method": "voting"
+  },
+  {
+    "id": 24,
+    "answer": "1308.84亿斤",
+    "method": "confidence"
+  },
+  {
+    "id": 24,
+    "answer": "1308.84亿斤。",
+    "method": "iterative"
+  },
+  {
+    "id": 24,
+    "answer": "1308.84亿斤。",
+    "method": "naive"
+  },
+  {
+    "id": 24,
+    "answer": "1308.84亿斤",
+    "method": "prompt"
+  },
+  {
+    "id": 24,
+    "answer": "1308.84亿斤。",
+    "method": "selfrag"
+  },
+  {
+    "id": 24,
+    "answer": "1308.84亿斤。",
+    "method": "voting"
+  },
+  {
+    "id": 32,
+    "answer": "讲述短道速滑运动员陈冕及三代运动员为祖国荣誉奋斗的故事。",
+    "method": "confidence"
+  },
+  {
+    "id": 32,
+    "answer": "《超越》讲述短道速滑运动员的励志成长故事。",
+    "method": "iterative"
+  },
+  {
+    "id": 32,
+    "answer": "《超越》讲述短道速滑运动员陈冕从青岛队成长为国家队并站上冬奥赛场的故事。",
+    "method": "naive"
+  },
+  {
+    "id": 32,
+    "answer": "《超越》讲述的是短道速滑运动员的成长与拼搏故事。",
+    "method": "prompt"
+  },
+  {
+    "id": 32,
+    "answer": "《超越》讲述短道速滑运动员陈冕从青岛队成长为国家队并站上冬奥赛场的故事。",
+    "method": "selfrag"
+  },
+  {
+    "id": 32,
+    "answer": "《超越》讲述短道速滑运动员陈冕从青岛队成长为国家队选手的励志故事。",
+    "method": "voting"
+  },
+  {
+    "id": 34,
+    "answer": "张丹、张昊",
+    "method": "confidence"
+  },
+  {
+    "id": 34,
+    "answer": "张丹、张昊",
+    "method": "iterative"
+  },
+  {
+    "id": 34,
+    "answer": "张丹、张昊",
+    "method": "naive"
+  },
+  {
+    "id": 34,
+    "answer": "张丹、张昊",
+    "method": "prompt"
+  },
+  {
+    "id": 34,
+    "answer": "张丹、张昊",
+    "method": "selfrag"
+  },
+  {
+    "id": 34,
+    "answer": "张丹、张昊。",
+    "method": "voting"
+  },
+  {
+    "id": 37,
+    "answer": "纳达尔",
+    "method": "confidence"
+  },
+  {
+    "id": 37,
+    "answer": "纳达尔",
+    "method": "iterative"
+  },
+  {
+    "id": 37,
+    "answer": "纳达尔",
+    "method": "naive"
+  },
+  {
+    "id": 37,
+    "answer": "纳达尔",
+    "method": "prompt"
+  },
+  {
+    "id": 37,
+    "answer": "纳达尔",
+    "method": "selfrag"
+  },
+  {
+    "id": 37,
+    "answer": "纳达尔",
+    "method": "voting"
+  },
+  {
+    "id": 38,
+    "answer": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）",
+    "method": "confidence"
+  },
+  {
+    "id": 38,
+    "answer": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）。",
+    "method": "iterative"
+  },
+  {
+    "id": 38,
+    "answer": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）。",
+    "method": "naive"
+  },
+  {
+    "id": 38,
+    "answer": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）。",
+    "method": "prompt"
+  },
+  {
+    "id": 38,
+    "answer": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）。",
+    "method": "selfrag"
+  },
+  {
+    "id": 38,
+    "answer": "张艺谋（总监制）、张和平（专家顾问团团长）、陆川（总导演）。",
+    "method": "voting"
+  },
+  {
+    "id": 48,
+    "answer": "60.4亿元",
+    "method": "confidence"
+  },
+  {
+    "id": 48,
+    "answer": "60.39亿元（或60.4亿元）。",
+    "method": "iterative"
+  },
+  {
+    "id": 48,
+    "answer": "60.39亿元。",
+    "method": "naive"
+  },
+  {
+    "id": 48,
+    "answer": "60.4亿元。",
+    "method": "prompt"
+  },
+  {
+    "id": 48,
+    "answer": "60.39亿元。",
+    "method": "selfrag"
+  },
+  {
+    "id": 48,
+    "answer": "60.4亿元。",
+    "method": "voting"
+  },
+  {
+    "id": 55,
+    "answer": "51枚",
+    "method": "confidence"
+  },
+  {
+    "id": 55,
+    "answer": "51块金牌。",
+    "method": "iterative"
+  },
+  {
+    "id": 55,
+    "answer": "51块金牌。",
+    "method": "naive"
+  },
+  {
+    "id": 55,
+    "answer": "51块金牌。",
+    "method": "prompt"
+  },
+  {
+    "id": 55,
+    "answer": "51块金牌。",
+    "method": "selfrag"
+  },
+  {
+    "id": 55,
+    "answer": "51块金牌。",
+    "method": "voting"
+  },
+  {
+    "id": 73,
+    "answer": "亚历山大·武契奇",
+    "method": "confidence"
+  },
+  {
+    "id": 73,
+    "answer": "亚历山大·武契奇",
+    "method": "iterative"
+  },
+  {
+    "id": 73,
+    "answer": "亚历山大·武契奇",
+    "method": "naive"
+  },
+  {
+    "id": 73,
+    "answer": "亚历山大·武契奇",
+    "method": "prompt"
+  },
+  {
+    "id": 73,
+    "answer": "亚历山大·武契奇",
+    "method": "selfrag"
+  },
+  {
+    "id": 73,
+    "answer": "亚历山大·武契奇。",
+    "method": "voting"
+  },
+  {
+    "id": 86,
+    "answer": "2022年6月3日",
+    "method": "confidence"
+  },
+  {
+    "id": 86,
+    "answer": "2022年6月3日。",
+    "method": "iterative"
+  },
+  {
+    "id": 86,
+    "answer": "2022年6月3日。",
+    "method": "naive"
+  },
+  {
+    "id": 86,
+    "answer": "2022年6月3日。",
+    "method": "prompt"
+  },
+  {
+    "id": 86,
+    "answer": "2022年6月3日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 86,
+    "answer": "2022年6月3日。",
+    "method": "voting"
+  },
+  {
+    "id": 89,
+    "answer": "21人死亡",
+    "method": "confidence"
+  },
+  {
+    "id": 89,
+    "answer": "21人死亡。",
+    "method": "iterative"
+  },
+  {
+    "id": 89,
+    "answer": "21人死亡，包括19名儿童和2名成人。",
+    "method": "naive"
+  },
+  {
+    "id": 89,
+    "answer": "21人死亡，包括19名儿童和2名成人。",
+    "method": "prompt"
+  },
+  {
+    "id": 89,
+    "answer": "21人死亡，包括19名儿童和2名成人。",
+    "method": "selfrag"
+  },
+  {
+    "id": 89,
+    "answer": "21人死亡，包括19名儿童和2名成人。",
+    "method": "voting"
+  },
+  {
+    "id": 100,
+    "answer": "50%",
+    "method": "confidence"
+  },
+  {
+    "id": 100,
+    "answer": "50%。",
+    "method": "iterative"
+  },
+  {
+    "id": 100,
+    "answer": "50%。",
+    "method": "naive"
+  },
+  {
+    "id": 100,
+    "answer": "50%",
+    "method": "prompt"
+  },
+  {
+    "id": 100,
+    "answer": "50%。",
+    "method": "selfrag"
+  },
+  {
+    "id": 100,
+    "answer": "50%",
+    "method": "voting"
+  },
+  {
+    "id": 103,
+    "answer": "奈良县近铁大和西大寺站",
+    "method": "confidence"
+  },
+  {
+    "id": 103,
+    "answer": "奈良县的近铁“大和西大寺站”。",
+    "method": "iterative"
+  },
+  {
+    "id": 103,
+    "answer": "奈良市的近铁“大和西大寺站”。",
+    "method": "naive"
+  },
+  {
+    "id": 103,
+    "answer": "奈良市的近铁“大和西大寺站”。",
+    "method": "prompt"
+  },
+  {
+    "id": 103,
+    "answer": "奈良市的近铁“大和西大寺站”。",
+    "method": "selfrag"
+  },
+  {
+    "id": 103,
+    "answer": "奈良市近铁“大和西大寺站”附近。",
+    "method": "voting"
+  },
+  {
+    "id": 106,
+    "answer": "德劳帕迪·穆尔穆",
+    "method": "confidence"
+  },
+  {
+    "id": 106,
+    "answer": "德劳帕迪·穆尔穆",
+    "method": "iterative"
+  },
+  {
+    "id": 106,
+    "answer": "德劳帕迪·穆尔穆",
+    "method": "naive"
+  },
+  {
+    "id": 106,
+    "answer": "德劳帕迪·穆尔穆",
+    "method": "prompt"
+  },
+  {
+    "id": 106,
+    "answer": "德劳帕迪·穆尔穆",
+    "method": "selfrag"
+  },
+  {
+    "id": 106,
+    "answer": "德劳帕迪·穆尔穆",
+    "method": "voting"
+  },
+  {
+    "id": 107,
+    "answer": "韩国（印尼参与）",
+    "method": "confidence"
+  },
+  {
+    "id": 107,
+    "answer": "韩国。",
+    "method": "iterative"
+  },
+  {
+    "id": 107,
+    "answer": "韩国。",
+    "method": "naive"
+  },
+  {
+    "id": 107,
+    "answer": "韩国（主导）与印尼（参与）。",
+    "method": "prompt"
+  },
+  {
+    "id": 107,
+    "answer": "韩国。",
+    "method": "selfrag"
+  },
+  {
+    "id": 107,
+    "answer": "韩国和印尼。",
+    "method": "voting"
+  },
+  {
+    "id": 115,
+    "answer": "雷佳音、张子枫、张新成",
+    "method": "confidence"
+  },
+  {
+    "id": 115,
+    "answer": "雷佳音、张子枫、张新成。",
+    "method": "iterative"
+  },
+  {
+    "id": 115,
+    "answer": "雷佳音、张子枫、张新成。",
+    "method": "naive"
+  },
+  {
+    "id": 115,
+    "answer": "雷佳音、张子枫、张新成。",
+    "method": "prompt"
+  },
+  {
+    "id": 115,
+    "answer": "雷佳音、张子枫、张新成。",
+    "method": "selfrag"
+  },
+  {
+    "id": 115,
+    "answer": "雷佳音、张子枫、张新成。",
+    "method": "voting"
+  },
+  {
+    "id": 120,
+    "answer": "黑龙江哈尔滨",
+    "method": "confidence"
+  },
+  {
+    "id": 120,
+    "answer": "哈尔滨",
+    "method": "iterative"
+  },
+  {
+    "id": 120,
+    "answer": "哈尔滨",
+    "method": "naive"
+  },
+  {
+    "id": 120,
+    "answer": "哈尔滨",
+    "method": "prompt"
+  },
+  {
+    "id": 120,
+    "answer": "哈尔滨",
+    "method": "selfrag"
+  },
+  {
+    "id": 120,
+    "answer": "哈尔滨",
+    "method": "voting"
+  },
+  {
+    "id": 123,
+    "answer": "2022年9月1日",
+    "method": "confidence"
+  },
+  {
+    "id": 123,
+    "answer": "2022年9月1日。",
+    "method": "iterative"
+  },
+  {
+    "id": 123,
+    "answer": "2022年9月1日。",
+    "method": "naive"
+  },
+  {
+    "id": 123,
+    "answer": "2022年9月1日。",
+    "method": "prompt"
+  },
+  {
+    "id": 123,
+    "answer": "2022年9月1日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 123,
+    "answer": "2022年9月1日。",
+    "method": "voting"
+  },
+  {
+    "id": 133,
+    "answer": "波兰和斯洛文尼亚",
+    "method": "confidence"
+  },
+  {
+    "id": 133,
+    "answer": "波兰和斯洛文尼亚。",
+    "method": "iterative"
+  },
+  {
+    "id": 133,
+    "answer": "波兰和斯洛文尼亚。",
+    "method": "naive"
+  },
+  {
+    "id": 133,
+    "answer": "波兰和斯洛文尼亚。",
+    "method": "prompt"
+  },
+  {
+    "id": 133,
+    "answer": "波兰和斯洛文尼亚。",
+    "method": "selfrag"
+  },
+  {
+    "id": 133,
+    "answer": "波兰和斯洛文尼亚",
+    "method": "voting"
+  },
+  {
+    "id": 144,
+    "answer": "三千孤儿入内蒙",
+    "method": "confidence"
+  },
+  {
+    "id": 144,
+    "answer": "“三千孤儿入内蒙”真实历史事件。",
+    "method": "iterative"
+  },
+  {
+    "id": 144,
+    "answer": "“三千孤儿入内蒙”真实历史事件。",
+    "method": "naive"
+  },
+  {
+    "id": 144,
+    "answer": "“三千孤儿入内蒙”真实历史事件。",
+    "method": "prompt"
+  },
+  {
+    "id": 144,
+    "answer": "“三千孤儿入内蒙”真实历史事件。",
+    "method": "selfrag"
+  },
+  {
+    "id": 144,
+    "answer": "“三千孤儿入内蒙”真实历史事件。",
+    "method": "voting"
+  },
+  {
+    "id": 158,
+    "answer": "3.71万人",
+    "method": "confidence"
+  },
+  {
+    "id": 158,
+    "answer": "3.71万人",
+    "method": "iterative"
+  },
+  {
+    "id": 158,
+    "answer": "3.71万人",
+    "method": "naive"
+  },
+  {
+    "id": 158,
+    "answer": "3.71万人",
+    "method": "prompt"
+  },
+  {
+    "id": 158,
+    "answer": "3.71万人",
+    "method": "selfrag"
+  },
+  {
+    "id": 158,
+    "answer": "3.71万人。",
+    "method": "voting"
+  },
+  {
+    "id": 159,
+    "answer": "2022年10月30日至11月2日",
+    "method": "confidence"
+  },
+  {
+    "id": 159,
+    "answer": "2022年10月30日至11月2日。",
+    "method": "iterative"
+  },
+  {
+    "id": 159,
+    "answer": "2022年10月30日至11月2日。",
+    "method": "naive"
+  },
+  {
+    "id": 159,
+    "answer": "2022年10月30日至11月2日",
+    "method": "prompt"
+  },
+  {
+    "id": 159,
+    "answer": "2022年10月30日至11月2日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 159,
+    "answer": "2022年10月30日至11月2日。",
+    "method": "voting"
+  },
+  {
+    "id": 173,
+    "answer": "厦门",
+    "method": "confidence"
+  },
+  {
+    "id": 173,
+    "answer": "厦门",
+    "method": "iterative"
+  },
+  {
+    "id": 173,
+    "answer": "厦门",
+    "method": "naive"
+  },
+  {
+    "id": 173,
+    "answer": "厦门",
+    "method": "prompt"
+  },
+  {
+    "id": 173,
+    "answer": "厦门",
+    "method": "selfrag"
+  },
+  {
+    "id": 173,
+    "answer": "厦门",
+    "method": "voting"
+  },
+  {
+    "id": 181,
+    "answer": "美国新奥尔良",
+    "method": "confidence"
+  },
+  {
+    "id": 181,
+    "answer": "美国新奥尔良。",
+    "method": "iterative"
+  },
+  {
+    "id": 181,
+    "answer": "美国新奥尔良。",
+    "method": "naive"
+  },
+  {
+    "id": 181,
+    "answer": "美国新奥尔良",
+    "method": "prompt"
+  },
+  {
+    "id": 181,
+    "answer": "美国新奥尔良。",
+    "method": "selfrag"
+  },
+  {
+    "id": 181,
+    "answer": "美国新奥尔良。",
+    "method": "voting"
+  },
+  {
+    "id": 190,
+    "answer": "阿根廷队和法国队",
+    "method": "confidence"
+  },
+  {
+    "id": 190,
+    "answer": "阿根廷队和法国队。",
+    "method": "iterative"
+  },
+  {
+    "id": 190,
+    "answer": "阿根廷队和法国队。",
+    "method": "naive"
+  },
+  {
+    "id": 190,
+    "answer": "阿根廷队和法国队。",
+    "method": "prompt"
+  },
+  {
+    "id": 190,
+    "answer": "阿根廷队和法国队。",
+    "method": "selfrag"
+  },
+  {
+    "id": 190,
+    "answer": "阿根廷队对阵法国队",
+    "method": "voting"
+  },
+  {
+    "id": 192,
+    "answer": "48支",
+    "method": "confidence"
+  },
+  {
+    "id": 192,
+    "answer": "48支球队。",
+    "method": "iterative"
+  },
+  {
+    "id": 192,
+    "answer": "48支球队。",
+    "method": "naive"
+  },
+  {
+    "id": 192,
+    "answer": "48支球队。",
+    "method": "prompt"
+  },
+  {
+    "id": 192,
+    "answer": "48支球队。",
+    "method": "selfrag"
+  },
+  {
+    "id": 192,
+    "answer": "48支球队。",
+    "method": "voting"
+  },
+  {
+    "id": 205,
+    "answer": "利雅得胜利",
+    "method": "confidence"
+  },
+  {
+    "id": 205,
+    "answer": "利雅得胜利",
+    "method": "iterative"
+  },
+  {
+    "id": 205,
+    "answer": "利雅得胜利",
+    "method": "naive"
+  },
+  {
+    "id": 205,
+    "answer": "利雅得胜利",
+    "method": "prompt"
+  },
+  {
+    "id": 205,
+    "answer": "利雅得胜利",
+    "method": "selfrag"
+  },
+  {
+    "id": 205,
+    "answer": "利雅得胜利",
+    "method": "voting"
+  },
+  {
+    "id": 206,
+    "answer": "permacrisis",
+    "method": "confidence"
+  },
+  {
+    "id": 206,
+    "answer": "permacrisis",
+    "method": "iterative"
+  },
+  {
+    "id": 206,
+    "answer": "permacrisis",
+    "method": "naive"
+  },
+  {
+    "id": 206,
+    "answer": "permacrisis",
+    "method": "prompt"
+  },
+  {
+    "id": 206,
+    "answer": "permacrisis",
+    "method": "selfrag"
+  },
+  {
+    "id": 206,
+    "answer": "permacrisis",
+    "method": "voting"
+  },
+  {
+    "id": 208,
+    "answer": "7万个",
+    "method": "confidence"
+  },
+  {
+    "id": 208,
+    "answer": "7万个。",
+    "method": "iterative"
+  },
+  {
+    "id": 208,
+    "answer": "2023年北京新能源小客车指标有7万个。",
+    "method": "naive"
+  },
+  {
+    "id": 208,
+    "answer": "7万个。",
+    "method": "prompt"
+  },
+  {
+    "id": 208,
+    "answer": "2023年北京新能源小客车指标有7万个。",
+    "method": "selfrag"
+  },
+  {
+    "id": 208,
+    "answer": "7万个。",
+    "method": "voting"
+  },
+  {
+    "id": 220,
+    "answer": "墨西哥首都墨西哥城",
+    "method": "confidence"
+  },
+  {
+    "id": 220,
+    "answer": "墨西哥城。",
+    "method": "iterative"
+  },
+  {
+    "id": 220,
+    "answer": "墨西哥城。",
+    "method": "naive"
+  },
+  {
+    "id": 220,
+    "answer": "墨西哥城",
+    "method": "prompt"
+  },
+  {
+    "id": 220,
+    "answer": "墨西哥城。",
+    "method": "selfrag"
+  },
+  {
+    "id": 220,
+    "answer": "墨西哥城",
+    "method": "voting"
+  },
+  {
+    "id": 224,
+    "answer": "成都",
+    "method": "confidence"
+  },
+  {
+    "id": 224,
+    "answer": "成都。",
+    "method": "iterative"
+  },
+  {
+    "id": 224,
+    "answer": "成都。",
+    "method": "naive"
+  },
+  {
+    "id": 224,
+    "answer": "成都",
+    "method": "prompt"
+  },
+  {
+    "id": 224,
+    "answer": "成都。",
+    "method": "selfrag"
+  },
+  {
+    "id": 224,
+    "answer": "成都。",
+    "method": "voting"
+  },
+  {
+    "id": 225,
+    "answer": "山东泰山",
+    "method": "confidence"
+  },
+  {
+    "id": 225,
+    "answer": "山东泰山队。",
+    "method": "iterative"
+  },
+  {
+    "id": 225,
+    "answer": "山东泰山队",
+    "method": "naive"
+  },
+  {
+    "id": 225,
+    "answer": "山东泰山队",
+    "method": "prompt"
+  },
+  {
+    "id": 225,
+    "answer": "山东泰山队",
+    "method": "selfrag"
+  },
+  {
+    "id": 225,
+    "answer": "山东泰山队",
+    "method": "voting"
+  },
+  {
+    "id": 231,
+    "answer": "30870亿元",
+    "method": "confidence"
+  },
+  {
+    "id": 231,
+    "answer": "30870亿元",
+    "method": "iterative"
+  },
+  {
+    "id": 231,
+    "answer": "30870亿元。",
+    "method": "naive"
+  },
+  {
+    "id": 231,
+    "answer": "30870亿元",
+    "method": "prompt"
+  },
+  {
+    "id": 231,
+    "answer": "30870亿元。",
+    "method": "selfrag"
+  },
+  {
+    "id": 231,
+    "answer": "30870亿元",
+    "method": "voting"
+  },
+  {
+    "id": 239,
+    "answer": "高启强",
+    "method": "confidence"
+  },
+  {
+    "id": 239,
+    "answer": "高启强",
+    "method": "iterative"
+  },
+  {
+    "id": 239,
+    "answer": "高启强",
+    "method": "naive"
+  },
+  {
+    "id": 239,
+    "answer": "高启强",
+    "method": "prompt"
+  },
+  {
+    "id": 239,
+    "answer": "高启强",
+    "method": "selfrag"
+  },
+  {
+    "id": 239,
+    "answer": "高启强",
+    "method": "voting"
+  },
+  {
+    "id": 242,
+    "answer": "马赛",
+    "method": "confidence"
+  },
+  {
+    "id": 242,
+    "answer": "马赛",
+    "method": "iterative"
+  },
+  {
+    "id": 242,
+    "answer": "马赛",
+    "method": "naive"
+  },
+  {
+    "id": 242,
+    "answer": "马赛",
+    "method": "prompt"
+  },
+  {
+    "id": 242,
+    "answer": "马赛",
+    "method": "selfrag"
+  },
+  {
+    "id": 242,
+    "answer": "马赛",
+    "method": "voting"
+  },
+  {
+    "id": 245,
+    "answer": "2023年2月6日凌晨4时17分",
+    "method": "confidence"
+  },
+  {
+    "id": 245,
+    "answer": "2023年2月6日。",
+    "method": "iterative"
+  },
+  {
+    "id": 245,
+    "answer": "2023年2月6日凌晨4时17分。",
+    "method": "naive"
+  },
+  {
+    "id": 245,
+    "answer": "2023年2月6日。",
+    "method": "prompt"
+  },
+  {
+    "id": 245,
+    "answer": "2023年2月6日凌晨4时17分。",
+    "method": "selfrag"
+  },
+  {
+    "id": 245,
+    "answer": "2023年2月6日凌晨4时17分。",
+    "method": "voting"
+  },
+  {
+    "id": 246,
+    "answer": "7.8级",
+    "method": "confidence"
+  },
+  {
+    "id": 246,
+    "answer": "7.8级。",
+    "method": "iterative"
+  },
+  {
+    "id": 246,
+    "answer": "7.8级。",
+    "method": "naive"
+  },
+  {
+    "id": 246,
+    "answer": "7.8级",
+    "method": "prompt"
+  },
+  {
+    "id": 246,
+    "answer": "7.8级。",
+    "method": "selfrag"
+  },
+  {
+    "id": 246,
+    "answer": "7.8级。",
+    "method": "voting"
+  },
+  {
+    "id": 250,
+    "answer": "965亿元",
+    "method": "confidence"
+  },
+  {
+    "id": 250,
+    "answer": "965亿元",
+    "method": "iterative"
+  },
+  {
+    "id": 250,
+    "answer": "965亿元。",
+    "method": "naive"
+  },
+  {
+    "id": 250,
+    "answer": "965亿元",
+    "method": "prompt"
+  },
+  {
+    "id": 250,
+    "answer": "965亿元。",
+    "method": "selfrag"
+  },
+  {
+    "id": 250,
+    "answer": "965亿元",
+    "method": "voting"
+  },
+  {
+    "id": 251,
+    "answer": "亚历山大·扬科维奇",
+    "method": "confidence"
+  },
+  {
+    "id": 251,
+    "answer": "亚历山大·扬科维奇",
+    "method": "iterative"
+  },
+  {
+    "id": 251,
+    "answer": "亚历山大·扬科维奇",
+    "method": "naive"
+  },
+  {
+    "id": 251,
+    "answer": "亚历山大·扬科维奇",
+    "method": "prompt"
+  },
+  {
+    "id": 251,
+    "answer": "亚历山大·扬科维奇",
+    "method": "selfrag"
+  },
+  {
+    "id": 251,
+    "answer": "亚历山大·扬科维奇",
+    "method": "voting"
+  },
+  {
+    "id": 252,
+    "answer": "2023年3月10日",
+    "method": "confidence"
+  },
+  {
+    "id": 252,
+    "answer": "2023年3月10日。",
+    "method": "iterative"
+  },
+  {
+    "id": 252,
+    "answer": "2023年3月10日。",
+    "method": "naive"
+  },
+  {
+    "id": 252,
+    "answer": "2023年3月10日",
+    "method": "prompt"
+  },
+  {
+    "id": 252,
+    "answer": "2023年3月10日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 252,
+    "answer": "2023年3月10日",
+    "method": "voting"
+  },
+  {
+    "id": 253,
+    "answer": "2023年4月20日",
+    "method": "confidence"
+  },
+  {
+    "id": 253,
+    "answer": "2023年4月20日",
+    "method": "iterative"
+  },
+  {
+    "id": 253,
+    "answer": "2023年4月20日。",
+    "method": "naive"
+  },
+  {
+    "id": 253,
+    "answer": "2023年4月20日",
+    "method": "prompt"
+  },
+  {
+    "id": 253,
+    "answer": "2023年4月20日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 253,
+    "answer": "2023年4月20日",
+    "method": "voting"
+  },
+  {
+    "id": 261,
+    "answer": "2023年4月1日",
+    "method": "confidence"
+  },
+  {
+    "id": 261,
+    "answer": "2023年4月1日。",
+    "method": "iterative"
+  },
+  {
+    "id": 261,
+    "answer": "2023年4月1日。",
+    "method": "naive"
+  },
+  {
+    "id": 261,
+    "answer": "2023年3月27日至4月7日。",
+    "method": "prompt"
+  },
+  {
+    "id": 261,
+    "answer": "2023年4月1日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 261,
+    "answer": "2023年4月1日。",
+    "method": "voting"
+  },
+  {
+    "id": 268,
+    "answer": "2022年1月1日",
+    "method": "confidence"
+  },
+  {
+    "id": 268,
+    "answer": "2022年1月1日",
+    "method": "iterative"
+  },
+  {
+    "id": 268,
+    "answer": "2022年1月1日。",
+    "method": "naive"
+  },
+  {
+    "id": 268,
+    "answer": "2022年1月1日。",
+    "method": "prompt"
+  },
+  {
+    "id": 268,
+    "answer": "2022年1月1日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 268,
+    "answer": "2022年1月1日。",
+    "method": "voting"
+  },
+  {
+    "id": 276,
+    "answer": "闯入8强，创造中国男网大师赛最好成绩",
+    "method": "confidence"
+  },
+  {
+    "id": 276,
+    "answer": "2023年马德里大师赛张之臻闯入8强。",
+    "method": "iterative"
+  },
+  {
+    "id": 276,
+    "answer": "2023年马德里大师赛张之臻闯入八强。",
+    "method": "naive"
+  },
+  {
+    "id": 276,
+    "answer": "2023年马德里大师赛张之臻闯入八强，创造中国男网大师赛最好成绩。",
+    "method": "prompt"
+  },
+  {
+    "id": 276,
+    "answer": "2023年马德里大师赛张之臻闯入八强。",
+    "method": "selfrag"
+  },
+  {
+    "id": 276,
+    "answer": "2023年马德里大师赛张之臻闯入八强，创造中国男网大师赛最好成绩。",
+    "method": "voting"
+  },
+  {
+    "id": 283,
+    "answer": "2023年5月17日",
+    "method": "confidence"
+  },
+  {
+    "id": 283,
+    "answer": "2023年5月17日。",
+    "method": "iterative"
+  },
+  {
+    "id": 283,
+    "answer": "5月17日。",
+    "method": "naive"
+  },
+  {
+    "id": 283,
+    "answer": "2023年5月17日。",
+    "method": "prompt"
+  },
+  {
+    "id": 283,
+    "answer": "5月17日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 283,
+    "answer": "2023年5月17日。",
+    "method": "voting"
+  },
+  {
+    "id": 291,
+    "answer": "2023年8月17日",
+    "method": "confidence"
+  },
+  {
+    "id": 291,
+    "answer": "2023年8月17日",
+    "method": "iterative"
+  },
+  {
+    "id": 291,
+    "answer": "2023年8月17日",
+    "method": "naive"
+  },
+  {
+    "id": 291,
+    "answer": "2023年8月17日",
+    "method": "prompt"
+  },
+  {
+    "id": 291,
+    "answer": "2023年8月17日",
+    "method": "selfrag"
+  },
+  {
+    "id": 291,
+    "answer": "2023年8月17日",
+    "method": "voting"
+  },
+  {
+    "id": 295,
+    "answer": "6月25日",
+    "method": "confidence"
+  },
+  {
+    "id": 295,
+    "answer": "2023年6月25日。",
+    "method": "iterative"
+  },
+  {
+    "id": 295,
+    "answer": "6月25日。",
+    "method": "naive"
+  },
+  {
+    "id": 295,
+    "answer": "6月25日",
+    "method": "prompt"
+  },
+  {
+    "id": 295,
+    "answer": "6月25日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 295,
+    "answer": "6月25日",
+    "method": "voting"
+  },
+  {
+    "id": 297,
+    "answer": "7月6日至9日",
+    "method": "confidence"
+  },
+  {
+    "id": 297,
+    "answer": "2023年7月6日至9日。",
+    "method": "iterative"
+  },
+  {
+    "id": 297,
+    "answer": "2023年7月6日至9日。",
+    "method": "naive"
+  },
+  {
+    "id": 297,
+    "answer": "2023年7月6日至9日。",
+    "method": "prompt"
+  },
+  {
+    "id": 297,
+    "answer": "2023年7月6日至9日。",
+    "method": "selfrag"
+  },
+  {
+    "id": 297,
+    "answer": "7月6日至9日",
+    "method": "voting"
+  }
+]

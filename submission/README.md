@@ -34,6 +34,8 @@ git checkout mhr_develop
 
 `submission` 分支结构与 develop 相同，**额外**在 `submission/nlpexp4_final/` 下有完整提交副本。老师可只关注该子目录。
 
+**终期报告路径**：`submission/nlpexp4_final/report_final/main.pdf`（不是 `report_latex/`）。
+
 ## 3. 目录说明
 
 ```text

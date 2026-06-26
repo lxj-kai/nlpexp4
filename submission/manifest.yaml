@@ -22,10 +22,7 @@ include:
   - data/mobilemem
   - data/processed
   - figures
-  - report_final/main.tex
-  - report_final/main.pdf
-  - report_final/figures
-  - report_final/README.md
+  - report_final
   - scripts/run_all_full.py
   - scripts/render_all_figures.py
   - scripts/render_demo_figures.py
@@ -65,3 +62,5 @@ exclude_globs:
   - "data/noiser_bench/**"
   - "experiments/results/raw/**"
   - "experiments/results/*.log"
+  - "report_latex/**"
+  - "report/**"

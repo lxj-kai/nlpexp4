@@ -49,7 +49,8 @@ nlpexp4/
 ├── backend/                   # FastAPI 后端（/api/config、/samples、/inject、/run）
 ├── frontend/                  # Vue 3 交互前端（四 Stage 演示）
 ├── figures/                   # 实验图表
-├── report_latex/              # LaTeX 实验报告
+├── report_final/              # 终期实验报告（LaTeX + PDF）
+├── report_latex/              # 中期报告快照（历史参考）
 ├── tests/                     # 测试套件
 ├── requirements.txt
 ├── .env.example
@@ -298,13 +299,15 @@ npm run dev
 | 切换数据集后提示「无样本」 | 运行对应 `scripts/prepare_*.py` 生成 `data/` 下 JSON |
 | 前端请求失败 | 先启动后端 8000，再启动 Vite 5173 |
 
-## 7. LaTeX 报告编译
+## 7. LaTeX 报告编译（终期：`report_final`）
 
 ```bash
-cd report_latex
-xelatex main.tex     # 第一次编译
-xelatex main.tex     # 第二次编译（生成目录）
+cd report_final
+xelatex -interaction=nonstopmode main.tex
+xelatex -interaction=nonstopmode main.tex   # 第二遍更新目录
 ```
+
+> 中期探索版见 `report_latex/`，**终期提交以 `report_final/main.pdf` 为准**。
 
 ## 8. 代码规范
 
